@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="GameFiles">
+      <UniqueIdentifier>{4a70b552-08cc-480d-b2d8-c5c60b41a969}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles">
+      <UniqueIdentifier>{4eb263da-a340-4c9e-860a-5c05e3a6dd2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles\Components">
+      <UniqueIdentifier>{2da6a125-4f2b-40eb-8e37-2c8958accef5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles\Scenegraph">
+      <UniqueIdentifier>{d64ab1ee-f20d-4d7e-822f-a0c76cf4f982}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles\Managers">
+      <UniqueIdentifier>{e2c91fb6-d6d7-4cbc-9813-528b6ebf531b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles\Observing">
+      <UniqueIdentifier>{6619bd4d-eda4-494c-9bc3-089cb87b4182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles\Templates">
+      <UniqueIdentifier>{2fe04248-3efc-4e19-8189-8c4796c808d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles\Input">
+      <UniqueIdentifier>{986e81f9-334c-4118-95ef-134261978fa5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles\Rendering">
+      <UniqueIdentifier>{5b739326-d9c8-4668-a140-18bb92013327}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles\Variables">
+      <UniqueIdentifier>{6e0fc53a-a371-4230-ace4-213869bf0ad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles\Collision">
+      <UniqueIdentifier>{99b47ddb-146b-437b-932c-783a1c331545}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles\FSM">
+      <UniqueIdentifier>{a68e5185-d4aa-486d-a4b0-1d492389e0f6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniginPCH.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minigin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TextComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>FrameworkFiles\Scenegraph</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>FrameworkFiles\Scenegraph</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>FrameworkFiles\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>FrameworkFiles\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>FrameworkFiles\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Observer.h">
+      <Filter>FrameworkFiles\Observing</Filter>
+    </ClInclude>
+    <ClInclude Include="ObserverEvents.h">
+      <Filter>FrameworkFiles\Observing</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>FrameworkFiles\Templates</Filter>
+    </ClInclude>
+    <ClInclude Include="Locator.h">
+      <Filter>FrameworkFiles\Templates</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>FrameworkFiles\Scenegraph</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>FrameworkFiles\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCommand.h">
+      <Filter>FrameworkFiles\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="GridMovementComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>FrameworkFiles\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>FrameworkFiles\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Rect.h">
+      <Filter>FrameworkFiles\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneData.h">
+      <Filter>FrameworkFiles\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>FrameworkFiles\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Circle.h">
+      <Filter>FrameworkFiles\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>FrameworkFiles\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AABBCollisionComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMEvent.h">
+      <Filter>FrameworkFiles\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMCondition.h">
+      <Filter>FrameworkFiles\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionGridComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMState.h">
+      <Filter>FrameworkFiles\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="FiniteStateMachineComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Direction.h">
+      <Filter>FrameworkFiles\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderable.h">
+      <Filter>FrameworkFiles\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.h">
+      <Filter>FrameworkFiles\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ValueGridComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderCommand.h">
+      <Filter>FrameworkFiles\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Subject.h">
+      <Filter>FrameworkFiles\Observing</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MiniginPCH.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minigin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TextComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>FrameworkFiles\Scenegraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>FrameworkFiles\Scenegraph</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>FrameworkFiles\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>FrameworkFiles\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>FrameworkFiles\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>FrameworkFiles\Scenegraph</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>FrameworkFiles\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="GridMovementComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>FrameworkFiles\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>FrameworkFiles\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector2.cpp">
+      <Filter>FrameworkFiles\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>FrameworkFiles\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AABBCollisionComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionGridComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="FSMState.cpp">
+      <Filter>FrameworkFiles\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="FiniteStateMachineComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderable.cpp">
+      <Filter>FrameworkFiles\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>FrameworkFiles\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Subject.cpp">
+      <Filter>FrameworkFiles\Observing</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
