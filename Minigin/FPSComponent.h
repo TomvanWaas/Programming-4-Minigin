@@ -4,7 +4,7 @@ class TextComponent;
 class FPSComponent final : public BaseComponent
 {
 public:
-	explicit FPSComponent();
+	explicit FPSComponent(GameObject& gameObject);
 	virtual ~FPSComponent() override = default;
 
 	FPSComponent(const FPSComponent& other) = delete;
@@ -12,14 +12,15 @@ public:
 	FPSComponent& operator=(const FPSComponent& other) = delete;
 	FPSComponent& operator=(FPSComponent&& other) noexcept = delete;
 
-	virtual void Initialize() override;
-	virtual void Update() override;
+	virtual void Initialize(const SceneData& sceneData) override;
+	virtual void UpdateFirst(const SceneData& sceneData) override;
 
 	void SetPrecision(unsigned int prec);
 	unsigned int GetPrecision() const;
 
 private:
-	TextComponent* m_pTextComponent;
 	unsigned int m_Precision;
+
+	TextComponent* m_pTextComponent;
 };
 

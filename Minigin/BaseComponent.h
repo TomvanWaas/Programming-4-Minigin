@@ -1,13 +1,11 @@
 #pragma once
-namespace dae
+#include "GameObject.h"
+struct SceneData;
+class BaseComponent abstract
 {
-	class GameObject;
-}
+	friend BaseComponent* GameObject::CreateComponent<BaseComponent>();
 
-class BaseComponent
-{
 public:
-	explicit BaseComponent() = default;
 	virtual ~BaseComponent() = default;
 
 	BaseComponent(const BaseComponent& other) = delete;
@@ -15,15 +13,22 @@ public:
 	BaseComponent& operator=(const BaseComponent& other) = delete;
 	BaseComponent& operator=(BaseComponent&& other) noexcept = delete;
 
-	virtual void Initialize();
-	virtual void Update();
-	virtual void Render() const;
-	void SetOwner(dae::GameObject* owner);
+	void Construct(const SceneData& sceneData);
+	virtual void UpdateFirst(const SceneData& sceneData);
+	virtual void UpdateSecond(const SceneData& sceneData);
+
+	const GameObject& GetGameObject() const;
+	GameObject& GetGameObject();
+
+
 
 protected:
-	dae::GameObject* m_pOwner;
+	virtual void Initialize(const SceneData& sceneData);
+	explicit BaseComponent(GameObject& gameObject);
 
+	GameObject* m_pGameObject;
 
-
+private:
+	bool m_IsConstructed = false;
 };
 

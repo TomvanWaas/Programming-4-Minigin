@@ -4,40 +4,37 @@
 #include "ResourceManager.h"
 #include "GameObject.h"
 #include "Texture2D.h"
-#include "Renderer.h"
+#include "RenderManager.h"
 #include "RenderComponent.h"
 #include "Logger.h"
+#include "SceneData.h"
 
-TextComponent::TextComponent(const std::string& text, const SDL_Color& color, const std::string& fontpath, unsigned fontsize)
-	: m_pFont(dae::ResourceManager::GetInstance().LoadFont(fontpath, fontsize))
-	, m_Color(color)
-	, m_Text(text)
-	, m_bNeedsUpdate(true)
-	, m_pRenderComponent(nullptr)
-{
-}
-TextComponent::TextComponent(const std::string& text, const SDL_Color& color, const std::shared_ptr<dae::Font>& pFont)
-	: m_pFont(pFont)
-	, m_Color(color)
-	, m_Text(text)
-	, m_bNeedsUpdate(true)
-	, m_pRenderComponent(nullptr)
+TextComponent::TextComponent(GameObject& gameObject)
+	: BaseComponent(gameObject)
+	, m_pFont(nullptr)
+	, m_Color(SDL_Color())
+	, m_Text("")
+	, m_bNeedsUpdate(false)
 {
 }
 
-void TextComponent::Initialize()
+
+
+
+void TextComponent::Initialize(const SceneData& sceneData)
 {
-	if (m_pOwner != nullptr)
+	UNREFERENCED_PARAMETER(sceneData);
+
+	if (m_pGameObject != nullptr)
 	{
-		m_pRenderComponent = m_pOwner->GetComponent<RenderComponent>(false);
-	}
-	if (m_pRenderComponent == nullptr)
-	{
-		Logger::GetInstance().LogWarning("TextComponent cannot find RenderComponent");
+		m_pRenderComponent = m_pGameObject->GetComponent<RenderComponent>();
+		if (m_pRenderComponent == nullptr)
+		{
+			Logger::GetInstance().LogWarning("TextComponent::Initialize > Cannot find RenderComponent");
+		}
 	}
 }
-
-void TextComponent::Update()
+void TextComponent::UpdateFirst(const SceneData& sceneData)
 {
 	//Make texture
 	if (m_bNeedsUpdate && m_Text != "" && m_pFont != nullptr)
@@ -47,13 +44,13 @@ void TextComponent::Update()
 		{
 			throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
 		}
-		auto texture = SDL_CreateTextureFromSurface(dae::Renderer::GetInstance().GetSDLRenderer(), surf);
+		auto texture = SDL_CreateTextureFromSurface(sceneData.pRenderManager->GetSDLRenderer(), surf);
 		if (texture == nullptr)
 		{
 			throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
 		}
 		SDL_FreeSurface(surf);
-		auto pTexture = std::make_shared<dae::Texture2D>(texture);
+		auto pTexture = std::make_shared<Texture2D>(texture);
 		m_bNeedsUpdate = false;
 
 		if (m_pRenderComponent != nullptr)
@@ -63,6 +60,7 @@ void TextComponent::Update()
 	}
 }
 
+
 void TextComponent::SetText(const std::string& text)
 {
 	m_Text = text;
@@ -70,10 +68,10 @@ void TextComponent::SetText(const std::string& text)
 }
 void TextComponent::SetFont(const std::string& fontpath, unsigned int fontsize)
 {
-	m_pFont = dae::ResourceManager::GetInstance().LoadFont(fontpath, fontsize);
+	m_pFont = ResourceManager::GetInstance().LoadFont(fontpath, fontsize);
 	m_bNeedsUpdate = true;
 }
-void TextComponent::SetFont(const std::shared_ptr<dae::Font>& pFont)
+void TextComponent::SetFont(const std::shared_ptr<Font>& pFont)
 {
 	m_pFont = pFont;
 	m_bNeedsUpdate = true;

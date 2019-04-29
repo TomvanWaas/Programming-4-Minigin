@@ -3,36 +3,44 @@
 #include "Scene.h"
 #include <algorithm>
 #include "Logger.h"
+#include "Time.h"
 
-dae::SceneManager::SceneManager()
+SceneManager::SceneManager()
+	: m_pScenes()
+	, m_ActiveSceneId(0)
+//Init sceneData values
+	, m_pTime(new Time())
 {
-	
 }
 
-dae::SceneManager::~SceneManager()
+SceneManager::~SceneManager()
 {
 	for (Scene* pScene : m_pScenes)
 	{
-		delete pScene;
+		SAFE_DELETE(pScene);
 	}
 	m_pScenes.clear();
+
+	//Delete sceneData values
+	SAFE_DELETE(m_pTime);
 }
 
-void dae::SceneManager::Initialize()
+void SceneManager::Initialize()
 {
 	for (auto pScene : m_pScenes)
 	{
 		pScene->Initialize();
 	}
 }
-void dae::SceneManager::Update()
+void SceneManager::Update(float deltaTime)
 {
+	//Update scene
 	if (m_pScenes[m_ActiveSceneId] != nullptr)
 	{
-		m_pScenes[m_ActiveSceneId]->Update();
+		m_pScenes[m_ActiveSceneId]->Update(deltaTime);
 	}
 }
-void dae::SceneManager::Render()
+void SceneManager::Render() const
 {
 	if (m_pScenes[m_ActiveSceneId] != nullptr)
 	{
@@ -41,7 +49,7 @@ void dae::SceneManager::Render()
 }
 
 
-void dae::SceneManager::SetActiveScene(const std::string& name)
+void SceneManager::SetActiveScene(const std::string& name)
 {
 	for (size_t i{0}; i < m_pScenes.size(); ++i)
 	{
@@ -52,12 +60,12 @@ void dae::SceneManager::SetActiveScene(const std::string& name)
 		}
 	}
 }
-void dae::SceneManager::NextScene()
+void SceneManager::NextScene()
 {
 	++m_ActiveSceneId;
 	if (m_ActiveSceneId >= m_pScenes.size()) m_ActiveSceneId = 0;
 }
-void dae::SceneManager::PreviousScene()
+void SceneManager::PreviousScene()
 {
 	--m_ActiveSceneId;
 
@@ -66,9 +74,7 @@ void dae::SceneManager::PreviousScene()
 }
 
 
-
-
-dae::Scene* dae::SceneManager::CreateScene(const std::string& name)
+Scene* SceneManager::CreateScene(const std::string& name)
 {
 	if (m_pScenes.end() != std::find_if(m_pScenes.begin(), m_pScenes.end(), [name](Scene* pScene)
 	{
@@ -79,7 +85,7 @@ dae::Scene* dae::SceneManager::CreateScene(const std::string& name)
 		return nullptr;
 	}
 
-	Scene* pScene = new Scene(name);
+	Scene* pScene = new Scene(name, m_pTime);
 	m_pScenes.push_back(pScene);
 	return pScene;
 }

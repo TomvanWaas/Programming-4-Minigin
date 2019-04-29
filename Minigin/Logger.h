@@ -1,11 +1,11 @@
 #pragma once
 #include "Singleton.h"
 
-class Logger final: public dae::Singleton<Logger>
+class Logger final: public Singleton<Logger>
 {
 public:
 	Logger() = default;
-	~Logger();
+	virtual ~Logger() = default;
 	Logger(const Logger& other) = delete;
 	Logger(Logger&& other) = delete;
 	Logger& operator=(const Logger& other) = delete;

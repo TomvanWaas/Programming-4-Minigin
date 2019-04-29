@@ -1,24 +1,19 @@
 #include "MiniginPCH.h"
 #include "Logger.h"
-
-
-Logger::~Logger()
-{
-}
-
+#include <iostream>
 
 void Logger::LogInfo(const std::string& msg)
 {
-	UNREFERENCED_PARAMETER(msg);
+	std::cout << "[Logger::Info] > " << msg << std::endl;
 }
 
 void Logger::LogError(const std::string& msg)
 {
-	UNREFERENCED_PARAMETER(msg);
+	std::cout << "[Logger::Error] > " << msg << std::endl;
 }
 
 void Logger::LogWarning(const std::string& msg)
 {
-	UNREFERENCED_PARAMETER(msg);
+	std::cout << "[Logger::Warning] > " << msg << std::endl;
 }
 

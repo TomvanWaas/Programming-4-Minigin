@@ -4,13 +4,13 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include "Renderer.h"
 #include "Texture2D.h"
 #include "Font.h"
+#include "RenderManager.h"
 
-void dae::ResourceManager::Init(std::string&& dataPath)
+void ResourceManager::Init(std::string&& dataPath)
 {
-	mDataPath = std::move(dataPath);
+	m_DataPath = std::move(dataPath);
 
 	// load support for png and jpg, this takes a while!
 
@@ -30,10 +30,10 @@ void dae::ResourceManager::Init(std::string&& dataPath)
 	}
 }
 
-std::shared_ptr<dae::Texture2D> dae::ResourceManager::LoadTexture(const std::string& file)
+std::shared_ptr<Texture2D> ResourceManager::LoadTexture(const std::string& file)
 {
-	std::string fullPath = mDataPath + file;
-	SDL_Texture *texture = IMG_LoadTexture(Renderer::GetInstance().GetSDLRenderer(), fullPath.c_str());
+	std::string fullPath = m_DataPath + file;
+	SDL_Texture *texture = IMG_LoadTexture(RenderManager::GetSDLRenderer(), fullPath.c_str());
 	if (texture == nullptr) 
 	{
 		throw std::runtime_error(std::string("Failed to load texture: ") + SDL_GetError());
@@ -41,7 +41,7 @@ std::shared_ptr<dae::Texture2D> dae::ResourceManager::LoadTexture(const std::str
 	return std::make_shared<Texture2D>(texture);
 }
 
-std::shared_ptr<dae::Font> dae::ResourceManager::LoadFont(const std::string& file, unsigned int size)
+std::shared_ptr<Font> ResourceManager::LoadFont(const std::string& file, unsigned int size)
 {
-	return std::make_shared<Font>(mDataPath + file, size);
+	return std::make_shared<Font>(m_DataPath + file, size);
 }

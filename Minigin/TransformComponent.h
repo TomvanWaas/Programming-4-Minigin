@@ -1,16 +1,11 @@
 #pragma once
 #include "BaseComponent.h"
-
-#pragma warning (push)	// Give warnings: Nameless union/struct
-#pragma warning (disable:4201)
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#pragma warning (pop)
+#include "Vector2.h"
 
 class TransformComponent final : public BaseComponent
 {
 public:
-	explicit TransformComponent() = default;
+	explicit TransformComponent(GameObject& gameObject);
 	virtual ~TransformComponent() override = default;
 
 	TransformComponent(const TransformComponent& other) = delete;
@@ -18,29 +13,31 @@ public:
 	TransformComponent& operator=(const TransformComponent& other) = delete;
 	TransformComponent& operator=(TransformComponent&& other) noexcept = delete;
 
-	virtual void Update() override {}
-	virtual void Render() const override {}
+	void SetWorldPosition(float x, float y);
+	void SetWorldPosition(const Vector2& p);
+	Vector2 GetWorldPosition() const;
+	void SetLocalPosition(float x, float y);
+	void SetLocalPosition(const Vector2& p);
+	const Vector2& GetLocalPosition() const;
 
-	void SetPosition(float x, float y, float z);
-	void SetEulerRotation(float x, float y, float z);
-	void SetQuaternionRotation(float x, float y, float z, float w);
-	void SetScale(float x, float y, float z);
-	void SetPosition(const glm::vec3& pos);
-	void SetEulerRotation(const glm::vec3& rot);
-	void SetQuaternionRotation(const glm::vec4& rot);
-	void SetScale(const glm::vec3& sca);
-	const glm::vec3& GetPosition() const;
-	glm::vec3 GetEulerRotation() const;
-	const glm::vec4& GetQuaternionRotation() const;
-	const glm::vec3& GetScale() const;
+	void SetWorldRotation(float rot, bool isdegrees = true);
+	float GetWorldRotation(bool isdegrees = true) const;
+	void SetLocalRotation(float rot, bool isdegrees = true);
+	float GetLocalRotation(bool isdegrees = true) const;
+
+	void SetWorldScale(Vector2 s);
+	void SetWorldScale(float x, float y);
+	Vector2 GetWorldScale() const;
+	void SetLocalScale(const Vector2& s);
+	void SetLocalScale(float x, float y);
+	const Vector2& GetLocalScale() const;
 
 private:
-	glm::vec3 m_Position;
-	glm::vec4 m_Rotation;
-	glm::vec3 m_Scale;
+	//Local
+	Vector2 m_LocalPosition;
+	Vector2 m_LocalScale;
+	float m_LocalRotationDegrees;
 
-	glm::vec3 ToEuler(const glm::vec4& quaternion) const;
-	glm::vec4 ToQuaternion(const glm::vec3& euler) const;
 
 };
 

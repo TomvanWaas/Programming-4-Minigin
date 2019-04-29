@@ -1,18 +1,33 @@
 #include "MiniginPCH.h"
 #include "Texture2D.h"
 #include <SDL.h>
+#include "Logger.h"
 
-dae::Texture2D::~Texture2D()
+
+Texture2D::Texture2D(SDL_Texture* texture)
+{
+	m_pTexture = texture;
+	if (SDL_QueryTexture(texture, nullptr, nullptr, &m_Width, &m_Height) != 0)
+	{
+		Logger::GetInstance().LogWarning("Texture2D::Texture2D > Invalid Texture");
+	}
+}
+Texture2D::~Texture2D()
 {
 	SDL_DestroyTexture(m_pTexture);
 }
 
-SDL_Texture* dae::Texture2D::GetSDLTexture() const
+
+SDL_Texture* Texture2D::GetSDLTexture() const
 {
 	return m_pTexture;
 }
-
-dae::Texture2D::Texture2D(SDL_Texture* texture)
+int Texture2D::GetWidth() const
 {
-	m_pTexture = texture;
+	return m_Width;
 }
+int Texture2D::GetHeight() const
+{
+	return m_Height;
+}
+

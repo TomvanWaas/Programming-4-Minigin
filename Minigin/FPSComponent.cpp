@@ -2,48 +2,51 @@
 #include "FPSComponent.h"
 #include "TextComponent.h"
 #include "GameObject.h"
-#include "Time.h"
 #include "Logger.h"
 #include "sstream"
 #include "iomanip"
+#include "SceneData.h"
+#include "Time.h"
 
-FPSComponent::FPSComponent()
-	: BaseComponent()
-	, m_pTextComponent(nullptr)
+FPSComponent::FPSComponent(GameObject& gameObject)
+	: BaseComponent(gameObject)
 	, m_Precision(2)
+	, m_pTextComponent(nullptr)
 {
 }
 
-void FPSComponent::Initialize()
+void FPSComponent::Initialize(const SceneData& sceneData)
 {
-	if (m_pOwner != nullptr)
+	UNREFERENCED_PARAMETER(sceneData);
+
+	if (m_pGameObject != nullptr)
 	{
-		m_pTextComponent = m_pOwner->GetComponent<TextComponent>(false);
-	}
-	if (m_pTextComponent == nullptr)
-	{
-		Logger::GetInstance().LogWarning("FPSComponent cannot find TextComponent");
+		m_pTextComponent = m_pGameObject->GetComponent<TextComponent>();
+		if (m_pTextComponent == nullptr)
+		{
+			Logger::GetInstance().LogWarning("FPSComponent::Initialize > Cannot find TextComponent");
+		}
 	}
 }
 
-void FPSComponent::Update()
+void FPSComponent::UpdateFirst(const SceneData& sceneData)
 {
-	//Set value
 	if (m_pTextComponent != nullptr)
 	{
 		//Calc FPS
-		float fps = 1 / Time::GetInstance().GetDeltaTime();
+		float fps = 1 / sceneData.pTime->GetDeltaTime();
 		std::stringstream ss{};
 		ss << std::fixed << std::setprecision(m_Precision) << fps;
 		m_pTextComponent->SetText("FPS:" + ss.str());
 	}
 }
 
+
+
 void FPSComponent::SetPrecision(unsigned int prec)
 {
 	m_Precision = prec;
 }
-
 unsigned int FPSComponent::GetPrecision() const
 {
 	return m_Precision;

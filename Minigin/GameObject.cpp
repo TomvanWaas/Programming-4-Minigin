@@ -1,90 +1,235 @@
 #include "MiniginPCH.h"
 #include "GameObject.h"
-#include "BaseComponent.h"
+//#include "BaseComponent.h"
 #include "TransformComponent.h"
+#include "Scene.h"
+#include <algorithm>
 
-dae::GameObject::GameObject()
-	: m_pTransform(new TransformComponent{})
+GameObject::GameObject()
+	: m_pTransformComponent(nullptr)
+	, m_pComponents()
+	, m_pChildren()
 	, m_pParent(nullptr)
+	, m_pScene(nullptr)
 {
+	CreateComponent<TransformComponent>();
 }
-
-dae::GameObject::~GameObject()
+GameObject::~GameObject()
 {
-	delete m_pTransform;
+	for (GameObject* pChild : m_pChildren)
+	{
+		SAFE_DELETE(pChild);
+	}
 	for (BaseComponent* pComponent : m_pComponents)
 	{
-		delete pComponent;
+		SAFE_DELETE(pComponent);
 	}
-	for (GameObject* pChild : m_pChildren)
-	{
-		delete pChild;
-	}
+	SAFE_DELETE(m_pTransformComponent);
 }
 
-void dae::GameObject::Initialize()
+
+
+
+void GameObject::Initialize(const SceneData& sceneData)
 {
+	m_pTransformComponent->Construct(sceneData);
+
 	for (BaseComponent* pComponent : m_pComponents)
 	{
-		pComponent->Initialize();
+		if (pComponent != nullptr)
+		{
+			pComponent->Construct(sceneData);
+		}
 	}
 	for (GameObject* pChild : m_pChildren)
 	{
-		pChild->Initialize();
+		if (pChild != nullptr)
+		{
+			pChild->Initialize(sceneData);
+		}
 	}
 }
 
-
-void dae::GameObject::Update()
+void GameObject::UpdateFirst(const SceneData& sceneData)
 {
+	//UpdateFirst Components
+	m_pTransformComponent->UpdateFirst(sceneData);
 	for (BaseComponent* pComponent : m_pComponents)
 	{
-		pComponent->Update();
+		if (pComponent != nullptr)
+		{
+			pComponent->UpdateFirst(sceneData);
+		}
 	}
+
+	//UpdateFirst Children
 	for (GameObject* pChild : m_pChildren)
 	{
-		pChild->Update();
+		if (pChild != nullptr)
+		{
+			pChild->UpdateFirst(sceneData);
+		}
 	}
-}
 
-void dae::GameObject::Render() const
-{
-	for (const BaseComponent* pComponent : m_pComponents)
+	//Erase if nullptr (deleted or...)
+	m_pComponents.erase(std::remove_if(m_pComponents.begin(), m_pComponents.end(), [](const BaseComponent* pComponent)
 	{
-		pComponent->Render();
+		return pComponent == nullptr;
+	}), m_pComponents.end());
+	m_pChildren.erase(std::remove_if(m_pChildren.begin(), m_pChildren.end(), [](const GameObject* pChild)
+	{
+		return pChild == nullptr;
+	}), m_pChildren.end());
+}
+void GameObject::UpdateSecond(const SceneData& sceneData)
+{
+	//UpdateFirst Components
+	m_pTransformComponent->UpdateFirst(sceneData);
+	for (BaseComponent* pComponent : m_pComponents)
+	{
+		if (pComponent != nullptr)
+		{
+			pComponent->UpdateSecond(sceneData);
+		}
 	}
+
+	//UpdateFirst Children
 	for (GameObject* pChild : m_pChildren)
 	{
-		pChild->Render();
+		if (pChild != nullptr)
+		{
+			pChild->UpdateSecond(sceneData);
+		}
 	}
+
+	//Erase if nullptr (deleted or...)
+	m_pComponents.erase(std::remove_if(m_pComponents.begin(), m_pComponents.end(), [](const BaseComponent* pComponent)
+	{
+		return pComponent == nullptr;
+	}), m_pComponents.end());
+	m_pChildren.erase(std::remove_if(m_pChildren.begin(), m_pChildren.end(), [](const GameObject* pChild)
+	{
+		return pChild == nullptr;
+	}), m_pChildren.end());
 }
 
-void dae::GameObject::AddComponent(BaseComponent* pComponent)
-{
-	m_pComponents.push_back(pComponent);
-	pComponent->SetOwner(this);
-}
 
-void dae::GameObject::AddChild(GameObject* pChild)
+
+
+
+GameObject* GameObject::CreateChild()
 {
+	GameObject* pChild = new GameObject();
+	pChild->m_pScene = m_pScene;
+	pChild->m_pParent = this;
+	if (m_pScene)m_pScene->SetInitialize();
 	m_pChildren.push_back(pChild);
-	pChild->SetParent(this);
+	return pChild;
 }
-
-void dae::GameObject::SetParent(GameObject* pParent)
+void GameObject::DeleteChild(GameObject* pChild)
 {
-	m_pParent = pParent;
+	if (pChild == nullptr) return;
+	auto i = std::find(m_pChildren.begin(), m_pChildren.end(), pChild);
+
+	if (i != m_pChildren.end())
+	{
+		SAFE_DELETE(pChild);
+	}
 }
 
-TransformComponent* dae::GameObject::GetTransform()
+void GameObject::SetParent(GameObject* pParent)
 {
-	return m_pTransform;
+	if ( (m_pParent == nullptr && pParent == nullptr)
+		|| (m_pParent == pParent)) return;
+
+	//Previous Parent was Scene
+	if (m_pParent == nullptr
+		&& m_pScene != nullptr)
+	{
+		//New Parent is Object
+		m_pScene->RemoveGameObject(this);
+		pParent->m_pChildren.push_back(this);
+		m_pParent = pParent;
+		//New Parent is Scene
+		//- Ignored as Previous and New are Scene => No Change
+	}
+	//Previous Parent was Object
+	else if (m_pParent != nullptr)
+	{
+		//New Parent is Object
+		if (pParent != nullptr)
+		{
+			//Remove from Previous
+			auto i = std::find(m_pParent->m_pChildren.begin(), m_pParent->m_pChildren.end(), this);
+			if (i != m_pParent->m_pChildren.end())
+			{
+				(*i) = nullptr;
+			}
+			//Register on New
+			pParent->m_pChildren.push_back(this);
+			m_pParent = pParent;
+		}
+		//New Parent is Scene
+		else
+		{
+			//Remove from Previous
+			auto i = std::find(m_pParent->m_pChildren.begin(), m_pParent->m_pChildren.end(), this);
+			if (i != m_pParent->m_pChildren.end())
+			{
+				(*i) = nullptr;
+			}
+			//Register on Scene
+			m_pParent = nullptr;
+			m_pScene->AddGameObject(this);
+		}
+	}	
 }
-const TransformComponent* dae::GameObject::GetTransform() const
+
+
+
+void GameObject::DeleteComponent(BaseComponent* pComponent)
 {
-	return m_pTransform;
+	if (pComponent == nullptr) return;
+	auto i = std::find(m_pComponents.begin(), m_pComponents.end(), pComponent);
+
+	if (i != m_pComponents.end())
+	{
+		SAFE_DELETE(pComponent);
+	}
 }
 
 
+const std::vector<BaseComponent*>& GameObject::GetAllComponents() const
+{
+	return m_pComponents;
+}
+const std::vector<GameObject*>& GameObject::GetAllChildren() const
+{
+	return m_pChildren;
+}
 
+
+const GameObject* GameObject::GetParent() const
+{
+	return m_pParent;
+}
+const GameObject& GameObject::GetRoot() const
+{
+	const GameObject* pParent = this;
+	while (pParent->GetParent() != nullptr)
+	{
+		pParent = pParent->GetParent();
+	}
+	return *pParent;
+}
+
+
+const Scene& GameObject::GetScene() const
+{
+	return *m_pScene;
+}
+Scene& GameObject::GetScene()
+{
+	return *m_pScene;
+}
 

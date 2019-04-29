@@ -1,93 +1,142 @@
 #pragma once
 #include <vector>
+#include "Scene.h"
+#include "Subject.h"
 class BaseComponent;
+struct SceneData;
 class TransformComponent;
-namespace dae
+class GameObject final : public Subject
 {
-	class GameObject final
+
+	friend GameObject* Scene::CreateGameObject();
+
+	explicit GameObject();
+
+public:
+
+	virtual ~GameObject();
+	GameObject(const GameObject& other) = delete;
+	GameObject(GameObject&& other) = delete;
+	GameObject& operator=(const GameObject& other) = delete;
+	GameObject& operator=(GameObject&& other) = delete;
+
+	void Initialize(const SceneData& sceneData);
+	void UpdateFirst(const SceneData& sceneData);
+	void UpdateSecond(const SceneData& sceneData);
+
+
+
+	const std::vector<BaseComponent*>& GetAllComponents() const;
+	const std::vector<GameObject*>& GetAllChildren() const;
+
+	const GameObject* GetParent() const;
+	const GameObject& GetRoot() const;
+
+	const Scene& GetScene() const;
+	Scene& GetScene();
+
+
+
+	//Creates new gameobject and adds it as child
+	GameObject* CreateChild();
+	void DeleteChild(GameObject* pChild);
+	void SetParent(GameObject* pParent);
+
+	//Creates new Component and adds it to vector
+	template <class T>
+	T* CreateComponent()
 	{
-	public:
-		void Initialize();
-		virtual void Update();
-		virtual void Render() const;
-
-		void AddComponent(BaseComponent* pComponent);
-		void AddChild(GameObject* pChild);
-		void SetParent(GameObject* pParent);
-
-		template <typename T>
-		T* GetComponent(bool searchchildren = false)
+		T* pComponent = GetComponent<T>();
+		if (pComponent == nullptr)
 		{
-			//BASED ON OVERLORD_ENGINE (from Graphics Programming 2)
+			//Tell scene to initialize
+			if (m_pScene) m_pScene->SetInitialize();
 
-			//Search Self
-			const type_info& ti = typeid(T);
-			for (BaseComponent* pComponent : m_pComponents)
+			pComponent = new T(*this);
+
+			//If transformComp
+			if (typeid(T) == typeid(TransformComponent))
 			{
-				if (pComponent != nullptr && typeid(*pComponent) == ti)
-				{
-					return static_cast<T*>(pComponent);
-				}
+				m_pTransformComponent = dynamic_cast<TransformComponent*>(pComponent);
+				return pComponent;
 			}
-
-			if (searchchildren)
-			{
-				//Search Children
-				for (GameObject* pChild : m_pChildren)
-				{
-					if (pChild == nullptr) continue;
-					T* pComponent = pChild->GetComponent<T>(true);
-					if (pComponent != nullptr) return pComponent;
-				}
-			}
-
-			//Return NULLPTR
-			return nullptr;
+			//Else add to vector
+			m_pComponents.push_back(dynamic_cast<BaseComponent*>(pComponent));
+			return pComponent;
 		}
-		template <typename T>
-		const T* GetComponent(bool searchchildren = false) const
+		return pComponent;
+	}
+	void DeleteComponent(BaseComponent* pComponent);
+
+
+	//Returns component in self and or children
+	template <class T>
+	T* GetComponent(bool searchChildren = false) const
+	{
+		/////////////////////////////////////////////////////////
+		//BASED ON OVERLORD_ENGINE (from Graphics Programming 2)
+		/////////////////////////////////////////////////////////
+
+		const type_info& ti = typeid(T);
+
+		//Search Self
+		for (BaseComponent* pComponent : m_pComponents)
 		{
-			//BASED ON OVERLORD_ENGINE (from Graphics Programming 2)
-
-			//Search Self
-			const type_info& ti = typeid(T);
-			for (BaseComponent* pComponent : m_pComponents)
+			if (pComponent != nullptr && typeid(*pComponent) == ti)
 			{
-				if (pComponent != nullptr && typeid(*pComponent) == ti)
-				{
-					return static_cast<T*>(pComponent);
-				}
+				return static_cast<T*>(pComponent);
 			}
-
-			if (searchchildren)
-			{
-				//Search Children
-				for (GameObject* pChild : m_pChildren)
-				{
-					if (pChild == nullptr) continue;
-					T* pComponent = pChild->GetComponent<T>(true);
-					if (pComponent != nullptr) return pComponent;
-				}
-			}
-
-			//Return NULLPTR
-			return nullptr;
 		}
-		TransformComponent* GetTransform();
-		const TransformComponent* GetTransform() const;
 
+		if (searchChildren)
+		{
+			//Search Children
+			for (GameObject* pChild : m_pChildren)
+			{
+				if (pChild == nullptr) continue;
+				T* pComponent = pChild->GetComponent<T>(true);
+				if (pComponent != nullptr) return pComponent;
+			}
+		}
 
-		GameObject();
-		virtual ~GameObject();
-		GameObject(const GameObject& other) = delete;
-		GameObject(GameObject&& other) = delete;
-		GameObject& operator=(const GameObject& other) = delete;
-		GameObject& operator=(GameObject&& other) = delete;
+		//Return NULLPTR
+		return nullptr;
+	}
 
-	private:
-		TransformComponent* m_pTransform;
-		std::vector<BaseComponent*> m_pComponents;
-		std::vector<GameObject*> m_pChildren;
-		GameObject* m_pParent;
-	};
-}
+	//Base get function for transformComponent (Specialized)
+	template <>
+	TransformComponent* GetComponent<TransformComponent>(bool searchChildren) const
+	{
+		UNREFERENCED_PARAMETER(searchChildren);
+		return m_pTransformComponent;
+	}
+
+	template <class T>
+	std::vector<T*> GetComponents(bool searchChildren = true) const
+	{
+		std::vector<T*> pResult;
+
+		pResult.push_back(GetComponent<T>());
+
+		if (searchChildren)
+		{
+			for (GameObject* pChild: m_pChildren)
+			{
+				auto v = pChild->GetComponents<T>();
+				pResult.insert(pResult.end(), v.begin(), v.end());
+			}
+		}
+
+		return pResult;
+	}
+
+private:
+	Scene* m_pScene;
+
+	GameObject* m_pParent;
+	std::vector<GameObject*> m_pChildren;
+
+	TransformComponent* m_pTransformComponent;
+	std::vector<BaseComponent*> m_pComponents;
+};
+

@@ -1,98 +1,147 @@
 #include "MiniginPCH.h"
 #include "TransformComponent.h"
+#include "GameObject.h"
+#include "Logger.h"
 
+#ifndef PI
+#define PI 3.14159265359f
+#endif
+#ifndef RADTODEG
+#define RADTODEG 57.2957795f
+#endif
+#ifndef DEGTORAD
+#define DEGTORAD 0.0174532925f 
+#endif
 
-void TransformComponent::SetPosition(float x, float y, float z)
+TransformComponent::TransformComponent(GameObject& gameObject)
+	: BaseComponent(gameObject)
+	, m_LocalPosition(0, 0)
+	, m_LocalRotationDegrees(0)
+	, m_LocalScale(1, 1)
 {
-	m_Position.x = x;
-	m_Position.y = y;
-	m_Position.z = z;
 }
 
-void TransformComponent::SetEulerRotation(float x, float y, float z)
+
+
+
+void TransformComponent::SetWorldPosition(float x, float y)
 {
-	SetEulerRotation(glm::vec3{ x, y, z });
+	SetWorldPosition(Vector2(x, y));
+}
+void TransformComponent::SetWorldPosition(const Vector2& p)
+{
+	Vector2 wp = GetWorldPosition();
+	SetLocalPosition(GetLocalPosition() + (p - wp));
+}
+Vector2 TransformComponent::GetWorldPosition() const
+{
+	Vector2 p = GetLocalPosition();
+	const GameObject* pParent = GetGameObject().GetParent();
+	while (pParent != nullptr)
+	{
+		p += pParent->GetComponent<TransformComponent>()->GetLocalPosition();
+		pParent = pParent->GetParent();
+	}
+	return p;
 }
 
-void TransformComponent::SetQuaternionRotation(float x, float y, float z, float w)
+void TransformComponent::SetLocalPosition(float x, float y)
 {
-	m_Rotation.x = x;
-	m_Rotation.y = y;
-	m_Rotation.z = z;
-	m_Rotation.w = w;
+	SetLocalPosition(Vector2(x, y));
+}
+void TransformComponent::SetLocalPosition(const Vector2& p)
+{
+	m_LocalPosition = p;
+}
+const Vector2& TransformComponent::GetLocalPosition() const
+{
+	return m_LocalPosition;
 }
 
-void TransformComponent::SetScale(float x, float y, float z)
+
+
+void TransformComponent::SetWorldRotation(float rot, bool isdegrees)
 {
-	m_Scale.x = x;
-	m_Scale.y = y;
-	m_Scale.z = z;
+	float wr = GetWorldRotation(true);
+	if (isdegrees)
+	{
+		SetLocalRotation(GetLocalRotation(true) + rot - wr, true);
+	}
+	else
+	{
+		SetLocalRotation(GetLocalRotation(true) + (rot*RADTODEG) - wr, true);
+	}
+}
+float TransformComponent::GetWorldRotation(bool isdegrees) const
+{
+	float r = GetLocalRotation(isdegrees);
+	const GameObject* pParent = GetGameObject().GetParent();
+	while (pParent != nullptr)
+	{
+		r += pParent->GetComponent<TransformComponent>()->GetLocalRotation(isdegrees);
+		pParent = pParent->GetParent();
+	}
+	return r;
 }
 
-void TransformComponent::SetPosition(const glm::vec3& pos)
+void TransformComponent::SetLocalRotation(float rot, bool isdegrees)
 {
-	m_Position = pos;
+	if (isdegrees) m_LocalRotationDegrees = rot;
+	else
+	{
+		m_LocalRotationDegrees = rot * RADTODEG;
+	}
+}
+float TransformComponent::GetLocalRotation(bool isdegrees) const
+{
+	return (isdegrees) ? m_LocalRotationDegrees : (m_LocalRotationDegrees*DEGTORAD);
 }
 
-void TransformComponent::SetEulerRotation(const glm::vec3& rot)
+
+
+void TransformComponent::SetWorldScale(Vector2 s)
 {
-	SetQuaternionRotation(ToQuaternion(rot));
+	if (s.x == 0.0f || s.y == 0.0f)
+	{
+		Logger::GetInstance().LogWarning("TransformComponent::SetWorldScale > Scale x or y was zero");
+		if (s.x == 0.0f) s.x = FLT_EPSILON;
+		if (s.y == 0.0f) s.y = FLT_EPSILON;
+	}
+	Vector2 ws = GetWorldScale();
+	if (ws.x == 0.0f || ws.y == 0.0f)
+	{
+		Logger::GetInstance().LogWarning("TransformComponent::SetWorldScale > WorldScale x or y was zero");
+		if (ws.x == 0.0f) ws.x = FLT_EPSILON;
+		if (ws.y == 0.0f) ws.y = FLT_EPSILON;
+	}
+	SetLocalScale(GetLocalScale() * (s / ws));
+}
+void TransformComponent::SetWorldScale(float x, float y)
+{
+	SetWorldScale(Vector2(x, y));
+}
+Vector2 TransformComponent::GetWorldScale() const
+{
+	Vector2 s = GetLocalScale();
+	const GameObject* pParent = GetGameObject().GetParent();
+	while (pParent != nullptr)
+	{
+		s *= pParent->GetComponent<TransformComponent>()->GetLocalScale();
+		pParent = pParent->GetParent();
+	}
+	return s;
 }
 
-void TransformComponent::SetQuaternionRotation(const glm::vec4& rot)
+void TransformComponent::SetLocalScale(const Vector2& s)
 {
-	m_Rotation = rot;
+	m_LocalScale = s;
+}
+void TransformComponent::SetLocalScale(float x, float y)
+{
+	SetLocalScale(Vector2(x, y));
+}
+const Vector2& TransformComponent::GetLocalScale() const
+{
+	return m_LocalScale;
 }
 
-void TransformComponent::SetScale(const glm::vec3& sca)
-{
-	m_Scale = sca;
-}
-
-const glm::vec3& TransformComponent::GetPosition() const
-{
-	return m_Position;
-}
-
-glm::vec3 TransformComponent::GetEulerRotation() const
-{
-	return ToEuler(GetQuaternionRotation());
-}
-
-const glm::vec4& TransformComponent::GetQuaternionRotation() const
-{
-	return m_Rotation;
-}
-
-const glm::vec3& TransformComponent::GetScale() const
-{
-	return m_Scale;
-}
-
- glm::vec3 TransformComponent::ToEuler(const glm::vec4& quaternion) const
-{
-	//Definition found on wikipedia: 'https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles'
-
-	glm::vec3 euler{};
-	euler.x = atan(2 * (quaternion.x*quaternion.y + quaternion.z*quaternion.w) / (1 - 2 * (quaternion.y*quaternion.y + quaternion.z*quaternion.z)));
-	euler.y = asin(2 * (quaternion.x*quaternion.z - quaternion.y*quaternion.w));
-	euler.z = atan(2 * (quaternion.x*quaternion.z + quaternion.y*quaternion.w) / (1 - 2 * (quaternion.z*quaternion.z + quaternion.w*quaternion.w)));
-	return euler;
-}
-glm::vec4 TransformComponent::ToQuaternion(const glm::vec3& euler) const
-{
-	//Definition found on wikipedia: 'https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles'
-	
-	glm::vec4 quaternion{};
-	float cy = cos(euler.z*0.5f);
-	float sy = sin(euler.z*0.5f);
-	float cp = cos(euler.y*0.5f);
-	float sp = sin(euler.y*0.5f);
-	float cr = cos(euler.x*0.5f);
-	float sr = sin(euler.x*0.5f);
-	quaternion.w = cy * cp * cr + sy * sp * sr;
-	quaternion.x = cy * cp * sr - sy * sp * cr;
-	quaternion.y = sy * cp * sr + cy * sp * cr;
-	quaternion.z = sy * cp * cr - cy * sp * sr;
-	return quaternion;
-}
