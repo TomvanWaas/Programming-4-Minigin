@@ -58,12 +58,23 @@ struct SweepSource final : public SpriteSource
 	unsigned int amount;
 };
 
+struct FixedSource final : public SpriteSource
+{
+	FixedSource(const Rect& source)
+		: SpriteSource(false)
+		, source(source)
+	{}
+	virtual ~FixedSource() = default;
+	virtual Rect GetSource(float& accuTime, float speed) override;
+	Rect source;
+};
 
 
 class SpriteComponent final : public BaseComponent
 {
 public:
-	explicit SpriteComponent(GameObject& gameObject);
+	explicit SpriteComponent(const std::shared_ptr<Texture2D>& pTexture = nullptr, float speed = 0.2f);
+	explicit SpriteComponent(const std::string& path, float speed = 0.2f);
 	virtual ~SpriteComponent();
 
 	SpriteComponent(const SpriteComponent& other) = delete;
@@ -71,7 +82,7 @@ public:
 	SpriteComponent& operator=(const SpriteComponent& other) = delete;
 	SpriteComponent& operator=(SpriteComponent&& other) noexcept = delete;
 
-	virtual void UpdateFirst(const SceneData& sceneData) override;
+	virtual void UpdateFirstOverride(const SceneData& sceneData) override;
 
 	void SetTexture(const std::shared_ptr<Texture2D>& pTexture);
 	void SetTexture(const std::string& path);
@@ -93,7 +104,6 @@ private:
 	std::map<unsigned int, SpriteSource*> m_pSources;
 
 	SpriteSource* m_pCurrentSource;
-	float m_CurrentAmount;
 	float m_SpriteSpeed;
 	float m_AccuTime;
 

@@ -5,10 +5,6 @@
 #include "FSMCondition.h"
 
 
-FiniteStateMachineComponent::FiniteStateMachineComponent(GameObject& gameObject)
-	: BaseComponent(gameObject)
-	, m_pCurrentState(nullptr)
-{}
 FiniteStateMachineComponent::~FiniteStateMachineComponent()
 {
 	for (auto& pState : m_pSavedStates)
@@ -20,18 +16,7 @@ FiniteStateMachineComponent::~FiniteStateMachineComponent()
 }
 
 
-void FiniteStateMachineComponent::Initialize(const SceneData& sceneData)
-{
-	for (auto& pEvent: m_pSavedEvents)
-	{
-		pEvent->Initialize(sceneData);
-	}
-	for (auto& pCondition: m_pSavedConditions)
-	{
-		pCondition->Initialize(sceneData);
-	}
-}
-void FiniteStateMachineComponent::UpdateFirst(const SceneData& sceneData)
+void FiniteStateMachineComponent::UpdateFirstOverride(const SceneData& sceneData)
 {
 	m_StateChanged = false;
 	if (m_pCurrentState != nullptr)
@@ -39,7 +24,7 @@ void FiniteStateMachineComponent::UpdateFirst(const SceneData& sceneData)
 		SetState(m_pCurrentState->UpdateFirst(sceneData), sceneData);
 	}
 }
-void FiniteStateMachineComponent::UpdateSecond(const SceneData& sceneData)
+void FiniteStateMachineComponent::UpdateSecondOverride(const SceneData& sceneData)
 {
 	if (m_pCurrentState != nullptr && !m_StateChanged)
 	{
@@ -56,6 +41,7 @@ void FiniteStateMachineComponent::SetState(FSMState* pState, const SceneData& sc
 	}
 	if (pState != nullptr)
 	{
+		pState->Initialize(sceneData);
 		pState->Enter(sceneData);
 	}
 	m_pCurrentState = pState;

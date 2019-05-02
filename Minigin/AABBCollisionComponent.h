@@ -5,7 +5,11 @@ class ColliderCommand;
 class AABBCollisionComponent : public BaseComponent
 {
 public:
-	explicit AABBCollisionComponent(GameObject& gameobject);
+	explicit AABBCollisionComponent(const Rect& extents = Rect{ 0,0,1,1 },
+		bool isTrigger = false,
+		const std::string& tag = "Tag",
+		const std::shared_ptr<ColliderCommand>& enter = nullptr, 
+		const std::shared_ptr<ColliderCommand>& exit = nullptr);
 	~AABBCollisionComponent() = default;
 
 	AABBCollisionComponent(const AABBCollisionComponent& other) = delete;
@@ -13,7 +17,8 @@ public:
 	AABBCollisionComponent& operator=(const AABBCollisionComponent& other) = delete;
 	AABBCollisionComponent& operator=(AABBCollisionComponent&& other) noexcept = delete;
 
-	virtual void Initialize(const SceneData& sceneData) override;
+	virtual void InitializeOverride(const SceneData& sceneData) override;
+	virtual void DestroyOverride(const SceneData& sceneData) override;
 
 	bool CollidesWith(AABBCollisionComponent* pCollider) const;
 

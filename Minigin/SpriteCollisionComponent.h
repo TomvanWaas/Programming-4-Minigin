@@ -4,7 +4,8 @@ class SpriteComponent;
 class SpriteCollisionComponent final : public AABBCollisionComponent
 {
 public:
-	explicit SpriteCollisionComponent(GameObject& gameObject);
+	explicit SpriteCollisionComponent(const Rect& extents = Rect{}, bool isTrigger = false, const std::string& tag = "Tag",
+		const std::shared_ptr<ColliderCommand>& enter = nullptr, const std::shared_ptr<ColliderCommand>& exit = nullptr);
 	virtual ~SpriteCollisionComponent() = default;
 
 	SpriteCollisionComponent(const SpriteCollisionComponent& other) = delete;
@@ -12,7 +13,7 @@ public:
 	SpriteCollisionComponent& operator=(const SpriteCollisionComponent& other) = delete;
 	SpriteCollisionComponent& operator=(SpriteCollisionComponent&& other) noexcept = delete;
 
-	virtual void Initialize(const SceneData& sceneData) override;
+	virtual void InitializeOverride(const SceneData& sceneData) override;
 
 	void SetOffset(float leftx, float rightx, float topy, float bottomy);
 	virtual void CalculateCollider() override;

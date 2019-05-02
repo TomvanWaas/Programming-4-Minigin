@@ -22,6 +22,8 @@ struct Vector2
 	float Dot(const Vector2& other) const;
 	float Cross(const Vector2& other) const;
 
+	bool Equals(const Vector2& other, float e = FLT_EPSILON) const;
+
 	//
 	bool operator==(const Vector2& other) const;
 	bool operator!=(const Vector2& other) const;

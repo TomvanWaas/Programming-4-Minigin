@@ -40,6 +40,13 @@ public:
 		}
 		return cond;
 	}
+	virtual void Initialize(const SceneData& sceneData) override
+	{
+		for (auto& pCondition : m_pConditions)
+		{
+			if (pCondition != nullptr) pCondition->Initialize(sceneData);
+		}
+	}
 
 private:
 	std::vector<std::shared_ptr<FSMCondition>> m_pConditions;
@@ -71,6 +78,20 @@ public:
 
 private:
 	std::vector<std::shared_ptr<FSMCondition>> m_pConditions;
+};
+
+class FSMNotCondition final : public FSMCondition
+{
+public:
+	explicit FSMNotCondition(const std::shared_ptr<FSMCondition>& pCondition)
+		: m_pCondition(pCondition)
+	{}
+	virtual bool Execute(const SceneData& sceneData) const override
+	{
+		return (m_pCondition != nullptr && !m_pCondition->Execute(sceneData));
+	}
+private:
+	std::shared_ptr<FSMCondition> m_pCondition;
 };
 
 

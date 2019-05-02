@@ -1,30 +1,42 @@
 #include "MiniginPCH.h"
 #include "MultiRenderComponent.h"
 #include "ResourceManager.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 #include "RenderManager.h"
 #include "Texture2D.h"
 #include "Logger.h"
+#include "SceneData.h"
+#include "GameObject.h"
 
-
-MultiRenderComponent::MultiRenderComponent(GameObject& gameObject)
-	: BaseComponent(gameObject)
-	, m_pTexture()
+MultiRenderComponent::MultiRenderComponent(const std::string& texturePath)
+	: m_pTexture(ResourceManager::GetInstance().LoadTexture(texturePath))
+	, m_RenderInfos()
+{
+}
+MultiRenderComponent::MultiRenderComponent(const std::shared_ptr<Texture2D>& texture)
+	: m_pTexture(texture)
 	, m_RenderInfos()
 {
 }
 
-void MultiRenderComponent::Initialize(const SceneData& sceneData)
+
+void MultiRenderComponent::InitializeOverride(const SceneData& sceneData)
 {
 	RegisterRenderable(sceneData.pRenderManager);
 }
+
+void MultiRenderComponent::DestroyOverride(const SceneData& sceneData)
+{
+	UnRegisterRenderable(sceneData.pRenderManager);
+}
+
 void MultiRenderComponent::Render(const RenderManager& renderer) const
 {
-	if (m_pGameObject != nullptr && m_pTexture != nullptr)
+	if (GetGameObject() != nullptr && m_pTexture != nullptr&& IsEnabled())
 	{
-		const auto transform = m_pGameObject->GetComponent<TransformComponent>();
-		const auto position = transform->GetWorldPosition();
-		const auto scale = transform->GetWorldScale();
+		const auto& transform = GetGameObject()->GetTransform();
+		const auto position = transform.GetWorldPosition();
+		const auto scale = transform.GetWorldScale();
 
 		for (const std::pair<unsigned int, RenderInfo>& info : m_RenderInfos)
 		{
@@ -43,6 +55,8 @@ void MultiRenderComponent::Render(const RenderManager& renderer) const
 				dst = Rect(0, 0, rinfo.src.width, rinfo.src.height);
 			}
 			//Apply Transform
+			dst.x *= scale.x;
+			dst.y *= scale.y;
 			dst.x += position.x;
 			dst.y += position.y;
 			dst.width *= scale.x;

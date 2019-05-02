@@ -16,7 +16,9 @@ public:
 		bool hasDst;
 	};
 
-	explicit MultiRenderComponent(GameObject& gameObject);
+	explicit MultiRenderComponent() = default;
+	explicit MultiRenderComponent(const std::string& texturePath);
+	explicit MultiRenderComponent(const std::shared_ptr<Texture2D>& texture);
 	virtual ~MultiRenderComponent() override = default;
 
 	MultiRenderComponent(const MultiRenderComponent& other) = delete;
@@ -24,7 +26,8 @@ public:
 	MultiRenderComponent& operator=(const MultiRenderComponent& other) = delete;
 	MultiRenderComponent& operator=(MultiRenderComponent&& other) noexcept = delete;
 
-	virtual void Initialize(const SceneData& sceneData) override;
+	virtual void InitializeOverride(const SceneData& sceneData) override;
+	virtual void DestroyOverride(const SceneData& sceneData) override;
 	virtual void Render(const RenderManager& renderer) const override;
 
 	void AddRenderInfo(unsigned int id ,const RenderInfo& info);

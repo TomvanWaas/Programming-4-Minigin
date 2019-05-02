@@ -201,14 +201,18 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="DigDugApplication.h" />
     <ClInclude Include="DigDugGridComponent.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="DigDugMovementComponent.h" />
+    <ClInclude Include="Enumerations.h" />
+    <ClInclude Include="FSMConditions.h" />
+    <ClInclude Include="FSMEvents.h" />
     <ClInclude Include="GameColliderCommands.h" />
     <ClInclude Include="GameFiles.h" />
     <ClInclude Include="GameFSMClasses.h" />
     <ClInclude Include="GameInputCommands.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="GridComponent.h" />
+    <ClInclude Include="MiniginMath.h" />
     <ClInclude Include="MultiRenderComponent.h" />
-    <ClInclude Include="Direction.h" />
     <ClInclude Include="FiniteStateMachineComponent.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FPSComponent.h" />
@@ -223,7 +227,6 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="Minigin.h" />
     <ClInclude Include="MiniginPCH.h" />
     <ClInclude Include="SpriteCollisionComponent.h" />
-    <ClInclude Include="SpriteIds.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="ObserverEvents.h" />
@@ -242,8 +245,9 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="TextComponent.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Time.h" />
-    <ClInclude Include="TransformComponent.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="Vector2.h" />
+    <ClInclude Include="WindowSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseComponent.cpp" />
@@ -251,6 +255,9 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="DigDugApplication.cpp" />
     <ClCompile Include="DigDugGridComponent.cpp" />
+    <ClCompile Include="DigDugMovementComponent.cpp" />
+    <ClCompile Include="FSMConditions.cpp" />
+    <ClCompile Include="FSMEvents.cpp" />
     <ClCompile Include="GameColliderCommands.cpp" />
     <ClCompile Include="GameFiles.cpp" />
     <ClCompile Include="GameFSMClasses.cpp" />
@@ -286,7 +293,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClCompile Include="TextComponent.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Time.cpp" />
-    <ClCompile Include="TransformComponent.cpp" />
+    <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Vector2.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

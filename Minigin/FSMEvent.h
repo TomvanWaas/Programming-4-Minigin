@@ -37,6 +37,14 @@ public:
 			pEvent->Execute(sceneData);
 		}
 	}
+	virtual void Initialize(const SceneData& sceneData) override
+	{
+		for (auto& pEvent : m_pEvents)
+		{
+			if (pEvent == nullptr) continue;
+			pEvent->Initialize(sceneData);
+		}
+	}
 private:
 	std::vector<std::shared_ptr<FSMEvent>> m_pEvents;
 };

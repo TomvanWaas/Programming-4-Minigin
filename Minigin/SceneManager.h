@@ -1,6 +1,7 @@
 #pragma once
 class Scene;
 class Time;
+#include "SceneData.h"
 class SceneManager final
 {
 public:
@@ -28,9 +29,9 @@ private:
 	size_t m_ActiveSceneId;
 
 
-	//SceneManager::SceneData variables
-	Time* m_pTime;
-	//...
+	//SceneManager::SceneData variables that are used by all scenes
+	SceneData m_SceneData;
+
 
 };
 

@@ -6,7 +6,9 @@ class Texture2D;
 class RenderComponent final : public BaseComponent, public Renderable
 {
 public:
-	explicit RenderComponent(GameObject& gameObject);
+	explicit RenderComponent() = default;
+	explicit RenderComponent(const std::string& texturePath);
+	explicit RenderComponent(const std::shared_ptr<Texture2D>& texture);
 	virtual ~RenderComponent() override = default;
 
 	RenderComponent(const RenderComponent& other) = delete;
@@ -14,7 +16,8 @@ public:
 	RenderComponent& operator=(const RenderComponent& other) = delete;
 	RenderComponent& operator=(RenderComponent&& other) noexcept = delete;
 
-	virtual void Initialize(const SceneData& sceneData) override;
+	virtual void InitializeOverride(const SceneData& sceneData) override;
+	virtual void DestroyOverride(const SceneData& sceneData) override;
 	virtual void Render(const RenderManager& renderer) const override;
 
 	void SetTexture(const std::string& filename);

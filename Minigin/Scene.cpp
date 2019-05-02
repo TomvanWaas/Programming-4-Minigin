@@ -6,12 +6,12 @@
 #include "CollisionManager.h"
 #include "RenderManager.h"
 
-Scene::Scene(const std::string& name, Time* pTime)
+Scene::Scene(const std::string& name)
 	: m_Name(name)
 	, m_pGameObjects()
+	, m_SceneData()
+	, m_NeedsInit(true)
 {
-	m_SceneData.Initialize(pTime, nullptr, nullptr, nullptr);
-	m_SceneData.pCollisionManager->Initialize(m_SceneData);
 }
 Scene::~Scene()
 {
@@ -20,10 +20,20 @@ Scene::~Scene()
 		SAFE_DELETE(pObject);
 	}
 	m_pGameObjects.clear();
+	for (GameObject* pObject : m_pMarkedForDelete)
+	{
+		SAFE_DELETE(pObject);
+	}
+	m_pMarkedForDelete.clear();
 
 	SAFE_DELETE(m_SceneData.pInput);
 	SAFE_DELETE(m_SceneData.pCollisionManager);
 	SAFE_DELETE(m_SceneData.pRenderManager);
+}
+
+void Scene::InitSceneData(const SceneData& sceneData)
+{
+	m_SceneData.Initialize(sceneData);
 }
 
 
@@ -31,48 +41,46 @@ Scene::~Scene()
 GameObject* Scene::CreateGameObject()
 {
 	GameObject* pObject = new GameObject();
-	pObject->m_pScene = this;
-
-	m_pGameObjects.push_back(pObject);
+	AddGameObject(pObject);
 	return pObject;
 }
-void Scene::DeleteGameObject(GameObject* pObject)
+bool Scene::DeleteGameObject(GameObject* pObject)
 {
-	if (pObject == nullptr) return;
-
-	for (GameObject* pGameObject: m_pGameObjects)
-	{
-		if (pGameObject == pObject)
-		{
-			SAFE_DELETE(pGameObject);
-			break;
-		}
-	}
+	if (pObject == nullptr) return false;
+	pObject->SetParent(nullptr);
+	RemoveGameObject(pObject);
+	m_pMarkedForDelete.push_back(pObject);
+	pObject->Destroy(m_SceneData);
+	pObject->SetEnabled(false);
+	return true;
 }
-
-void Scene::RemoveGameObject(GameObject* pObject)
+bool Scene::RemoveGameObject(GameObject* pObject)
 {
+	if (pObject == nullptr) return false;
 	auto i = std::find(m_pGameObjects.begin(), m_pGameObjects.end(), pObject);
-	if (i != m_pGameObjects.end() && pObject != nullptr)
+	if (i != m_pGameObjects.end())
 	{
 		(*i) = nullptr;
 	}
+	return false;
 }
-
-void Scene::AddGameObject(GameObject* pObject)
+bool Scene::AddGameObject(GameObject* pObject)
 {
 	auto i = std::find(m_pGameObjects.begin(), m_pGameObjects.end(), pObject);
 	if (i == m_pGameObjects.end() && pObject != nullptr)
 	{
 		m_pGameObjects.push_back(pObject);
-		pObject->SetParent(nullptr);
+		pObject->SetScene(this);
+		return true;
 	}
+	return false;
 }
+
 
 
 void Scene::Initialize()
 {
-	//Initialize all
+	//InitializeOverride all
 	for (GameObject* pObject: m_pGameObjects)
 	{
 		if (pObject != nullptr)
@@ -84,10 +92,10 @@ void Scene::Initialize()
 }
 void Scene::Update(float elapsed)
 {
-	//UpdateFirst sceneData
+	//UpdateFirstOverride sceneData
 	m_SceneData.Update(elapsed);
 	
-	//UpdateFirst all
+	//UpdateFirstOverride all
 	for (GameObject* pObject: m_pGameObjects)
 	{
 		if (pObject != nullptr)
@@ -95,13 +103,8 @@ void Scene::Update(float elapsed)
 			pObject->UpdateFirst(m_SceneData);
 		}
 	}
-	//Intialize if new things appeared
-	if (m_NeedsInit)
-	{
-		Initialize();
-	}
 
-	//UpdateFirst all
+	//UpdateFirstOverride all
 	for (GameObject* pObject : m_pGameObjects)
 	{
 		if (pObject != nullptr)
@@ -109,6 +112,17 @@ void Scene::Update(float elapsed)
 			pObject->UpdateSecond(m_SceneData);
 		}
 	}
+
+	//If Deleted
+	if (m_pMarkedForDelete.size() > 0)
+	{
+		for (GameObject* pObject : m_pMarkedForDelete)
+		{
+			SAFE_DELETE(pObject);
+		}
+		m_pMarkedForDelete.clear();
+	}
+
 	//Intialize if new things appeared
 	if (m_NeedsInit)
 	{

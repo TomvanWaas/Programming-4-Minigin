@@ -8,9 +8,9 @@
 SceneManager::SceneManager()
 	: m_pScenes()
 	, m_ActiveSceneId(0)
-//Init sceneData values
-	, m_pTime(new Time())
+	, m_SceneData()
 {
+	m_SceneData.pTime = new Time{};
 }
 
 SceneManager::~SceneManager()
@@ -22,7 +22,7 @@ SceneManager::~SceneManager()
 	m_pScenes.clear();
 
 	//Delete sceneData values
-	SAFE_DELETE(m_pTime);
+	SAFE_DELETE(m_SceneData.pTime);
 }
 
 void SceneManager::Initialize()
@@ -85,8 +85,9 @@ Scene* SceneManager::CreateScene(const std::string& name)
 		return nullptr;
 	}
 
-	Scene* pScene = new Scene(name, m_pTime);
+	Scene* pScene = new Scene(name);
 	m_pScenes.push_back(pScene);
+	pScene->InitSceneData(m_SceneData);
 	return pScene;
 }
 

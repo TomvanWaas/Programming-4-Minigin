@@ -9,32 +9,22 @@
 #include "Logger.h"
 #include "SceneData.h"
 
-TextComponent::TextComponent(GameObject& gameObject)
-	: BaseComponent(gameObject)
-	, m_pFont(nullptr)
-	, m_Color(SDL_Color())
-	, m_Text("")
-	, m_bNeedsUpdate(false)
-{
-}
 
 
-
-
-void TextComponent::Initialize(const SceneData& sceneData)
+void TextComponent::InitializeOverride(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
 
-	if (m_pGameObject != nullptr)
+	if (GetGameObject() != nullptr)
 	{
-		m_pRenderComponent = m_pGameObject->GetComponent<RenderComponent>();
+		m_pRenderComponent = GetGameObject()->GetComponent<RenderComponent>();
 		if (m_pRenderComponent == nullptr)
 		{
-			Logger::GetInstance().LogWarning("TextComponent::Initialize > Cannot find RenderComponent");
+			Logger::GetInstance().LogWarning("TextComponent::InitializeOverride > Cannot find RenderComponent");
 		}
 	}
 }
-void TextComponent::UpdateFirst(const SceneData& sceneData)
+void TextComponent::UpdateFirstOverride(const SceneData& sceneData)
 {
 	//Make texture
 	if (m_bNeedsUpdate && m_Text != "" && m_pFont != nullptr)

@@ -7,6 +7,6 @@ public:
 	DigDugApplication() = default;
 	virtual ~DigDugApplication() = default;
 
-	virtual void Initialize(SceneManager& sceneManager) override;
+	virtual void Initialize(SceneManager& sceneManager, const WindowSettings& windowSettings) override;
 };
 

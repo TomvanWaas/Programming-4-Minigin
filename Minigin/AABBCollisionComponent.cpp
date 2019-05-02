@@ -1,30 +1,39 @@
 #include "MiniginPCH.h"
 #include "AABBCollisionComponent.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 #include "GameObject.h"
 #include "ColliderCommand.h"
 #include "CollisionManager.h"
+#include "SceneData.h"
 
-AABBCollisionComponent::AABBCollisionComponent(GameObject& gameObject)
-	: BaseComponent(gameObject) 
-	, m_Rectangle()
-	, m_pOnEnter(nullptr)
-	, m_IsTrigger(false)
-	, m_pOnExit(nullptr)
+AABBCollisionComponent::AABBCollisionComponent(const Rect& extents, bool isTrigger, const std::string& tag,
+	const std::shared_ptr<ColliderCommand>& enter, const std::shared_ptr<ColliderCommand>& exit)
+	: m_Rectangle(extents)
+	, m_IsTrigger(isTrigger)
+	, m_pOnEnter(enter)
+	, m_pOnExit(exit)
+	, m_Collider({})
+	, m_Tag(tag)
 {
 }
 
-
-void AABBCollisionComponent::Initialize(const SceneData& sceneData)
+void AABBCollisionComponent::InitializeOverride(const SceneData& sceneData)
 {
 	sceneData.pCollisionManager->RegisterCollision(*this);
 }
 
+void AABBCollisionComponent::DestroyOverride(const SceneData& sceneData)
+{
+	sceneData.pCollisionManager->UnRegisterCollision(*this);
+}
+
 bool AABBCollisionComponent::CollidesWith(AABBCollisionComponent* pCollider) const
 {
-	if (pCollider == nullptr || pCollider == this	//Null Or same collider?
+	if (GetGameObject() == nullptr || pCollider->GetGameObject() == nullptr ||
+		pCollider == nullptr || pCollider == this	//Null Or same collider?
 		|| pCollider->IsTrigger() || IsTrigger()	//One is trigger?
-		|| &pCollider->GetGameObject().GetRoot() == &GetGameObject().GetRoot()) //Same Object?
+		|| &pCollider->GetGameObject()->GetRoot() == &GetGameObject()->GetRoot()
+		|| pCollider->IsEnabled() == false || IsEnabled() == false) //Same Object?
 		return false; 
 
 	const auto rect = pCollider->GetCollider();
@@ -41,15 +50,13 @@ bool AABBCollisionComponent::CollidesWith(AABBCollisionComponent* pCollider) con
 void AABBCollisionComponent::CalculateCollider()
 {
 	m_Collider = m_Rectangle;
-	if (m_pGameObject == nullptr)return;
-	const auto* pTransform = GetGameObject().GetComponent<TransformComponent>();
-	if (pTransform != nullptr)
-	{
-		m_Collider.x += pTransform->GetWorldPosition().x;
-		m_Collider.y += pTransform->GetWorldPosition().y;
-		m_Collider.width *= pTransform->GetWorldScale().x;
-		m_Collider.height *= pTransform->GetWorldScale().y;
-	}
+	if (GetGameObject() == nullptr)return;
+	const auto& transform = GetGameObject()->GetTransform();
+
+	m_Collider.x += transform.GetWorldPosition().x;
+	m_Collider.y += transform.GetWorldPosition().y;
+	m_Collider.width *= transform.GetWorldScale().x;
+	m_Collider.height *= transform.GetWorldScale().y;
 	m_Collider.x -= m_Collider.width*0.5f;
 	m_Collider.y -= m_Collider.height*0.5f;
 }
@@ -66,11 +73,11 @@ const Rect& AABBCollisionComponent::GetCollider() const
 
 void AABBCollisionComponent::Enter(AABBCollisionComponent* pOther)
 {
-	m_pOnEnter->Execute(pOther);
+	if (m_pOnEnter) m_pOnEnter->Execute(pOther);
 }
 void AABBCollisionComponent::Exit(AABBCollisionComponent* pOther)
 {
-	m_pOnExit->Execute(pOther);
+	if (m_pOnExit) m_pOnExit->Execute(pOther);
 }
 
 

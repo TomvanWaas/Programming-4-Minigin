@@ -13,7 +13,7 @@ struct SceneData final
 		, pCollisionManager(nullptr)
 	{}
 
-	void Initialize(Time* time, RenderManager* rendermanager, InputManager* inputmanager, CollisionManager* collisionmanager);
+	void Initialize(const SceneData& other);
 	void Update(float elapsed);
 
 	Time* pTime;

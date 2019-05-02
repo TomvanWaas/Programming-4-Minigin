@@ -9,22 +9,22 @@
 #include "GameObject.h"
 #include "RenderManager.h"
 #include "Application.h"
+#include "WindowSettings.h"
 
-
-//Application
-void dae::Minigin::Initialize()
+void dae::Minigin::Initialize(const WindowSettings& settings)
 {
+	//InitializeOverride Window
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) 
 	{
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 	}
 
 	m_pWindow = SDL_CreateWindow(
-		"Programming 4 assignment",
+		settings.name.c_str(),
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		640,
-		480,
+		int(settings.width),
+		int(settings.height),
 		SDL_WINDOW_OPENGL
 	);
 	if (m_pWindow == nullptr) 
@@ -32,12 +32,19 @@ void dae::Minigin::Initialize()
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
 
+	//InitializeOverride RenderManager
 	RenderManager::InitializeRenderer(m_pWindow);
+
+	//Initialze ResourceManager
+	// tell the resource manager where he can find the game data
+	ResourceManager::GetInstance().Init("../Resources/");
 }
 
 
 void dae::Minigin::Cleanup()
 {
+	InputManager::Destroy();
+
 	SDL_DestroyWindow(m_pWindow);
 	m_pWindow = nullptr;
 	SDL_Quit();
@@ -46,47 +53,42 @@ void dae::Minigin::Cleanup()
 
 void dae::Minigin::Run()
 {
-	Initialize();
+	//InitializeOverride
+	auto windowSettings = WindowSettings{ 1280.0f, 720.0f, "Programming 4 Assignment" };
 
-	// tell the resource manager where he can find the game data
-	ResourceManager::GetInstance().Init("../Resources/");
-	
+	Initialize(windowSettings);
 	SceneManager sceneManager{};
 	if (m_pApplication != nullptr)
 	{
-		m_pApplication->Initialize(sceneManager);
+		m_pApplication->Initialize(sceneManager, windowSettings);
 	}
-	//Run
+	auto t = std::chrono::high_resolution_clock::now();
+	sceneManager.Initialize();
+	InputManager::Initialize();
+
+	//Gameloop
+	bool doContinue = true;
+	auto lastTime = std::chrono::high_resolution_clock::now();
+	float lag = 0.0f;
+	const float msPerUpdate = 0.001f * m_MsPerFrame;
+	while (doContinue)
 	{
-		auto t = std::chrono::high_resolution_clock::now();
-		
-		sceneManager.Initialize();
-		InputManager::Initialize();
+		const auto currentTime = std::chrono::high_resolution_clock::now();
+		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+		lastTime = currentTime;
+		lag += deltaTime;
 
-		bool doContinue = true;
-		auto lastTime = std::chrono::high_resolution_clock::now();
-		float lag = 0.0f;
-		const float msPerUpdate = 0.001f * m_MsPerFrame;
-		while (doContinue)
-		{		
-			const auto currentTime = std::chrono::high_resolution_clock::now();
-			float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
-			lastTime = currentTime;
-			lag += deltaTime;
-
-			doContinue = InputManager::ProcessInput();
-			while (lag >= msPerUpdate)
-			{
-				sceneManager.Update(msPerUpdate);
-				lag -= msPerUpdate;
-			}
-			sceneManager.Render();
+		doContinue = InputManager::ProcessInput();
+		while (lag >= msPerUpdate)
+		{
+			sceneManager.Update(msPerUpdate);
+			lag -= msPerUpdate;
 		}
-
-		InputManager::Destroy();
-
+		sceneManager.Render();
 	}
 
+
+	//Cleanup
 	Cleanup();
 }
 

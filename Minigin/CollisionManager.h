@@ -13,8 +13,8 @@ class CollisionManager final
 {
 	struct CollPair
 	{
-		AABBCollisionComponent* pFirst;
-		AABBCollisionComponent* pSecond;
+		AABBCollisionComponent* pFirst = nullptr;
+		AABBCollisionComponent* pSecond = nullptr;
 		bool operator==(const CollPair& rhs) const
 		{
 			return ((pFirst == rhs.pFirst && pSecond == rhs.pSecond)
@@ -47,7 +47,7 @@ public:
 #endif
 
 	void RegisterCollision(AABBCollisionComponent& col);
-
+	void UnRegisterCollision(AABBCollisionComponent& col);
 
 	bool Collides(AABBCollisionComponent* pCollider) const;
 	bool Collides(const Rect& a, const Rect& b) const;

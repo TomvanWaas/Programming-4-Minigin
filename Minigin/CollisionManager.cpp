@@ -5,7 +5,7 @@
 #include "Logger.h"
 #include <algorithm>
 #include "GameObject.h"
-
+#include "SceneData.h"
 
 #ifdef Debug
 CollisionManager::CollisionManager()
@@ -35,7 +35,7 @@ void CollisionManager::Initialize(const SceneData& sceneData)
 //Return true if pCollider collides, else false
 bool CollisionManager::Collides(AABBCollisionComponent* pCollider) const
 {
-	if (pCollider == nullptr) return false;
+	if (pCollider == nullptr || pCollider->IsEnabled() == false) return false;
 
 	for (AABBCollisionComponent* pColl: m_pColliders)
 	{
@@ -81,11 +81,12 @@ void CollisionManager::UpdateBuffers()
 	for (unsigned int i = 0; i < m_pColliders.size(); ++i)
 	{
 		auto* pCollI = m_pColliders[i];
-		if (pCollI == nullptr) continue;
+		if (pCollI == nullptr || pCollI->GetGameObject() == nullptr) continue;
 		for (unsigned int j = 0; j < m_pColliders.size(); ++j)
 		{
 			auto* pCollJ = m_pColliders[j];
-			if (pCollJ == nullptr || &pCollJ->GetGameObject().GetRoot() == &pCollI->GetGameObject().GetRoot()) continue;
+			if (pCollJ == nullptr || pCollJ->GetGameObject() == nullptr || pCollJ->IsEnabled() == false || pCollI->IsEnabled() == false ||
+				&pCollJ->GetGameObject()->GetRoot() == &pCollI->GetGameObject()->GetRoot()) continue;
 
 			if (Collides(pCollI->GetCollider(), pCollJ->GetCollider()))
 			{
@@ -114,8 +115,8 @@ void CollisionManager::UpdateBuffers()
 		}
 
 		if (f) continue;
-		pI.pFirst->Enter(pI.pSecond);
-		pI.pSecond->Enter(pI.pFirst);
+		if (pI.pFirst) pI.pFirst->Enter(pI.pSecond);
+		if (pI.pSecond) pI.pSecond->Enter(pI.pFirst);
 	}
 
 	//Exits
@@ -132,8 +133,8 @@ void CollisionManager::UpdateBuffers()
 		}
 
 		if (f) continue;
-		pI.pFirst->Exit(pI.pSecond);
-		pI.pSecond->Exit(pI.pFirst);
+		if (pI.pFirst) pI.pFirst->Exit(pI.pSecond);
+		if (pI.pSecond) pI.pSecond->Exit(pI.pFirst);
 	}
 
 	///////////////
@@ -151,7 +152,7 @@ void CollisionManager::Render(const RenderManager& renderer) const
 	renderer.SetRenderColor(0, 255, 0, 255);
 	for (const AABBCollisionComponent* pCol: m_pColliders)
 	{
-		if (pCol != nullptr)
+		if (pCol != nullptr && pCol->IsEnabled())
 		{
 			renderer.RenderRect(pCol->GetCollider());
 		}
@@ -167,6 +168,40 @@ void CollisionManager::RegisterCollision(AABBCollisionComponent& col)
 	{
 		m_pColliders.push_back(&col);
 	}
+
+}
+
+void CollisionManager::UnRegisterCollision(AABBCollisionComponent& col)
+{
+	//Find in Vector
+	auto i = std::find(m_pColliders.begin(), m_pColliders.end(), &col);
+	if (i != m_pColliders.end())
+	{
+		(*i) = nullptr;
+	}
+
+	//Find in Buffers
+	for (auto& pair: *m_pPairsBuffer1)
+	{
+		if (pair.pFirst == &col
+			|| pair.pSecond == &col)
+		{
+			pair.pFirst = nullptr;
+			pair.pSecond = nullptr;
+		}
+	}
+
+	for (auto& pair: *m_pPairsBuffer2)
+	{
+		if (pair.pFirst == &col
+			|| pair.pSecond == &col)
+		{
+			pair.pFirst = nullptr;
+			pair.pSecond = nullptr;
+		}
+	}
+
+
 
 }
 

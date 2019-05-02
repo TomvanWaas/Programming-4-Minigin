@@ -31,6 +31,7 @@ public:
 	FSMState& operator=(const FSMState& other) = delete;
 	FSMState& operator=(FSMState&& other) noexcept = delete;
 
+	void Initialize(const SceneData& sceneData);
 	FSMState* UpdateFirst(const SceneData& sceneData);
 	FSMState* UpdateSecond(const SceneData& sceneData);
 

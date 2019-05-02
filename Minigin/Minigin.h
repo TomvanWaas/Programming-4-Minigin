@@ -1,4 +1,5 @@
 #pragma once
+struct WindowSettings;
 struct SDL_Window;
 class SceneManager;
 class Application;
@@ -11,7 +12,7 @@ namespace dae
 		Application* m_pApplication;
 
 	public:
-		void Initialize();
+		void Initialize(const WindowSettings& settings);
 		void Cleanup();
 		void Run();
 

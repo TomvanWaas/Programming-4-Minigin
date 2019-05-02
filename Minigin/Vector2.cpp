@@ -84,6 +84,11 @@ float Vector2::Cross(const Vector2& other) const
 	return (x*other.y - y * other.x);
 }
 
+bool Vector2::Equals(const Vector2& other, float e) const
+{
+	return ((x - other.x)*(x - other.x) < e && (y - other.y)*(y - other.y) < e);
+}
+
 //
 bool Vector2::operator==(const Vector2& other) const
 {

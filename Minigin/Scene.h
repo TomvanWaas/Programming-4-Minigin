@@ -8,17 +8,10 @@ class RenderComponent;
 class Scene final
 {
 	friend Scene* SceneManager::CreateScene(const std::string& name);
-	explicit Scene(const std::string& name, Time* pTime);
+	explicit Scene(const std::string& name);
 
 
 public:
-	enum class Stage
-	{
-		Initialize,
-		Update,
-		Render
-	};
-
 	~Scene();
 	Scene(const Scene& other) = delete;
 	Scene(Scene&& other) = delete;
@@ -26,10 +19,11 @@ public:
 	Scene& operator=(Scene&& other) = delete;
 
 	GameObject* CreateGameObject();
-	void DeleteGameObject(GameObject* pObject);
-	void RemoveGameObject(GameObject* pObject);
-	void AddGameObject(GameObject* pObject);
+	bool DeleteGameObject(GameObject* pObject);
+	bool RemoveGameObject(GameObject* pObject);
+	bool AddGameObject(GameObject* pObject);
 
+	void InitSceneData(const SceneData& sceneData);
 	void Initialize();
 	void Update(float elapsed);
 	void Render() const;
@@ -44,7 +38,8 @@ private:
 	std::vector<GameObject*> m_pGameObjects;
 	SceneData m_SceneData;
 	bool m_NeedsInit = true;
-	
+
+	std::vector<GameObject*> m_pMarkedForDelete;
 };
 
 

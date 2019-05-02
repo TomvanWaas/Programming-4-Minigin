@@ -5,18 +5,22 @@
 #include "CollisionManager.h"
 #include "InputManager.h"
 
-void SceneData::Initialize(Time* time, RenderManager* rendermanager, InputManager* inputmanager,
-	CollisionManager* collisionmanager)
+void SceneData::Initialize(const SceneData& other)
 {
 	if (m_Initialized == false)
 	{
-		pTime = (time != nullptr) ? time : new Time();
-		pCollisionManager = (collisionmanager != nullptr) ? collisionmanager : new CollisionManager();
-		pInput = (inputmanager != nullptr) ? inputmanager : new InputManager();
-		pRenderManager = (rendermanager != nullptr) ? rendermanager : new RenderManager();
 		m_Initialized = true;
+		pTime = (other.pTime != nullptr) ? other.pTime : new Time();
+		pCollisionManager = (other.pCollisionManager != nullptr) ? other.pCollisionManager : new CollisionManager();
+		pInput = (other.pInput != nullptr) ? other.pInput : new InputManager();
+		pRenderManager = (other.pRenderManager != nullptr) ? other.pRenderManager : new RenderManager();
+
+		//InitializeOverride
+		pCollisionManager->Initialize(*this);
+
 	}
 }
+
 
 void SceneData::Update(float elapsed)
 {

@@ -39,10 +39,7 @@ class DataComponent final : public BaseComponent
 	
 
 public:
-	explicit DataComponent(GameObject& gameObject)
-	: BaseComponent(gameObject)
-	, m_pData()
-	{}
+	explicit DataComponent() = default;
 	virtual ~DataComponent() override
 	{
 		for (auto& data : m_pData)
@@ -98,6 +95,19 @@ public:
 				dataHolder = pData->GetData();
 				return true;
 			}
+		}
+		return false;
+	}
+
+	template <class T>
+	bool SetData(const std::string& dataname, const T& data)
+	{
+		T* pData = nullptr;
+		GetData<T>(dataname, pData);
+		if (pData != nullptr)
+		{
+			*pData = data;
+			return true;
 		}
 		return false;
 	}

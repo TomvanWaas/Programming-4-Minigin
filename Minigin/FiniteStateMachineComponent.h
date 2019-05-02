@@ -7,13 +7,11 @@ class FSMCondition;
 class FiniteStateMachineComponent final : public BaseComponent
 {
 public:
-	explicit FiniteStateMachineComponent(GameObject& gameObject);
+	explicit FiniteStateMachineComponent() = default;
 	virtual ~FiniteStateMachineComponent();
 
-	virtual void Initialize(const SceneData& sceneData) override;
-	virtual void UpdateFirst(const SceneData& sceneData) override;
-	virtual void UpdateSecond(const SceneData& sceneData) override;
-
+	virtual void UpdateFirstOverride(const SceneData& sceneData) override;
+	virtual void UpdateSecondOverride(const SceneData& sceneData) override;
 
 	void SetState(FSMState* pState, const SceneData& sceneData);
 

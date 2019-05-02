@@ -8,5 +8,5 @@
 #include "RenderComponent.h"
 #include "SpriteComponent.h"
 #include "TextComponent.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 #include "MultiRenderComponent.h"

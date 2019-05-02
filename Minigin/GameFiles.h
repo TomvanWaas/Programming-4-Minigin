@@ -1,65 +1,65 @@
 #pragma once
-#include "Direction.h"
-//Includes
 
 
 
-//Forward decl
 struct InputAction;
 class GameObject;
 class Scene;
 class DigDugGridComponent;
 class SpriteComponent;
 class Texture2D;
+#include "Vector2.h"
 
 namespace DigDug
 {
+	enum class PlayerState;
+	enum class PlayerHealth;
+	enum class PumpStatus;
+	enum class Direction;
+
 	struct DigDugSettings
 	{
+		//Sprites
 		float spriteWidth = 16.0f;
 		float spriteHeight = 16.0f;
 		std::shared_ptr<Texture2D> spriteTexture = nullptr;
 		float spriteSpeed = 0.25f;
+		//Grid
 		DigDugGridComponent* pGrid = nullptr;
+		Vector2 gridOffset = Vector2(48, 48);
+		unsigned int gridWidth = 15;
+		unsigned int gridHeight = 12;
+		std::shared_ptr<Texture2D> backgroundTexture = nullptr;
+		std::shared_ptr<Texture2D> cavesTexture;
 	};
 
-	//Functions
-	GameObject* MakePlayer(Scene& scene,
-		InputAction& moveLeftIAction,
-		InputAction& moveRightIAction,
-		InputAction& moveUpIAction,
-		InputAction& moveDownIAction,
-		InputAction& throwIAction, 
-		const DigDugSettings& settings
-	);
+
+
+	GameObject* MakePlayerObject(Scene& scene, const DigDugSettings& settings, char up, char down, char left, char right, char pump);
+
+
+
+
+
+#pragma region player
+
 
 	void MakePlayerSprites(SpriteComponent* pSpriteComp, const DigDugSettings& settings);
 
-	void MakePlayerInput(Scene& scene,
-		unsigned int& moveleftUp, unsigned int& moveleftDown,
-		unsigned int& moverightUp, unsigned int& moverightDown,
-		unsigned int& movedownUp, unsigned int& movedownDown,
-		unsigned int& moveupUp, unsigned int& moveupDown,
-		unsigned int& throwUp, unsigned int& throwDown,
-		InputAction& moveLeftIAction,
-		InputAction& moveRightIAction,
-		InputAction& moveUpIAction,
-		InputAction& moveDownIAction,
-		InputAction& throwIAction);
+	void MakePlayerInput(GameObject* pPlayer, const DigDugSettings& settings, char up, char down, char left, char right, char pump);
 
-	void MakePlayerFSM(Scene& scene, GameObject* pPlayer, DigDugGridComponent& grid, const float moveSpeed,
-		unsigned int& moveleftUp, unsigned int& moveleftDown,
-		unsigned int& moverightUp, unsigned int& moverightDown,
-		unsigned int& movedownUp, unsigned int& movedownDown,
-		unsigned int& moveupUp, unsigned int& moveupDown,
-		unsigned int& throwUp, unsigned int& throwDown);
+	void MakePlayerFSM(GameObject* pPlayer, const DigDugSettings& settings);
+
+
+#pragma endregion Functions to create playerObject
 
 
 
-	GameObject* MakeBackground(Scene& scene);
 
-	GameObject* MakeStone(Scene& scene, DigDugGridComponent& grid);
+	GameObject* MakeBackground(Scene& scene, const DigDugSettings& settings);
 
-	GameObject* MakeLasso(GameObject& parent, const DigDugSettings& settings, Direction dir);
+	GameObject* MakeStone(Scene& scene, const DigDugSettings& settings);
+
+	GameObject* MakePlayerPump(Scene& scene, GameObject& parent, const DigDugSettings& settings);
 	
 }

@@ -37,13 +37,13 @@ void InputManager::Initialize()
 }
 bool InputManager::ProcessInput()
 {
-	//UpdateFirst Keyboard States
+	//UpdateFirstOverride Keyboard States
 	BYTE* pBuffer = m_pPreviousKeyboardState;
 	m_pPreviousKeyboardState = m_pCurrentKeyboardState;
 	m_pCurrentKeyboardState = pBuffer;
 	GetKeyboardState(m_pCurrentKeyboardState);
 
-	//UpdateFirst Controller States
+	//UpdateFirstOverride Controller States
 	for (unsigned int i = 0; i < XUSER_MAX_COUNT; ++i)
 	{
 		if (m_IsControllerConnected[i] == false)

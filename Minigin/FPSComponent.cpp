@@ -8,28 +8,27 @@
 #include "SceneData.h"
 #include "Time.h"
 
-FPSComponent::FPSComponent(GameObject& gameObject)
-	: BaseComponent(gameObject)
-	, m_Precision(2)
+FPSComponent::FPSComponent(unsigned int prec)
+	: m_Precision(prec)
 	, m_pTextComponent(nullptr)
 {
 }
 
-void FPSComponent::Initialize(const SceneData& sceneData)
+void FPSComponent::InitializeOverride(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
 
-	if (m_pGameObject != nullptr)
+	if (GetGameObject() != nullptr)
 	{
-		m_pTextComponent = m_pGameObject->GetComponent<TextComponent>();
+		m_pTextComponent = GetGameObject()->GetComponent<TextComponent>();
 		if (m_pTextComponent == nullptr)
 		{
-			Logger::GetInstance().LogWarning("FPSComponent::Initialize > Cannot find TextComponent");
+			Logger::GetInstance().LogWarning("FPSComponent::InitializeOverride > Cannot find TextComponent");
 		}
 	}
 }
 
-void FPSComponent::UpdateFirst(const SceneData& sceneData)
+void FPSComponent::UpdateFirstOverride(const SceneData& sceneData)
 {
 	if (m_pTextComponent != nullptr)
 	{

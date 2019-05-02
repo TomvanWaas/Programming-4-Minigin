@@ -60,19 +60,29 @@ Rect SweepSource::GetSource(float& accuTime, float speed)
 }
 
 
+Rect FixedSource::GetSource(float& accuTime, float speed)
+{
+	UNREFERENCED_PARAMETER(speed);
+	accuTime = 0.0f;
+	return source;
+}
 
-
-
-SpriteComponent::SpriteComponent(GameObject& gameObject)
-	: BaseComponent(gameObject)
-	, m_pTexture()
-	, m_pSources()
+SpriteComponent::SpriteComponent(const std::shared_ptr<Texture2D>& pTexture, float speed)
+	: m_pTexture(pTexture)
+	, m_SpriteSpeed(speed)
 	, m_pCurrentSource(nullptr)
-	, m_SpriteSpeed(0.25f)
-	, m_AccuTime(0.0f)
-	, m_CurrentAmount(0)
+	, m_AccuTime(0)
+	, m_pSources()
 {
 }
+
+SpriteComponent::SpriteComponent(const std::string& path, float speed)
+	: SpriteComponent(ResourceManager::GetInstance().LoadTexture(path), speed)
+{
+}
+
+
+
 
 SpriteComponent::~SpriteComponent()
 {
@@ -83,11 +93,11 @@ SpriteComponent::~SpriteComponent()
 }
 
 
-void SpriteComponent::UpdateFirst(const SceneData& sceneData)
+void SpriteComponent::UpdateFirstOverride(const SceneData& sceneData)
 {
-	if (m_pCurrentSource != nullptr && m_pGameObject != nullptr)
+	if (m_pCurrentSource != nullptr && GetGameObject() != nullptr)
 	{
-		RenderComponent* pRenderComp = m_pGameObject->GetComponent<RenderComponent>();
+		RenderComponent* pRenderComp = GetGameObject()->GetComponent<RenderComponent>();
 		if (pRenderComp != nullptr)
 		{			
 			m_AccuTime += sceneData.pTime->GetDeltaTime();
@@ -173,8 +183,10 @@ void SpriteComponent::SetCurrentSource(unsigned id)
 	if (m_pSources.find(id) != m_pSources.end())
 	{
 		m_pCurrentSource = m_pSources[id];
-		m_AccuTime = 0.0f;
-		m_CurrentAmount = 0;
+		if (!m_pCurrentSource->looped)
+		{
+			m_AccuTime = 0.0f;
+		}
 	}
 	else
 	{

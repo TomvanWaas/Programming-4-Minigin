@@ -6,8 +6,8 @@ template <class T>
 class GridComponent final : public Grid<T>, public BaseComponent
 {
 public:
-	explicit GridComponent(GameObject& gameObject)
-		: BaseComponent(gameObject)
+	explicit GridComponent(unsigned int w, unsigned int h)
+		: Grid<T>(w, h)
 	{
 	}
 	virtual ~GridComponent() = default;
@@ -17,14 +17,12 @@ public:
 	GridComponent& operator=(const GridComponent& other) = delete;
 	GridComponent& operator=(GridComponent&& other) noexcept = delete;
 
-	virtual void Initialize(const SceneData& sceneData) override
+	virtual void InitializeOverride(const SceneData& sceneData) override
 	{
 		UNREFERENCED_PARAMETER(sceneData);
 		this->Make();
 	}
 	
-
-
 private:
 
 

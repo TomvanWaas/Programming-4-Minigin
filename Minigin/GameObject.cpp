@@ -1,18 +1,17 @@
 #include "MiniginPCH.h"
 #include "GameObject.h"
-//#include "BaseComponent.h"
-#include "TransformComponent.h"
+#include "BaseComponent.h"
+#include "Transform.h"
 #include "Scene.h"
 #include <algorithm>
 
 GameObject::GameObject()
-	: m_pTransformComponent(nullptr)
+	: m_Transform(*this)
 	, m_pComponents()
 	, m_pChildren()
 	, m_pParent(nullptr)
 	, m_pScene(nullptr)
 {
-	CreateComponent<TransformComponent>();
 }
 GameObject::~GameObject()
 {
@@ -24,21 +23,29 @@ GameObject::~GameObject()
 	{
 		SAFE_DELETE(pComponent);
 	}
-	SAFE_DELETE(m_pTransformComponent);
 }
 
 
-
+void GameObject::SetEnabled(bool e)
+{
+	m_IsEnabled = e;
+	for (BaseComponent* pComp: m_pComponents)
+	{
+		if (pComp) pComp->SetEnabled(e);
+	}
+	for (GameObject* pChild: m_pChildren)
+	{
+		if (pChild) pChild->SetEnabled(e);
+	}
+}
 
 void GameObject::Initialize(const SceneData& sceneData)
 {
-	m_pTransformComponent->Construct(sceneData);
-
 	for (BaseComponent* pComponent : m_pComponents)
 	{
 		if (pComponent != nullptr)
 		{
-			pComponent->Construct(sceneData);
+			pComponent->Initialize(sceneData);
 		}
 	}
 	for (GameObject* pChild : m_pChildren)
@@ -52,8 +59,9 @@ void GameObject::Initialize(const SceneData& sceneData)
 
 void GameObject::UpdateFirst(const SceneData& sceneData)
 {
-	//UpdateFirst Components
-	m_pTransformComponent->UpdateFirst(sceneData);
+	if (m_IsEnabled == false) return;
+
+	//UpdateFirstOverride Components
 	for (BaseComponent* pComponent : m_pComponents)
 	{
 		if (pComponent != nullptr)
@@ -62,7 +70,7 @@ void GameObject::UpdateFirst(const SceneData& sceneData)
 		}
 	}
 
-	//UpdateFirst Children
+	//UpdateFirstOverride Children
 	for (GameObject* pChild : m_pChildren)
 	{
 		if (pChild != nullptr)
@@ -71,7 +79,7 @@ void GameObject::UpdateFirst(const SceneData& sceneData)
 		}
 	}
 
-	//Erase if nullptr (deleted or...)
+	//Erase if nullptr (deleted or removed)
 	m_pComponents.erase(std::remove_if(m_pComponents.begin(), m_pComponents.end(), [](const BaseComponent* pComponent)
 	{
 		return pComponent == nullptr;
@@ -83,8 +91,9 @@ void GameObject::UpdateFirst(const SceneData& sceneData)
 }
 void GameObject::UpdateSecond(const SceneData& sceneData)
 {
-	//UpdateFirst Components
-	m_pTransformComponent->UpdateFirst(sceneData);
+	if (m_IsEnabled == false) return;
+
+	//UpdateFirstOverride Components
 	for (BaseComponent* pComponent : m_pComponents)
 	{
 		if (pComponent != nullptr)
@@ -93,7 +102,7 @@ void GameObject::UpdateSecond(const SceneData& sceneData)
 		}
 	}
 
-	//UpdateFirst Children
+	//UpdateFirstOverride Children
 	for (GameObject* pChild : m_pChildren)
 	{
 		if (pChild != nullptr)
@@ -102,7 +111,7 @@ void GameObject::UpdateSecond(const SceneData& sceneData)
 		}
 	}
 
-	//Erase if nullptr (deleted or...)
+	//Erase if nullptr (deleted or removed)
 	m_pComponents.erase(std::remove_if(m_pComponents.begin(), m_pComponents.end(), [](const BaseComponent* pComponent)
 	{
 		return pComponent == nullptr;
@@ -113,88 +122,15 @@ void GameObject::UpdateSecond(const SceneData& sceneData)
 	}), m_pChildren.end());
 }
 
-
-
-
-
-GameObject* GameObject::CreateChild()
+void GameObject::Destroy(const SceneData& sceneData)
 {
-	GameObject* pChild = new GameObject();
-	pChild->m_pScene = m_pScene;
-	pChild->m_pParent = this;
-	if (m_pScene)m_pScene->SetInitialize();
-	m_pChildren.push_back(pChild);
-	return pChild;
-}
-void GameObject::DeleteChild(GameObject* pChild)
-{
-	if (pChild == nullptr) return;
-	auto i = std::find(m_pChildren.begin(), m_pChildren.end(), pChild);
-
-	if (i != m_pChildren.end())
+	for (auto* pC: m_pComponents)
 	{
-		SAFE_DELETE(pChild);
+		if (pC) pC->Destroy(sceneData);
 	}
-}
-
-void GameObject::SetParent(GameObject* pParent)
-{
-	if ( (m_pParent == nullptr && pParent == nullptr)
-		|| (m_pParent == pParent)) return;
-
-	//Previous Parent was Scene
-	if (m_pParent == nullptr
-		&& m_pScene != nullptr)
+	for (auto* pC: m_pChildren)
 	{
-		//New Parent is Object
-		m_pScene->RemoveGameObject(this);
-		pParent->m_pChildren.push_back(this);
-		m_pParent = pParent;
-		//New Parent is Scene
-		//- Ignored as Previous and New are Scene => No Change
-	}
-	//Previous Parent was Object
-	else if (m_pParent != nullptr)
-	{
-		//New Parent is Object
-		if (pParent != nullptr)
-		{
-			//Remove from Previous
-			auto i = std::find(m_pParent->m_pChildren.begin(), m_pParent->m_pChildren.end(), this);
-			if (i != m_pParent->m_pChildren.end())
-			{
-				(*i) = nullptr;
-			}
-			//Register on New
-			pParent->m_pChildren.push_back(this);
-			m_pParent = pParent;
-		}
-		//New Parent is Scene
-		else
-		{
-			//Remove from Previous
-			auto i = std::find(m_pParent->m_pChildren.begin(), m_pParent->m_pChildren.end(), this);
-			if (i != m_pParent->m_pChildren.end())
-			{
-				(*i) = nullptr;
-			}
-			//Register on Scene
-			m_pParent = nullptr;
-			m_pScene->AddGameObject(this);
-		}
-	}	
-}
-
-
-
-void GameObject::DeleteComponent(BaseComponent* pComponent)
-{
-	if (pComponent == nullptr) return;
-	auto i = std::find(m_pComponents.begin(), m_pComponents.end(), pComponent);
-
-	if (i != m_pComponents.end())
-	{
-		SAFE_DELETE(pComponent);
+		if (pC) pC->Destroy(sceneData);
 	}
 }
 
@@ -213,6 +149,10 @@ const GameObject* GameObject::GetParent() const
 {
 	return m_pParent;
 }
+GameObject* GameObject::GetParent()
+{
+	return m_pParent;
+}
 const GameObject& GameObject::GetRoot() const
 {
 	const GameObject* pParent = this;
@@ -222,14 +162,181 @@ const GameObject& GameObject::GetRoot() const
 	}
 	return *pParent;
 }
+GameObject& GameObject::GetRoot()
+{
+	GameObject* pParent = this;
+	while (pParent->GetParent() != nullptr)
+	{
+		pParent = pParent->GetParent();
+	}
+	return *pParent;
+}
+const Scene* GameObject::GetScene() const
+{
+	Scene* pScene = GetRoot().m_pScene;
+	if (pScene != nullptr) return pScene;
+	return m_pScene;
+}
+Scene* GameObject::GetScene()
+{
+	Scene* pScene = GetRoot().m_pScene;
+	if (pScene != nullptr) return pScene;
+	return m_pScene;
+}
+void GameObject::SetScene(Scene* pScene)
+{
+	if (m_pScene == pScene) return;
+	Scene* pPrev = m_pScene;
+	m_pScene = pScene;
+	if (pPrev)
+	{
+		pPrev->RemoveGameObject(this);
+	}
+	if (pScene)
+	{
+		pScene->AddGameObject(this);
+	}
+	
+}
+const Transform& GameObject::GetTransform() const
+{
+	return m_Transform;
+}
+Transform& GameObject::GetTransform()
+{
+	return m_Transform;
+}
 
 
-const Scene& GameObject::GetScene() const
+
+
+GameObject* GameObject::CreateChild()
 {
-	return *m_pScene;
+	GameObject* pChild = new GameObject();
+	AddChild(pChild);
+	return pChild;
 }
-Scene& GameObject::GetScene()
+bool GameObject::DeleteChild(GameObject*& pChild)
 {
-	return *m_pScene;
+	if (pChild == nullptr) return false;
+	if (RemoveChild(pChild))
+	{
+		GetScene()->DeleteGameObject(pChild);
+		return true;
+	}
+	return false;
 }
+bool GameObject::RemoveChild(GameObject* pChild)
+{
+	if (pChild == nullptr) return false;
+	auto i = std::find(m_pChildren.begin(), m_pChildren.end(), pChild);
+	if (i != m_pChildren.end())
+	{
+		(*i)->m_pParent = nullptr;
+		(*i) = nullptr;
+		return true;
+	}
+	return false;
+}
+bool GameObject::AddChild(GameObject* pChild)
+{
+	if (pChild == nullptr) return false;
+	auto i = std::find(m_pChildren.begin(), m_pChildren.end(), pChild);
+	if (i == m_pChildren.end())
+	{
+		m_pChildren.push_back(pChild);
+		pChild->m_pParent = this;
+		pChild->m_pScene = m_pScene;
+		return true;
+	}
+	return false;
+}
+void GameObject::SetParent(GameObject* pParent)
+{
+	if (pParent == m_pParent) return;
+
+	//Scene as new parent
+	if (pParent == nullptr)
+	{
+		//Prev is scene => Ignored
+		//Prev is Object
+		m_pParent->RemoveChild(this);
+		m_pParent = nullptr;
+		if (m_pScene != nullptr)
+		{
+			m_pScene->AddGameObject(this);
+		}
+	}
+	//Object as new parent
+	else
+	{
+		//Prev was scene
+		if (m_pParent == nullptr)
+		{
+			if (m_pScene != nullptr)
+			{
+				m_pScene->RemoveGameObject(this);
+				m_pParent = pParent;
+				pParent->AddChild(this);
+			}
+		}
+		//Prev was object
+		else
+		{
+			m_pParent->RemoveChild(this);
+			m_pParent = pParent;
+			pParent->AddChild(this);
+		}
+	}
+}
+
+
+
+
+
+bool GameObject::AddComponent(BaseComponent* pComponent)
+{
+	if (pComponent == nullptr) return false;
+	const type_info& ti = typeid(pComponent);
+
+	for (const auto* pComp : m_pComponents)
+	{
+		if (pComp != nullptr && typeid(*pComp) == ti)
+		{
+			return false;
+		}
+	}
+	m_pComponents.push_back(pComponent);
+	pComponent->SetGameObject(this);
+	return true;
+}
+bool GameObject::RemoveComponent(BaseComponent* pComponent)
+{
+	if (pComponent == nullptr) return false;
+	auto i = std::find(m_pComponents.begin(), m_pComponents.end(), pComponent);
+	if (i != m_pComponents.end())
+	{
+		(*i) = nullptr;
+		return true;
+	}
+	return false;
+}
+bool GameObject::DeleteComponent(BaseComponent*& pComponent, const SceneData& sceneData)
+{
+	if (RemoveComponent(pComponent))
+	{
+		pComponent->Destroy(sceneData);
+		SAFE_DELETE(pComponent);
+		return true;
+	}
+	return false;
+}
+
+
+
+
+
+
+
+
 

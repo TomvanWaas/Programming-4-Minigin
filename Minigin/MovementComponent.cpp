@@ -1,49 +1,57 @@
 #include "MiniginPCH.h"
 #include "MovementComponent.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 #include "GameObject.h"
 #include "AABBCollisionComponent.h"
 #include "CollisionManager.h"
+#include "SceneData.h"
 
-MovementComponent::MovementComponent(GameObject& gameObject)
-	: BaseComponent(gameObject)
-	, m_Interpolation(0)
+MovementComponent::MovementComponent(unsigned int interpolation )
+	: m_Interpolation(interpolation)
 	, m_MovementQueue(0.0f, 0.0f)
 	, m_HasQueue(false)
 	, m_pColliders()
 {
 }
 
-void MovementComponent::Initialize(const SceneData& sceneData)
+void MovementComponent::InitializeOverride(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
-	if (m_pGameObject == nullptr) return;
-	m_pColliders = GetGameObject().GetComponents<AABBCollisionComponent>(true);
+	if (GetGameObject() == nullptr) return;
+	m_pColliders = GetGameObject()->GetRoot().GetComponentsInChildren<AABBCollisionComponent>();
+	auto comp = GetGameObject()->GetRoot().GetComponent<AABBCollisionComponent>();
+	m_pColliders.push_back(comp);
 }
 
-void MovementComponent::UpdateSecond(const SceneData& sceneData)
+void MovementComponent::UpdateSecondOverride(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
 
-	if (m_pGameObject != nullptr && m_HasQueue)
+	if (GetGameObject() != nullptr && m_HasQueue)
 	{
-		auto* pTransform = m_pGameObject->GetComponent<TransformComponent>();
+		auto& transform = GetGameObject()->GetTransform();
 
 		Vector2 interp = m_MovementQueue / int(m_Interpolation + 1);
+		Vector2 local{};
 		for (unsigned int i{0}; i < m_Interpolation+1; ++i)
 		{
-			pTransform->SetLocalPosition(pTransform->GetLocalPosition() + interp);
+			local = transform.GetLocalPosition();
+			transform.SetLocalPosition((transform.GetLocalPosition() + interp));
 
 			//Collision Detection
 			//If collide > previous and break
 			for (AABBCollisionComponent* pCollider: m_pColliders)
 			{
-				if (sceneData.pCollisionManager->Collides(pCollider))
+				if (pCollider != nullptr)
 				{
-					pTransform->SetLocalPosition(pTransform->GetLocalPosition() - interp);
-					m_MovementQueue = Vector2();
-					m_HasQueue = false;
-					return;
+					pCollider->CalculateCollider();
+					if (sceneData.pCollisionManager->Collides(pCollider))
+					{
+						transform.SetLocalPosition(local);
+						m_MovementQueue = Vector2();
+						m_HasQueue = false;
+						return;
+					}
 				}
 			}
 		}

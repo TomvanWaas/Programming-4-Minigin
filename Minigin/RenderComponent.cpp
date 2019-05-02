@@ -3,32 +3,45 @@
 #include "ResourceManager.h"
 #include "RenderManager.h"
 #include "GameObject.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 #include "Texture2D.h"
 #include "SceneData.h"
 
-RenderComponent::RenderComponent(GameObject& gameObject)
-	: BaseComponent(gameObject)
-	, m_SrcRect()
+
+RenderComponent::RenderComponent(const std::string& texturePath)
+	: m_pTexture(ResourceManager::GetInstance().LoadTexture(texturePath))
 	, m_HasSrc(false)
-	, m_pTexture()
+	, m_HasDst(false)
+	, m_SrcRect()
+	, m_DstRect()
+{
+}
+RenderComponent::RenderComponent(const std::shared_ptr<Texture2D>& texture)
+	: m_pTexture(texture)
+	, m_HasSrc(false)
+	, m_HasDst(false)
+	, m_SrcRect()
+	, m_DstRect()
 {
 }
 
-
-
-void RenderComponent::Initialize(const SceneData& sceneData)
+void RenderComponent::InitializeOverride(const SceneData& sceneData)
 {
 	RegisterRenderable(sceneData.pRenderManager);
 }
 
+void RenderComponent::DestroyOverride(const SceneData& sceneData)
+{
+	UnRegisterRenderable(sceneData.pRenderManager);
+}
+
 void RenderComponent::Render(const RenderManager& renderer) const
 {
-	if (m_pGameObject != nullptr && m_pTexture != nullptr)
+	if ( GetGameObject() != nullptr && m_pTexture != nullptr && IsEnabled())
 	{
-		const auto transform = m_pGameObject->GetComponent<TransformComponent>();
-		const auto position = transform->GetWorldPosition();
-		const auto scale = transform->GetWorldScale();
+		const auto& transform = GetGameObject()->GetTransform();
+		const auto position = transform.GetWorldPosition();
+		const auto scale = transform.GetWorldScale();
 
 		//If no dst nor src => take whole texture as dst
 		Rect dst = Rect(0, 0, float(m_pTexture->GetWidth()), float(m_pTexture->GetHeight()));

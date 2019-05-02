@@ -61,9 +61,6 @@
     <ClInclude Include="BaseComponent.h">
       <Filter>FrameworkFiles\Components</Filter>
     </ClInclude>
-    <ClInclude Include="TransformComponent.h">
-      <Filter>FrameworkFiles\Components</Filter>
-    </ClInclude>
     <ClInclude Include="TextComponent.h">
       <Filter>FrameworkFiles\Components</Filter>
     </ClInclude>
@@ -151,9 +148,6 @@
     <ClInclude Include="FiniteStateMachineComponent.h">
       <Filter>FrameworkFiles\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Direction.h">
-      <Filter>FrameworkFiles\Variables</Filter>
-    </ClInclude>
     <ClInclude Include="Renderable.h">
       <Filter>FrameworkFiles\Rendering</Filter>
     </ClInclude>
@@ -205,9 +199,6 @@
     <ClInclude Include="DigDugGridComponent.h">
       <Filter>GameFiles\Components</Filter>
     </ClInclude>
-    <ClInclude Include="SpriteIds.h">
-      <Filter>GameFiles\Functions</Filter>
-    </ClInclude>
     <ClInclude Include="GameFiles.h">
       <Filter>GameFiles\Functions</Filter>
     </ClInclude>
@@ -217,12 +208,30 @@
     <ClInclude Include="SpriteCollisionComponent.h">
       <Filter>FrameworkFiles\Components</Filter>
     </ClInclude>
+    <ClInclude Include="WindowSettings.h">
+      <Filter>FrameworkFiles\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniginMath.h">
+      <Filter>FrameworkFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>FrameworkFiles\Scenegraph</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMConditions.h">
+      <Filter>FrameworkFiles\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMEvents.h">
+      <Filter>FrameworkFiles\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="Enumerations.h">
+      <Filter>GameFiles\Parts</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugMovementComponent.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseComponent.cpp">
-      <Filter>FrameworkFiles\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="TransformComponent.cpp">
       <Filter>FrameworkFiles\Components</Filter>
     </ClCompile>
     <ClCompile Include="TextComponent.cpp">
@@ -326,6 +335,18 @@
     </ClCompile>
     <ClCompile Include="SpriteCollisionComponent.cpp">
       <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>FrameworkFiles\Scenegraph</Filter>
+    </ClCompile>
+    <ClCompile Include="FSMConditions.cpp">
+      <Filter>FrameworkFiles\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="FSMEvents.cpp">
+      <Filter>FrameworkFiles\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugMovementComponent.cpp">
+      <Filter>GameFiles\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

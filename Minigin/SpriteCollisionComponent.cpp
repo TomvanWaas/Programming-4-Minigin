@@ -1,22 +1,23 @@
 #include "MiniginPCH.h"
 #include "SpriteCollisionComponent.h"
 #include "SpriteComponent.h"
-#include "TransformComponent.h"
+#include "Transform.h"
+#include "GameObject.h"
 
-SpriteCollisionComponent::SpriteCollisionComponent(GameObject& gameObject)
-	: AABBCollisionComponent(gameObject)
+SpriteCollisionComponent::SpriteCollisionComponent(const Rect& extents, bool isTrigger, const std::string& tag,
+	const std::shared_ptr<ColliderCommand>& enter, const std::shared_ptr<ColliderCommand>& exit)
+	: AABBCollisionComponent(extents, isTrigger, tag, enter, exit)
 	, m_pSpriteComponent(nullptr)
 {
 }
 
-
-void SpriteCollisionComponent::Initialize(const SceneData& sceneData)
+void SpriteCollisionComponent::InitializeOverride(const SceneData& sceneData)
 {
-	if (m_pGameObject != nullptr)
+	if (GetGameObject() != nullptr)
 	{
-		m_pSpriteComponent = m_pGameObject->GetComponent<SpriteComponent>();
+		m_pSpriteComponent = GetGameObject()->GetComponent<SpriteComponent>();
 	}
-	AABBCollisionComponent::Initialize(sceneData);
+	AABBCollisionComponent::InitializeOverride(sceneData);
 }
 
 void SpriteCollisionComponent::SetOffset(float leftx, float rightx, float topy, float bottomy)
@@ -44,11 +45,11 @@ void SpriteCollisionComponent::CalculateCollider()
 	m_Collider.y = -m_Rectangle.y;
 
 	//Position
-	if (m_pGameObject != nullptr)
+	if (GetGameObject() != nullptr)
 	{
-		const auto* pTransform = m_pGameObject->GetComponent<TransformComponent>();
-		const auto wpos = pTransform->GetWorldPosition();
-		const auto wscale = pTransform->GetWorldScale();
+		const auto& transform = GetGameObject()->GetTransform();
+		const auto wpos = transform.GetWorldPosition();
+		const auto wscale = transform.GetWorldScale();
 		m_Collider.x += wpos.x;
 		m_Collider.y += wpos.y;
 		m_Collider.width *= wscale.x;

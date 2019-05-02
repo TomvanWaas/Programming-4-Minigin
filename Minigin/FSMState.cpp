@@ -4,6 +4,18 @@
 #include "FSMCondition.h"
 
 
+void FSMState::Initialize(const SceneData& sceneData)
+{
+	if (m_pOnEnterEvent != nullptr) m_pOnEnterEvent->Initialize(sceneData);
+	if (m_pOnExitEvent != nullptr) m_pOnExitEvent->Initialize(sceneData);
+	if (m_pUpdateFirstEvent != nullptr)m_pUpdateFirstEvent->Initialize(sceneData);
+	if (m_pUpdateSecondEvent != nullptr) m_pUpdateSecondEvent->Initialize(sceneData);
+	for (auto& trans: m_pTransitions)
+	{
+		if (trans != nullptr && trans->pCondition != nullptr) trans->pCondition->Initialize(sceneData);
+	}
+}
+
 FSMState* FSMState::UpdateFirst(const SceneData& sceneData)
 {
 	//Check Transitions
@@ -15,7 +27,7 @@ FSMState* FSMState::UpdateFirst(const SceneData& sceneData)
 		}
 	}
 
-	//Else UpdateFirst Events
+	//Else UpdateFirstOverride Events
 	if (m_pUpdateFirstEvent != nullptr) m_pUpdateFirstEvent->Execute(sceneData);
 	return this;
 }
@@ -30,7 +42,7 @@ FSMState* FSMState::UpdateSecond(const SceneData& sceneData)
 		}
 	}
 
-	//Else UpdateFirst Events
+	//Else UpdateFirstOverride Events
 	if (m_pUpdateSecondEvent != nullptr) m_pUpdateSecondEvent->Execute(sceneData);
 	return this;
 }
