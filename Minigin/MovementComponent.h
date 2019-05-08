@@ -17,13 +17,11 @@ public:
 	void SetInterpolation(unsigned int interpolation);
 	unsigned int GetInterpolation() const;
 
-
 private:
 	Vector2 m_MovementQueue;
 	bool m_HasQueue;
 	unsigned int m_Interpolation;
 
 	std::vector<AABBCollisionComponent*> m_pColliders;
-
 };
 

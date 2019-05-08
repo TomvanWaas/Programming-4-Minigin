@@ -6,30 +6,24 @@
 #include "Transform.h"
 #include "Texture2D.h"
 #include "SceneData.h"
-
+#include <SDL.h>
 
 RenderComponent::RenderComponent(const std::string& texturePath)
 	: m_pTexture(ResourceManager::GetInstance().LoadTexture(texturePath))
-	, m_HasSrc(false)
-	, m_HasDst(false)
-	, m_SrcRect()
-	, m_DstRect()
+	, m_HasSource(false)
+	, m_Source()
 {
 }
 RenderComponent::RenderComponent(const std::shared_ptr<Texture2D>& texture)
 	: m_pTexture(texture)
-	, m_HasSrc(false)
-	, m_HasDst(false)
-	, m_SrcRect()
-	, m_DstRect()
-{
-}
+	, m_HasSource(false)
+	, m_Source()
+{}
 
 void RenderComponent::InitializeOverride(const SceneData& sceneData)
 {
 	RegisterRenderable(sceneData.pRenderManager);
 }
-
 void RenderComponent::DestroyOverride(const SceneData& sceneData)
 {
 	UnRegisterRenderable(sceneData.pRenderManager);
@@ -42,48 +36,59 @@ void RenderComponent::Render(const RenderManager& renderer) const
 		const auto& transform = GetGameObject()->GetTransform();
 		const auto position = transform.GetWorldPosition();
 		const auto scale = transform.GetWorldScale();
+		const auto rot = transform.GetWorldRotation(true);
 
-		//If no dst nor src => take whole texture as dst
-		Rect dst = Rect(0, 0, float(m_pTexture->GetWidth()), float(m_pTexture->GetHeight()));
-		if (m_HasDst)
+		
+		
+		
+		
+		//Without angle nor flipmode
+		if ((rot*rot) < 0.01f && m_FlipMode == FlipMode::None)
 		{
-			//Else if dst => take dstrect
-			dst = m_DstRect;
+			//Has source
+			if (m_HasSource)
+			{
+				renderer.RenderTexture(*m_pTexture, position, scale, m_Source);
+			}
+			//No source
+			else
+			{
+				renderer.RenderTexture(*m_pTexture, position, scale);
+			}
 		}
-		else if (m_HasSrc)
-		{
-			//Else if src => take src measurements
-			dst = Rect(0, 0, m_SrcRect.width, m_SrcRect.height);
-		}
-		//Apply Transform
-		dst.x += position.x;
-		dst.y += position.y;
-		dst.width *= scale.x;
-		dst.height *= scale.y;
-		//Recenter
-		dst.x -= dst.width *0.5f;
-		dst.y -= dst.height*0.5f;
-
-		//Render
-		if (m_HasSrc)
-		{		
-			renderer.RenderTexture(*m_pTexture, m_SrcRect, dst);
-		}
+		//With angle and\or flipmode
 		else
 		{
-			renderer.RenderTexture(*m_pTexture, dst);
+			renderer.RenderTexture(*m_pTexture, position, scale, m_Source, rot, position, m_FlipMode);
 		}
 	}
 }
 
 
+
+
+
 void RenderComponent::SetTexture(const std::string& filename)
 {
 	m_pTexture = ResourceManager::GetInstance().LoadTexture(filename);
+	if (!m_HasSource)
+	{
+		m_Source.x = 0;
+		m_Source.y = 0;
+		m_Source.width = float(m_pTexture->GetWidth());
+		m_Source.height = float(m_pTexture->GetHeight());
+	}
 }
 void RenderComponent::SetTexture(const std::shared_ptr<Texture2D>& pTexture)
 {
 	m_pTexture = pTexture;
+	if (!m_HasSource)
+	{
+		m_Source.x = 0;
+		m_Source.y = 0;
+		m_Source.width = float(m_pTexture->GetWidth());
+		m_Source.height = float(m_pTexture->GetHeight());
+	}
 }
 const std::shared_ptr<Texture2D>& RenderComponent::GetTexture() const
 {
@@ -93,36 +98,37 @@ const std::shared_ptr<Texture2D>& RenderComponent::GetTexture() const
 
 void RenderComponent::SetSource(const Rect& r)
 {
-	m_SrcRect = r;
-	m_HasSrc = true;
+	m_Source = r;
+	m_HasSource = true;
 }
 void RenderComponent::ClearSource()
 {
-	m_HasSrc = false;
+	m_HasSource = false;
+	m_Source.x = 0;
+	m_Source.y = 0;
+	if (m_pTexture != nullptr)
+	{
+		m_Source.width = float(m_pTexture->GetWidth());
+		m_Source.height = float(m_pTexture->GetHeight());
+	}
 }
 const Rect& RenderComponent::GetSource() const
 {
-	return m_SrcRect;
+	return m_Source;
 }
 bool RenderComponent::HasSource() const
 {
-	return m_HasSrc;
+	return m_HasSource;
 }
 
-void RenderComponent::SetDestination(const Rect& r)
+
+
+void RenderComponent::SetFlipMode(FlipMode flip)
 {
-	m_DstRect = r;
-	m_HasSrc = true;
+	m_FlipMode = flip;
 }
-void RenderComponent::ClearDestination()
+FlipMode RenderComponent::GetFlipMode() const
 {
-	m_HasDst = false;
+	return m_FlipMode;
 }
-const Rect& RenderComponent::GetDestination() const
-{
-	return m_DstRect;
-}
-bool RenderComponent::HasDestination() const
-{
-	return m_HasDst;
-}
+

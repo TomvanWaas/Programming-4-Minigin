@@ -24,7 +24,7 @@ Rect TickSource::GetSource(float& accuTime, float speed)
 		}
 		else
 		{
-			current = amount;
+			current = amount-1;
 			accuTime = amount * sign * speed;
 		}
 	}

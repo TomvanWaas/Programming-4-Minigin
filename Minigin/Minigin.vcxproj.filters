@@ -35,12 +35,6 @@
     <Filter Include="FrameworkFiles\Variables">
       <UniqueIdentifier>{6e0fc53a-a371-4230-ace4-213869bf0ad3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FrameworkFiles\Collision">
-      <UniqueIdentifier>{99b47ddb-146b-437b-932c-783a1c331545}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FrameworkFiles\FSM">
-      <UniqueIdentifier>{a68e5185-d4aa-486d-a4b0-1d492389e0f6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="FrameworkFiles\Application">
       <UniqueIdentifier>{9e3dec85-27e5-43bc-b97e-e294dd309603}</UniqueIdentifier>
     </Filter>
@@ -55,6 +49,9 @@
     </Filter>
     <Filter Include="GameFiles\Parts">
       <UniqueIdentifier>{e7c83a0c-a648-44c0-881e-56fc388b7537}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameworkFiles\Operations">
+      <UniqueIdentifier>{627f7740-1a5f-409f-b689-9538e5b09ebf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -136,15 +133,6 @@
     <ClInclude Include="AABBCollisionComponent.h">
       <Filter>FrameworkFiles\Components</Filter>
     </ClInclude>
-    <ClInclude Include="FSMEvent.h">
-      <Filter>FrameworkFiles\FSM</Filter>
-    </ClInclude>
-    <ClInclude Include="FSMCondition.h">
-      <Filter>FrameworkFiles\FSM</Filter>
-    </ClInclude>
-    <ClInclude Include="FSMState.h">
-      <Filter>FrameworkFiles\FSM</Filter>
-    </ClInclude>
     <ClInclude Include="FiniteStateMachineComponent.h">
       <Filter>FrameworkFiles\Components</Filter>
     </ClInclude>
@@ -153,9 +141,6 @@
     </ClInclude>
     <ClInclude Include="RenderManager.h">
       <Filter>FrameworkFiles\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="ColliderCommand.h">
-      <Filter>FrameworkFiles\Collision</Filter>
     </ClInclude>
     <ClInclude Include="Subject.h">
       <Filter>FrameworkFiles\Observing</Filter>
@@ -217,17 +202,35 @@
     <ClInclude Include="Transform.h">
       <Filter>FrameworkFiles\Scenegraph</Filter>
     </ClInclude>
-    <ClInclude Include="FSMConditions.h">
-      <Filter>FrameworkFiles\FSM</Filter>
-    </ClInclude>
-    <ClInclude Include="FSMEvents.h">
-      <Filter>FrameworkFiles\FSM</Filter>
-    </ClInclude>
     <ClInclude Include="Enumerations.h">
       <Filter>GameFiles\Parts</Filter>
     </ClInclude>
     <ClInclude Include="DigDugMovementComponent.h">
       <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderCommand.h">
+      <Filter>FrameworkFiles\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMConditions.h">
+      <Filter>FrameworkFiles\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMCondition.h">
+      <Filter>FrameworkFiles\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMEvent.h">
+      <Filter>FrameworkFiles\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMEvents.h">
+      <Filter>FrameworkFiles\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMState.h">
+      <Filter>FrameworkFiles\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="FlipMode.h">
+      <Filter>FrameworkFiles\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>GameFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -285,9 +288,6 @@
     <ClCompile Include="AABBCollisionComponent.cpp">
       <Filter>FrameworkFiles\Components</Filter>
     </ClCompile>
-    <ClCompile Include="FSMState.cpp">
-      <Filter>FrameworkFiles\FSM</Filter>
-    </ClCompile>
     <ClCompile Include="FiniteStateMachineComponent.cpp">
       <Filter>FrameworkFiles\Components</Filter>
     </ClCompile>
@@ -339,14 +339,17 @@
     <ClCompile Include="Transform.cpp">
       <Filter>FrameworkFiles\Scenegraph</Filter>
     </ClCompile>
-    <ClCompile Include="FSMConditions.cpp">
-      <Filter>FrameworkFiles\FSM</Filter>
-    </ClCompile>
-    <ClCompile Include="FSMEvents.cpp">
-      <Filter>FrameworkFiles\FSM</Filter>
-    </ClCompile>
     <ClCompile Include="DigDugMovementComponent.cpp">
       <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="FSMEvents.cpp">
+      <Filter>FrameworkFiles\Operations</Filter>
+    </ClCompile>
+    <ClCompile Include="FSMConditions.cpp">
+      <Filter>FrameworkFiles\Operations</Filter>
+    </ClCompile>
+    <ClCompile Include="FSMState.cpp">
+      <Filter>FrameworkFiles\Operations</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

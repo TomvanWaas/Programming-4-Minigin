@@ -112,6 +112,20 @@ public:
 		return false;
 	}
 
+	template <class T>
+	T* FindFirstOf()
+	{
+		const type_info& ti = typeid(T);
+
+		for (const auto& pData : m_pData)
+		{
+			if (pData.second != nullptr && typeid(*pData.second) == ti) return static_cast<T*>(pData.second);
+		}
+		return nullptr;	
+	}
+	
+
+
 private:
 	std::unordered_map<std::string, BaseData*> m_pData;
 };

@@ -31,15 +31,13 @@ public:
 	const SceneData& GetSceneData() const;
 	const std::string& GetName() const;
 
-	void SetInitialize();
-
 private: 
 	std::string m_Name;
 	std::vector<GameObject*> m_pGameObjects;
 	SceneData m_SceneData;
-	bool m_NeedsInit = true;
 
 	std::vector<GameObject*> m_pMarkedForDelete;
+	bool m_IsInitialized = false;
 };
 
 

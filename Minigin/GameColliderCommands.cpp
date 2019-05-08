@@ -4,23 +4,8 @@
 #include "DataComponent.h"
 #include "AABBCollisionComponent.h"
 #include "MovementComponent.h"
-
-
-void LassoColliderCommand::Execute(AABBCollisionComponent* pOther)
-{
-	if (pOther != nullptr && pOther->GetTag() == "Enemy" && pOther->GetGameObject() != nullptr)
-	{
-		DataComponent* pData = pOther->GetGameObject()->GetRoot().GetComponent<DataComponent>();
-		if (pData != nullptr)
-		{
-			pData->SetData("IsHit", m_Target);
-			if (m_pHasHit != nullptr)
-			{
-				*m_pHasHit = m_Target;
-			}
-		}
-	}
-}
+#include "Enumerations.h"
+#include "DigDugMovementComponent.h"
 
 void StoneColliderCommand::Execute(AABBCollisionComponent* pOther)
 {
@@ -29,18 +14,15 @@ void StoneColliderCommand::Execute(AABBCollisionComponent* pOther)
 		if (pOther->GetGameObject() != nullptr)
 		{
 			//Disable Movement
-			auto pMove = pOther->GetGameObject()->GetRoot().GetComponent<MovementComponent>();
+			auto pMove = pOther->GetGameObject()->GetRoot().GetComponent<DigDug::DigDugMovementComponent>();
 			if (pMove) pMove->SetEnabled(false);
 
 			//Set Crushed
 			auto pData = pOther->GetGameObject()->GetRoot().GetComponent<DataComponent>();
 			if (pData)
 			{
-				pData->SetData("IsCrushed", true);
+				pData->SetData("Health", DigDug::PlayerHealth::Crushed);
 			}
-
-			//Make Child of object
-			pOther->GetGameObject()->GetRoot().SetParent(m_pObject);
 		}
 	}
 }

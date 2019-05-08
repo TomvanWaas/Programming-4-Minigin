@@ -2,7 +2,9 @@
 #include "BaseComponent.h"
 #include "Rect.h"
 #include "Renderable.h"
+#include "FlipMode.h"
 class Texture2D;
+
 class RenderComponent final : public BaseComponent, public Renderable
 {
 public:
@@ -29,17 +31,15 @@ public:
 	const Rect& GetSource() const;
 	bool HasSource() const;
 
-	void SetDestination(const Rect& r);
-	void ClearDestination();
-	const Rect& GetDestination() const;
-	bool HasDestination() const;
+	void SetFlipMode(FlipMode flip);
+	FlipMode GetFlipMode() const;
 
 
 private:
 	std::shared_ptr<Texture2D> m_pTexture;
-	Rect m_SrcRect;
-	Rect m_DstRect;
-	bool m_HasSrc;
-	bool m_HasDst;
+	Rect m_Source;
+	bool m_HasSource;
+	FlipMode m_FlipMode;
+
 };
 

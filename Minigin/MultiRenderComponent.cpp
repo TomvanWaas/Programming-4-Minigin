@@ -40,39 +40,22 @@ void MultiRenderComponent::Render(const RenderManager& renderer) const
 
 		for (const std::pair<unsigned int, RenderInfo>& info : m_RenderInfos)
 		{
-			auto& rinfo = info.second;
+			auto& rinfo = info.second;			
 
-			//If no dst nor src => take whole texture as dst
-			Rect dst = Rect(0, 0, float(m_pTexture->GetWidth()), float(m_pTexture->GetHeight()));
-			if (rinfo.hasDst)
-			{
-				//Else if dst => take dstrect
-				dst = rinfo.dst;
-			}
-			else if (rinfo.hasSrc)
-			{
-				//Else if src => take src measurements
-				dst = Rect(0, 0, rinfo.src.width, rinfo.src.height);
-			}
-			//Apply Transform
-			dst.x *= scale.x;
-			dst.y *= scale.y;
-			dst.x += position.x;
-			dst.y += position.y;
-			dst.width *= scale.x;
-			dst.height *= scale.y;
-			//Recenter
-			dst.x -= dst.width *0.5f;
-			dst.y -= dst.height*0.5f;
-
-			//Render
+			Vector2 center{};
+			center.x = (rinfo.dst.x + rinfo.dst.width * scale.x * 0.5f) * scale.x;
+			center.y = (rinfo.dst.y + rinfo.dst.height * scale.y * 0.5f) * scale.y;
+			center += position;
+			Vector2 scl{};
+			scl.x = scale.x * rinfo.dst.width / m_pTexture->GetWidth();
+			scl.y = scale.y * rinfo.dst.height / m_pTexture->GetHeight();
 			if (rinfo.hasSrc)
 			{
-				renderer.RenderTexture(*m_pTexture, rinfo.src, dst);
+				renderer.RenderTexture(*m_pTexture, center, scl, rinfo.src);
 			}
 			else
 			{
-				renderer.RenderTexture(*m_pTexture, dst);
+				renderer.RenderTexture(*m_pTexture, center, scl);
 			}
 		}
 	}

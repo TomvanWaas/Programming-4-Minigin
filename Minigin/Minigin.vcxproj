@@ -203,6 +203,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="Application.h" />
     <ClInclude Include="DigDugMovementComponent.h" />
     <ClInclude Include="Enumerations.h" />
+    <ClInclude Include="FlipMode.h" />
     <ClInclude Include="FSMConditions.h" />
     <ClInclude Include="FSMEvents.h" />
     <ClInclude Include="GameColliderCommands.h" />
@@ -211,6 +212,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="GameInputCommands.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="GridComponent.h" />
+    <ClInclude Include="Manager.h" />
     <ClInclude Include="MiniginMath.h" />
     <ClInclude Include="MultiRenderComponent.h" />
     <ClInclude Include="FiniteStateMachineComponent.h" />

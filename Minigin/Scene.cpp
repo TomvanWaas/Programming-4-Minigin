@@ -10,7 +10,7 @@ Scene::Scene(const std::string& name)
 	: m_Name(name)
 	, m_pGameObjects()
 	, m_SceneData()
-	, m_NeedsInit(true)
+	, m_IsInitialized(false)
 {
 }
 Scene::~Scene()
@@ -42,12 +42,13 @@ GameObject* Scene::CreateGameObject()
 {
 	GameObject* pObject = new GameObject();
 	AddGameObject(pObject);
+	if (m_IsInitialized) pObject->Initialize(m_SceneData);
 	return pObject;
 }
 bool Scene::DeleteGameObject(GameObject* pObject)
 {
 	if (pObject == nullptr) return false;
-	pObject->SetParent(nullptr);
+	pObject->SetParent(nullptr, m_SceneData);
 	RemoveGameObject(pObject);
 	m_pMarkedForDelete.push_back(pObject);
 	pObject->Destroy(m_SceneData);
@@ -71,6 +72,7 @@ bool Scene::AddGameObject(GameObject* pObject)
 	{
 		m_pGameObjects.push_back(pObject);
 		pObject->SetScene(this);
+		if (m_IsInitialized) pObject->Initialize(m_SceneData);
 		return true;
 	}
 	return false;
@@ -80,15 +82,18 @@ bool Scene::AddGameObject(GameObject* pObject)
 
 void Scene::Initialize()
 {
-	//InitializeOverride all
-	for (GameObject* pObject: m_pGameObjects)
+	if (m_IsInitialized == false)
 	{
-		if (pObject != nullptr)
+		//InitializeOverride all
+		for (GameObject* pObject : m_pGameObjects)
 		{
-			pObject->Initialize(m_SceneData);
+			if (pObject != nullptr)
+			{
+				pObject->Initialize(m_SceneData);
+			}
 		}
+		m_IsInitialized = true;
 	}
-	m_NeedsInit = false;
 }
 void Scene::Update(float elapsed)
 {
@@ -104,7 +109,7 @@ void Scene::Update(float elapsed)
 		}
 	}
 
-	//UpdateFirstOverride all
+	//UpdateSecondOverride all
 	for (GameObject* pObject : m_pGameObjects)
 	{
 		if (pObject != nullptr)
@@ -121,12 +126,6 @@ void Scene::Update(float elapsed)
 			SAFE_DELETE(pObject);
 		}
 		m_pMarkedForDelete.clear();
-	}
-
-	//Intialize if new things appeared
-	if (m_NeedsInit)
-	{
-		Initialize();
 	}
 
 	//Remove all nullptr from vector (if EG deleted)
@@ -149,11 +148,6 @@ const SceneData& Scene::GetSceneData() const
 const std::string& Scene::GetName() const
 {
 	return m_Name;
-}
-
-void Scene::SetInitialize()
-{
-	m_NeedsInit = true;
 }
 
 

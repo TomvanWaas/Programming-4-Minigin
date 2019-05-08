@@ -29,7 +29,7 @@ void DigDug::DigDugMovementComponent::InitializeOverride(const SceneData& sceneD
 void DigDug::DigDugMovementComponent::UpdateFirstOverride(const SceneData& sceneData)
 {
 	m_CurrentDirection = Direction::None;
-	if (m_pGrid != nullptr && m_pMovement != nullptr)
+	if (m_pGrid != nullptr && m_pMovement != nullptr && GetGameObject() != nullptr)
 	{
 		//Process Wanted
 		if (m_WantedDirection != Direction::None)
@@ -58,21 +58,28 @@ void DigDug::DigDugMovementComponent::UpdateFirstOverride(const SceneData& scene
 			if (m_CurrentDirection != Direction::None) m_PreviousDirection = m_CurrentDirection;
 
 			//Process Direction
+			Vector2 move = Vector2::Zero;
 			switch (m_CurrentDirection)
 			{
 			case Direction::Right:
-				m_pMovement->QueueMovement(Vector2(m_Speed*sceneData.pTime->GetDeltaTime(), 0));
+				move = Vector2(m_Speed*sceneData.pTime->GetDeltaTime(), 0);
 				break;
 			case Direction::Down:
-				m_pMovement->QueueMovement(Vector2(0, m_Speed*sceneData.pTime->GetDeltaTime()));
+				move = Vector2(0, m_Speed*sceneData.pTime->GetDeltaTime());
 				break;
 			case Direction::Left:
-				m_pMovement->QueueMovement(Vector2(-m_Speed * sceneData.pTime->GetDeltaTime(), 0));
+				move = Vector2(-m_Speed * sceneData.pTime->GetDeltaTime(), 0);
 				break;
 			case Direction::Up:
-				m_pMovement->QueueMovement(Vector2(0, -m_Speed * sceneData.pTime->GetDeltaTime()));
+				move = Vector2(0, -m_Speed * sceneData.pTime->GetDeltaTime());
 				break;
 			}
+
+			const auto wp = GetGameObject()->GetTransform().GetWorldPosition();
+
+			//Clamp to grid
+			move = m_pGrid->ClosestGrid(move + wp) - wp;
+			m_pMovement->QueueMovement(move);
 		}
 	}
 	m_WantedDirection = Direction::None;

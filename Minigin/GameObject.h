@@ -16,7 +16,7 @@ public:
 	GameObject& operator=(GameObject&& other) = delete;
 
 	void SetEnabled(bool e);
-	bool IsEnabled() const { return m_IsEnabled; }
+	bool IsEnabled() const { return IsState(State::Enabled); }
 
 	void Initialize(const SceneData& sceneData);
 	void UpdateFirst(const SceneData& sceneData);
@@ -35,17 +35,17 @@ public:
 	Scene* GetScene();
 	void SetScene(Scene* pScene);
 
-	GameObject* CreateChild();
-	bool DeleteChild(GameObject*& pChild);
+	GameObject* CreateChild(const SceneData& sceneData);
+	bool DeleteChild(GameObject*& pChild, const SceneData& sceneData);
 	bool RemoveChild(GameObject* pChild);
-	bool AddChild(GameObject* pChild);
-	void SetParent(GameObject* pParent);
+	bool AddChild(GameObject* pChild, const SceneData& sceneData);
+	void SetParent(GameObject* pParent, const SceneData& sceneData);
 
 	Transform& GetTransform();
 	const Transform& GetTransform() const;
 
 	//Components
-	bool AddComponent(BaseComponent* pComponent);
+	bool AddComponent(BaseComponent* pComponent, const SceneData& sceneData);
 	bool RemoveComponent(BaseComponent* pComponent);
 	bool DeleteComponent(BaseComponent*& pComponent, const SceneData& sceneData);
 
@@ -130,12 +130,37 @@ public:
 
 	
 private:
+	enum class State : char
+	{
+		Enabled = 1,
+		Initialized = 2,
+		Destroyed = 4
+	};
+
 	Scene* m_pScene;
 	GameObject* m_pParent;
 	std::vector<GameObject*> m_pChildren;
 
 	Transform m_Transform;
 	std::vector<BaseComponent*> m_pComponents;
-	bool m_IsEnabled = true;
+
+
+	char m_State = 1;
+	void SetState(bool set, State state)
+	{
+		if (set)
+		{
+			m_State |= char(state);
+		}
+		else
+		{
+			m_State &= ~char(state);
+		}
+	}
+	bool IsState(State state) const
+	{
+		return (m_State & char(state));
+	}
+
 };
 

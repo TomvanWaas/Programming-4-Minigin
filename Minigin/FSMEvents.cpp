@@ -18,7 +18,7 @@ void FSMDeleteGameObjectEvent::Execute(const SceneData& sceneData)
 	//Delete by using parent
 	if (m_pObject != nullptr && m_pObject->GetParent() != nullptr)
 	{
-		m_pObject->GetParent()->DeleteChild(m_pObject);
+		m_pObject->GetParent()->DeleteChild(m_pObject, sceneData);
 		m_pObject = nullptr;
 	}
 	//Delete by using Scene

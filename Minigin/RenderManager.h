@@ -7,7 +7,7 @@ class Renderable;
 class RenderManager;
 struct Rect;
 class Texture2D;
-
+#include "FlipMode.h"
 class RenderManager final
 {
 public:
@@ -24,17 +24,23 @@ public:
 	//Static
 	static void InitializeRenderer(SDL_Window* pWindow);
 	static SDL_Renderer* GetSDLRenderer();
+	static void DestroyRenderer();
 
 	//Render shapes, etc
-	void RenderTexture(const Texture2D& texture, float x, float y) const;
-	void RenderTexture(const Texture2D& texture, float x, float y, float scalex, float scaley) const;
-	void RenderTexture(const Texture2D& texture, const Rect& dstRect) const;
-	void RenderTexture(const Texture2D& texture, const Rect& srcRect, const Rect& dstRect) const;
+	void RenderTexture(const Texture2D& texture, const Vector2& center) const;
+	void RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale) const;
+	void RenderTexture(const Texture2D& texture, const Vector2& center, const Rect& source) const;
+	void RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, const Rect& source) const;
+	void RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, float angle, const Vector2& around, FlipMode flip) const;
+	void RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, const Rect& source, float angle, const Vector2& around, FlipMode flip) const;
+
+
 
 	void RenderLine(const Vector2& a, const Vector2& b) const;
 	void RenderRect(const Rect& r) const;
 	void RenderPoint(const Vector2& p) const;
 	void RenderPoint(const Vector2& p, float r) const;
+
 	void SetRenderColor(UINT8 r = 0, UINT8 g = 0, UINT8 b = 0, UINT8 a = 255) const;
 	void ClearRenderColor() const;
 

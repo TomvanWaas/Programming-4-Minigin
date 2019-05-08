@@ -277,14 +277,12 @@ void DigDugGridComponent::UpdateRender(unsigned idx)
 	{
 		//Update on RenderComp
 		MultiRenderComponent::RenderInfo info{};
-
 		Vector2 p = m_GridPositions.Get(idx);
-		info.hasDst = true;
 		info.hasSrc = false;
 		info.dst.width = m_GridPositions.GetOffset().x * 1.5f;
 		info.dst.height = m_GridPositions.GetOffset().y * 1.5f;
-		info.dst.x = p.x;
-		info.dst.y = p.y;
+		info.dst.x = p.x - info.dst.width*0.5f;
+		info.dst.y = p.y - info.dst.height*0.5f;
 		m_pMultiRenderer->AddRenderInfo(idx, info);
 	}
 }

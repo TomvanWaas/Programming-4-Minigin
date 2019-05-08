@@ -3,6 +3,7 @@
 #include "Rect.h"
 #include "BaseComponent.h"
 #include "Renderable.h"
+#include "Vector2.h"
 
 class Texture2D;
 class MultiRenderComponent final : public BaseComponent, public Renderable
@@ -10,10 +11,9 @@ class MultiRenderComponent final : public BaseComponent, public Renderable
 public:
 	struct RenderInfo
 	{
-		Rect src;
 		Rect dst;
+		Rect src;
 		bool hasSrc;
-		bool hasDst;
 	};
 
 	explicit MultiRenderComponent() = default;

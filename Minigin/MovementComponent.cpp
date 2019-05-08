@@ -31,6 +31,7 @@ void MovementComponent::UpdateSecondOverride(const SceneData& sceneData)
 	{
 		auto& transform = GetGameObject()->GetTransform();
 
+		//Apply movement to transform
 		Vector2 interp = m_MovementQueue / int(m_Interpolation + 1);
 		Vector2 local{};
 		for (unsigned int i{0}; i < m_Interpolation+1; ++i)
@@ -80,4 +81,3 @@ unsigned MovementComponent::GetInterpolation() const
 {
 	return m_Interpolation;
 }
-
