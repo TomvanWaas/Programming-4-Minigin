@@ -22,11 +22,11 @@ RenderComponent::RenderComponent(const std::shared_ptr<Texture2D>& texture)
 
 void RenderComponent::InitializeOverride(const SceneData& sceneData)
 {
-	RegisterRenderable(sceneData.pRenderManager);
+	RegisterRenderable(sceneData.GetRender());
 }
 void RenderComponent::DestroyOverride(const SceneData& sceneData)
 {
-	UnRegisterRenderable(sceneData.pRenderManager);
+	UnRegisterRenderable(sceneData.GetRender());
 }
 
 void RenderComponent::Render(const RenderManager& renderer) const

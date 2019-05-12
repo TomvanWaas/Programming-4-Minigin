@@ -4,6 +4,8 @@
 #include "Transform.h"
 #include "Scene.h"
 #include <algorithm>
+#include "Deletor.h"
+#include "ObservedData.h"
 
 GameObject::GameObject()
 	: m_Transform(*this)
@@ -15,15 +17,53 @@ GameObject::GameObject()
 }
 GameObject::~GameObject()
 {
-	for (GameObject* pChild : m_pChildren)
+	for (GameObject*& pChild : m_pChildren)
 	{
 		SAFE_DELETE(pChild);
 	}
-	for (BaseComponent* pComponent : m_pComponents)
+	m_pChildren.clear();
+	for (BaseComponent*& pComponent : m_pComponents)
 	{
 		SAFE_DELETE(pComponent);
 	}
+	m_pComponents.clear();
 }
+
+
+void GameObject::DeleteObject(GameObject*& pObject)
+{
+	if (!pObject) return;
+
+	//Destroy
+	if (pObject->m_pScene)
+	{
+		pObject->Destroy(pObject->m_pScene->GetSceneData());
+	}
+
+	//Remove in parent
+	if (pObject->m_pParent)
+	{
+		auto i = std::find(pObject->m_pParent->m_pChildren.begin(), pObject->m_pParent->m_pChildren.end(), pObject);
+		if (i != pObject->m_pParent->m_pChildren.end())
+		{
+			(*i) = nullptr;
+		}
+	}
+	pObject->m_pParent = nullptr;
+
+	//Remove in Scene
+	if (pObject->m_pScene)
+	{
+		pObject->m_pScene->RemoveGameObject(pObject);
+	}	
+	pObject->m_pScene = nullptr;
+
+	//Set State
+	pObject->SetState(false, State::Enabled);
+
+	Deletor::GetInstance().StoreDelete(pObject);
+}
+
 
 
 void GameObject::SetEnabled(bool e)
@@ -38,6 +78,7 @@ void GameObject::SetEnabled(bool e)
 		if (pChild) pChild->SetEnabled(e);
 	}
 }
+
 
 void GameObject::Initialize(const SceneData& sceneData)
 {
@@ -60,7 +101,6 @@ void GameObject::Initialize(const SceneData& sceneData)
 		}
 	}
 }
-
 void GameObject::UpdateFirst(const SceneData& sceneData)
 {
 	if (IsState(State::Enabled) && IsState(State::Initialized) && !IsState(State::Destroyed))
@@ -84,9 +124,9 @@ void GameObject::UpdateFirst(const SceneData& sceneData)
 		}
 
 		//Erase if nullptr (deleted or removed)
-		m_pComponents.erase(std::remove_if(m_pComponents.begin(), m_pComponents.end(), [](const BaseComponent* pComponent)
+		m_pComponents.erase(std::remove_if(m_pComponents.begin(), m_pComponents.end(), [](const BaseComponent* pComp)
 		{
-			return pComponent == nullptr;
+			return pComp == nullptr;
 		}), m_pComponents.end());
 		m_pChildren.erase(std::remove_if(m_pChildren.begin(), m_pChildren.end(), [](const GameObject* pChild)
 		{
@@ -117,9 +157,9 @@ void GameObject::UpdateSecond(const SceneData& sceneData)
 		}
 
 		//Erase if nullptr (deleted or removed)
-		m_pComponents.erase(std::remove_if(m_pComponents.begin(), m_pComponents.end(), [](const BaseComponent* pComponent)
+		m_pComponents.erase(std::remove_if(m_pComponents.begin(), m_pComponents.end(), [](const BaseComponent* pComp)
 		{
-			return pComponent == nullptr;
+			return pComp == nullptr;
 		}), m_pComponents.end());
 		m_pChildren.erase(std::remove_if(m_pChildren.begin(), m_pChildren.end(), [](const GameObject* pChild)
 		{
@@ -127,17 +167,16 @@ void GameObject::UpdateSecond(const SceneData& sceneData)
 		}), m_pChildren.end());
 	}
 }
-
 void GameObject::Destroy(const SceneData& sceneData)
 {
 	if (!IsState(State::Destroyed))
 	{
 		SetState(true, State::Destroyed);
-		for (auto* pC : m_pComponents)
+		for (BaseComponent* pC : m_pComponents)
 		{
 			if (pC) pC->Destroy(sceneData);
 		}
-		for (auto* pC : m_pChildren)
+		for (GameObject* pC : m_pChildren)
 		{
 			if (pC) pC->Destroy(sceneData);
 		}
@@ -153,6 +192,78 @@ const std::vector<GameObject*>& GameObject::GetAllChildren() const
 {
 	return m_pChildren;
 }
+
+
+
+
+void GameObject::Notify(ObservedEvent event, const ObservedData& data)
+{
+	m_Transform.OnNotify(event, data);
+	for (BaseComponent* pComponent : m_pComponents)
+	{
+		if (pComponent) pComponent->Notify(event, data);
+	}
+}
+void GameObject::Notify(const std::string& component, ObservedEvent event, const ObservedData& data)
+{
+	if (component == typeid(Transform).name())
+	{
+		m_Transform.OnNotify(event, data);
+	}
+	else
+	{
+		for (BaseComponent* pComponent : m_pComponents)
+		{
+			if (pComponent && typeid(*pComponent).name() == component)
+			{
+				pComponent->Notify(event, data);
+				return;
+			}
+		}
+	}
+}
+void GameObject::NotifyChildren(ObservedEvent event, const ObservedData& data)
+{
+	for (GameObject* pChild : m_pChildren)
+	{
+		if (pChild)
+		{
+			pChild->Notify(event, data);
+			pChild->NotifyChildren(event, data);
+		}
+	}
+}
+void GameObject::NotifyChildren(const std::string& component, ObservedEvent event, const ObservedData& data)
+{
+	for (GameObject* pChild : m_pChildren)
+	{
+		if (pChild)
+		{
+			pChild->Notify(component, event, data);
+			pChild->NotifyChildren(component, event, data);
+		}
+	}
+}
+void GameObject::NotifyParents(ObservedEvent event, const ObservedData& data)
+{
+	if (m_pParent)
+	{
+		m_pParent->Notify(event, data);
+		m_pParent->NotifyParents(event, data);
+	}
+}
+void GameObject::NotifyParents(const std::string& component, ObservedEvent event, const ObservedData& data)
+{
+	if (m_pParent)
+	{
+		m_pParent->Notify(component, event, data);
+		m_pParent->NotifyParents(component, event, data);
+	}
+}
+
+
+
+
 
 
 const GameObject* GameObject::GetParent() const
@@ -220,30 +331,28 @@ Transform& GameObject::GetTransform()
 
 
 
-GameObject* GameObject::CreateChild(const SceneData& sceneData)
+GameObject* GameObject::CreateChild()
 {
 	GameObject* pChild = new GameObject();
-	AddChild(pChild, sceneData);
+	AddChild(pChild);
+	ObservedData d{};
+	pChild->Notify(ObservedEvent::ScaleChanged, d);
+	pChild->Notify(ObservedEvent::PositionChanged, d);
+	pChild->Notify(ObservedEvent::RotationChanged, d);
 	return pChild;
 }
-bool GameObject::DeleteChild(GameObject*& pChild, const SceneData& sceneData)
+bool GameObject::DeleteChild(GameObject*& pChild)
 {
-	/*if (pChild == nullptr) return false;
-	if (RemoveChild(pChild))
-	{
-		GetScene()->DeleteGameObject(pChild);
-		return true;
-	}
-	return false;*/
 	if (pChild == nullptr) return false;
 	if (RemoveChild(pChild))
 	{
-		pChild->Destroy(sceneData);
-		SAFE_DELETE(pChild);
+		if (m_pScene) pChild->Destroy(m_pScene->GetSceneData());
+		Deletor::GetInstance().StoreDelete(pChild);
+		pChild->SetEnabled(false);
+		pChild = nullptr;
 		return true;
 	}
 	return false;
-
 }
 bool GameObject::RemoveChild(GameObject* pChild)
 {
@@ -253,11 +362,19 @@ bool GameObject::RemoveChild(GameObject* pChild)
 	{
 		(*i)->m_pParent = nullptr;
 		(*i) = nullptr;
+
+		ObservedData d{};
+		pChild->Notify(ObservedEvent::ScaleChanged, d);
+		pChild->NotifyChildren(ObservedEvent::ScaleChanged, d);
+		pChild->Notify(ObservedEvent::RotationChanged, d);
+		pChild->NotifyChildren(ObservedEvent::RotationChanged, d);
+		pChild->Notify(ObservedEvent::PositionChanged, d);
+		pChild->NotifyChildren(ObservedEvent::PositionChanged, d);
 		return true;
 	}
 	return false;
 }
-bool GameObject::AddChild(GameObject* pChild, const SceneData& sceneData)
+bool GameObject::AddChild(GameObject* pChild)
 {
 	if (pChild == nullptr) return false;
 	auto i = std::find(m_pChildren.begin(), m_pChildren.end(), pChild);
@@ -266,15 +383,22 @@ bool GameObject::AddChild(GameObject* pChild, const SceneData& sceneData)
 		m_pChildren.push_back(pChild);
 		pChild->m_pParent = this;
 		pChild->m_pScene = m_pScene;
-		if (IsState(State::Initialized))
+		if (IsState(State::Initialized) && m_pScene != nullptr)
 		{
-			pChild->Initialize(sceneData);
+			pChild->Initialize(m_pScene->GetSceneData());
 		}
+		ObservedData d{};
+		pChild->Notify(ObservedEvent::ScaleChanged, d);
+		pChild->NotifyChildren(ObservedEvent::ScaleChanged, d);
+		pChild->Notify(ObservedEvent::RotationChanged, d);
+		pChild->NotifyChildren(ObservedEvent::RotationChanged, d);
+		pChild->Notify(ObservedEvent::PositionChanged, d);
+		pChild->NotifyChildren(ObservedEvent::PositionChanged, d);
 		return true;
 	}
 	return false;
 }
-void GameObject::SetParent(GameObject* pParent, const SceneData& sceneData)
+void GameObject::SetParent(GameObject* pParent)
 {
 	if (pParent == m_pParent) return;
 
@@ -300,7 +424,7 @@ void GameObject::SetParent(GameObject* pParent, const SceneData& sceneData)
 			{
 				m_pScene->RemoveGameObject(this);
 				m_pParent = pParent;
-				pParent->AddChild(this, sceneData);
+				pParent->AddChild(this);
 			}
 		}
 		//Prev was object
@@ -308,7 +432,7 @@ void GameObject::SetParent(GameObject* pParent, const SceneData& sceneData)
 		{
 			m_pParent->RemoveChild(this);
 			m_pParent = pParent;
-			pParent->AddChild(this, sceneData);
+			pParent->AddChild(this);
 		}
 	}
 }
@@ -317,23 +441,20 @@ void GameObject::SetParent(GameObject* pParent, const SceneData& sceneData)
 
 
 
-bool GameObject::AddComponent(BaseComponent* pComponent, const SceneData& sceneData)
+bool GameObject::AddComponent(BaseComponent* pComponent)
 {
 	if (pComponent == nullptr) return false;
-	const type_info& ti = typeid(pComponent);
+	const type_info& ti = typeid(*pComponent);
 
-	for (const auto* pComp : m_pComponents)
+	for (BaseComponent* pComp : m_pComponents)
 	{
-		if (pComp != nullptr && typeid(*pComp) == ti)
-		{
-			return false;
-		}
+		if (pComp && typeid(pComp) == ti) return false;
 	}
 	m_pComponents.push_back(pComponent);
 	pComponent->SetGameObject(this);
-	if (IsState(State::Initialized))
+	if (IsState(State::Initialized) && m_pScene)
 	{
-		pComponent->Initialize(sceneData);
+		pComponent->Initialize(m_pScene->GetSceneData());
 	}
 	return true;
 }
@@ -348,12 +469,14 @@ bool GameObject::RemoveComponent(BaseComponent* pComponent)
 	}
 	return false;
 }
-bool GameObject::DeleteComponent(BaseComponent*& pComponent, const SceneData& sceneData)
+bool GameObject::DeleteComponent(BaseComponent*& pComponent)
 {
 	if (RemoveComponent(pComponent))
 	{
-		pComponent->Destroy(sceneData);
-		SAFE_DELETE(pComponent);
+		if (m_pScene) pComponent->Destroy(m_pScene->GetSceneData());
+		Deletor::GetInstance().StoreDelete(pComponent);
+		pComponent->SetEnabled(false);
+		pComponent = nullptr;
 		return true;
 	}
 	return false;

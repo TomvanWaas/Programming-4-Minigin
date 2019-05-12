@@ -22,12 +22,12 @@ MultiRenderComponent::MultiRenderComponent(const std::shared_ptr<Texture2D>& tex
 
 void MultiRenderComponent::InitializeOverride(const SceneData& sceneData)
 {
-	RegisterRenderable(sceneData.pRenderManager);
+	RegisterRenderable(sceneData.GetRender());
 }
 
 void MultiRenderComponent::DestroyOverride(const SceneData& sceneData)
 {
-	UnRegisterRenderable(sceneData.pRenderManager);
+	UnRegisterRenderable(sceneData.GetRender());
 }
 
 void MultiRenderComponent::Render(const RenderManager& renderer) const

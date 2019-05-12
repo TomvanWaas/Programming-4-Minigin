@@ -27,7 +27,7 @@ public:
 		, m_Target(target)
 	{}
 	virtual ~FSMDataValCondition() = default;
-	virtual bool Execute(const SceneData& sceneData) const override
+	virtual bool Execute(const SceneData& sceneData, const FSMData& data) const override
 	{
 		return (m_Data == m_Target);
 	}
@@ -47,7 +47,7 @@ class FSMGridPositionWalkablePointCondition final : public FSMCondition
 public:
 	FSMGridPositionWalkablePointCondition(DigDugGridComponent& grid, GameObject& go, bool target = true);
 	virtual ~FSMGridPositionWalkablePointCondition() = default;
-	virtual bool Execute(const SceneData& sceneData) const override;
+	virtual bool Execute(const SceneData& sceneData, const FSMData& data) const override;
 private:
 	DigDugGridComponent* m_pGrid;
 	Transform* m_pTransform;
@@ -62,7 +62,7 @@ public:
 		, m_Target(target)
 	{}
 	virtual ~FSMGridPositionPointCondition() = default;
-	virtual bool Execute(const SceneData& sceneData) const override;
+	virtual bool Execute(const SceneData& sceneData, const FSMData& data) const override;
 private:
 	DigDugGridComponent* m_pGrid;
 	Transform* m_pTransform;
@@ -74,7 +74,7 @@ class FSMGridMarkCondition final : public FSMCondition
 public:
 	FSMGridMarkCondition(DigDugGridComponent& grid, GameObject& go, const Vector2& offset = {}, bool target = true);
 	virtual ~FSMGridMarkCondition() = default;
-	virtual bool Execute(const SceneData& sceneData) const override;
+	virtual bool Execute(const SceneData& sceneData, const FSMData& data) const override;
 private:
 	DigDugGridComponent* m_pGrid;
 	Transform* m_pTransform;
@@ -93,7 +93,7 @@ class FSMMoveEvent final : public FSMEvent
 public:
 	explicit FSMMoveEvent(const Vector2& velocity, GameObject& go);
 	virtual ~FSMMoveEvent() = default;
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 	void SetVelocity(const Vector2& velocity);
 	const Vector2& GetVelocity() const;
 	Vector2& GetVelocity();
@@ -107,7 +107,7 @@ class FSMFunctionEvent final : public FSMEvent
 public:
 	explicit FSMFunctionEvent(GameObject& go, void func(GameObject*, const SceneData&));
 	virtual ~FSMFunctionEvent() = default;
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 private:
 	GameObject* m_pGameObject;
 	void(* m_Function)(GameObject*, const SceneData&);
@@ -118,7 +118,7 @@ class FSMGridMarkerEvent final : public FSMEvent
 public:
 	explicit FSMGridMarkerEvent(GameObject& go, DigDugGridComponent& grid, const Vector2& offset = {});
 	virtual ~FSMGridMarkerEvent() = default;
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 private:
 	Transform* m_pTransform;
 	DigDugGridComponent* m_pGrid;
@@ -132,7 +132,7 @@ public:
 		: m_pComponent(pComp)
 		, m_Enabled(enable)
 	{}
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 private:
 	BaseComponent* m_pComponent;
 	bool m_Enabled;
@@ -145,7 +145,7 @@ public:
 		: m_pTransform(&t)
 		, m_Local(p)
 	{}
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 private:
 	Transform* m_pTransform;
 	Vector2 m_Local;
@@ -158,7 +158,7 @@ public:
 		: m_pTransform(&t)
 		, m_Velocity(vel)
 	{}
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 private:
 	Vector2 m_Velocity;
 	Transform* m_pTransform;
@@ -173,8 +173,17 @@ public:
 		: m_Target(tar)
 		, m_pCollider(&col)
 	{}
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 };
+
+
+
+
+
+
+
+
+
 
 
 
@@ -198,7 +207,7 @@ class FSMEventPumpSprite final : public FSMEvent
 	SpriteComponent* m_pComponent;
 public:
 	explicit FSMEventPumpSprite(DigDug::Direction& dir, SpriteComponent* pSprite);
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 };
 class FSMEventGridMove final : public FSMEvent
 {
@@ -207,7 +216,7 @@ class FSMEventGridMove final : public FSMEvent
 	float m_Speed;
 public:
 	explicit FSMEventGridMove(DigDug::Direction& dir, MovementComponent* pMove, float speed);
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 };
 
 //Player
@@ -218,9 +227,12 @@ class FSMEventPlayerSprite final : public FSMEvent
 	DigDug::PlayerState* m_pState;
 public:
 	explicit FSMEventPlayerSprite(DigDug::Direction& dir, SpriteComponent* pSprite, DigDug::PlayerState& state);
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 
 };
+
+
+
 
 
 

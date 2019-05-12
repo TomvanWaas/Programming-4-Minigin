@@ -1,9 +1,31 @@
 #pragma once
 #include <memory>
 #include "SceneData.h"
+class ObservedData;
+enum class ObservedEvent;
 class FSMCondition;
 class FSMEvent;
-class FSMState;
+class FSMNotifiedEvent;
+class FSMData;
+
+class FSMState abstract
+{
+public:
+	explicit FSMState() = default;
+	virtual ~FSMState() = default;
+
+	FSMState(const FSMState& other) = delete;
+	FSMState(FSMState&& other) noexcept = delete;
+	FSMState& operator=(const FSMState& other) = delete;
+	FSMState& operator=(FSMState&& other) noexcept = delete;
+
+	virtual void Initialize(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData); UNREFERENCED_PARAMETER(data); }
+	virtual FSMState* UpdateFirst(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData);  UNREFERENCED_PARAMETER(data); return this; }
+	virtual FSMState* UpdateSecond(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData); UNREFERENCED_PARAMETER(data); return this; }
+	virtual void Enter(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData);  UNREFERENCED_PARAMETER(data); }
+	virtual void Exit(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData); UNREFERENCED_PARAMETER(data); }
+	virtual FSMState* OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data) { UNREFERENCED_PARAMETER(oevent); UNREFERENCED_PARAMETER(odata); UNREFERENCED_PARAMETER(data); return this; };
+};
 
 struct FSMTransition
 {
@@ -20,37 +42,40 @@ struct FSMTransition
 	std::shared_ptr<FSMCondition> pCondition;
 };
 
-class FSMState final
+
+
+class FSMStateDefault final : public FSMState
 {
 public:
-	explicit FSMState() = default;
-	~FSMState() = default;
+	explicit FSMStateDefault() = default;
+	virtual ~FSMStateDefault() = default;
 
-	FSMState(const FSMState& other) = delete;
-	FSMState(FSMState&& other) noexcept = delete;
-	FSMState& operator=(const FSMState& other) = delete;
-	FSMState& operator=(FSMState&& other) noexcept = delete;
+	FSMStateDefault(const FSMStateDefault& other) = delete;
+	FSMStateDefault(FSMStateDefault&& other) noexcept = delete;
+	FSMStateDefault& operator=(const FSMStateDefault& other) = delete;
+	FSMStateDefault& operator=(FSMStateDefault&& other) noexcept = delete;
 
-	void Initialize(const SceneData& sceneData);
-	FSMState* UpdateFirst(const SceneData& sceneData);
-	FSMState* UpdateSecond(const SceneData& sceneData);
+	virtual void Initialize(const SceneData& sceneData, FSMData& data) override;
+	virtual FSMState* UpdateFirst(const SceneData& sceneData, FSMData& data) override;
+	virtual FSMState* UpdateSecond(const SceneData& sceneData, FSMData& data) override;
+	virtual FSMState* OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data) override;
 
 	void AddTransition(const std::shared_ptr<FSMTransition>& pTransition);
 	void SetUpdateFirstEvent(const std::shared_ptr<FSMEvent>& pEvent);
 	void SetUpdateSecondEvent(const std::shared_ptr<FSMEvent>& pEvent);
 	void SetEnterEvent(const std::shared_ptr<FSMEvent>& pEvent);
 	void SetExitEvent(const std::shared_ptr<FSMEvent>& pEvent);
+	void SetNotifiedEvent(const std::shared_ptr<FSMNotifiedEvent>& pEvent);
 
-
-	void Enter(const SceneData& sceneData);
-	void Exit(const SceneData& sceneData);
+	virtual void Enter(const SceneData& sceneData, FSMData& data) override;
+	virtual void Exit(const SceneData& sceneData, FSMData& data) override;
 private:
 	std::vector<std::shared_ptr<FSMTransition>> m_pTransitions;
 	std::shared_ptr<FSMEvent> m_pOnEnterEvent;
 	std::shared_ptr<FSMEvent> m_pOnExitEvent;
 	std::shared_ptr<FSMEvent> m_pUpdateFirstEvent;
 	std::shared_ptr<FSMEvent> m_pUpdateSecondEvent;
-
+	std::shared_ptr<FSMNotifiedEvent> m_pNotifiedEvent;
 
 	
 };

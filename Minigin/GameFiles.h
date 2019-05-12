@@ -37,29 +37,25 @@ namespace DigDug
 
 	GameObject* MakePlayerObject(Scene& scene, const DigDugSettings& settings, char up, char down, char left, char right, char pump);
 
-
-
-
-
-#pragma region player
-
-
 	void MakePlayerSprites(SpriteComponent* pSpriteComp, const DigDugSettings& settings);
-
 	void MakePlayerInput(GameObject* pPlayer, const DigDugSettings& settings, char up, char down, char left, char right, char pump);
-
 	void MakePlayerFSM(GameObject* pPlayer, const DigDugSettings& settings);
+	GameObject* MakePlayerPump(Scene& scene, GameObject& parent, const DigDugSettings& settings);
 
-
-#pragma endregion Functions to create playerObject
-
-
-
-
+	   	 
 	GameObject* MakeBackground(Scene& scene, const DigDugSettings& settings);
 
-	GameObject* MakeStone(Scene& scene, const DigDugSettings& settings);
-
-	GameObject* MakePlayerPump(Scene& scene, GameObject& parent, const DigDugSettings& settings);
 	
+
+
+
+
+
+
+
+
+	GameObject* CreateObstacle(Scene& scene, const DigDugSettings& settings);
+	GameObject* CreatePooka(Scene& scene, const DigDugSettings& settings);
+	GameObject* CreatePump(GameObject &parent, const DigDugSettings& settings);
+
 }

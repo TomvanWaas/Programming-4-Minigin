@@ -1,16 +1,17 @@
 #pragma once
 #include "ObserverEvents.h"
 class GameObject;
+class ObservedData;
 class Observer abstract
 {
 public:
 	explicit Observer() = default;
 	virtual ~Observer() = default;
 
-	virtual void Notify(GameObject* pObject, ObservedEvent event)
+	virtual void Notify(ObservedEvent event, const ObservedData& data)
 	{
 		UNREFERENCED_PARAMETER(event);
-		UNREFERENCED_PARAMETER(pObject);
+		UNREFERENCED_PARAMETER(data);
 	}
 
 	Observer(const Observer& other) = delete;

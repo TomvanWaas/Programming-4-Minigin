@@ -45,14 +45,14 @@ namespace DigDug
 		Killed
 	};
 
-	enum class StoneSprite
+	enum class ObstacleSprite
 	{
 		Idle,
 		Moving,
 		Destroyed
 	};
 
-	enum class LassoSprite
+	enum class PumpSpriteID
 	{
 		Up,
 		Right,
@@ -83,4 +83,26 @@ namespace DigDug
 		Right,
 		None
 	};
+
+
+	enum class EnemySprite
+	{
+		IdleRight,
+		MoveRight,
+		CrushedRight,
+		Ghost,
+		PumpedRightTier1,
+		PumpedRightTier2,
+		PumpedRightTier3,
+		PumpedRightTier4,
+		IdleLeft,
+		MoveLeft,
+		CrushedLeft,
+		PumpedLeftTier1,
+		PumpedLeftTier2,
+		PumpedLeftTier3,
+		PumpedLeftTier4
+	};
+
+
 }

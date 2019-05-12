@@ -33,7 +33,7 @@ void FPSComponent::UpdateFirstOverride(const SceneData& sceneData)
 	if (m_pTextComponent != nullptr)
 	{
 		//Calc FPS
-		float fps = 1 / sceneData.pTime->GetDeltaTime();
+		float fps = 1 / sceneData.GetTime()->GetDeltaTime();
 		std::stringstream ss{};
 		ss << std::fixed << std::setprecision(m_Precision) << fps;
 		m_pTextComponent->SetText("FPS:" + ss.str());

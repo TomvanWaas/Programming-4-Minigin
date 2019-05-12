@@ -1,6 +1,8 @@
 #pragma once
 #include "FSMCondition.h"
 
+class FSMData;
+
 class FSMTimeCondition final : public FSMCondition
 {
 	float m_StartTime;
@@ -8,8 +10,8 @@ class FSMTimeCondition final : public FSMCondition
 public:
 	explicit FSMTimeCondition(float dtime);
 	virtual ~FSMTimeCondition() = default;
-	virtual void Initialize(const SceneData& sceneData) override;
-	virtual bool Execute(const SceneData& sceneData) const override;
+	virtual void Initialize(const SceneData& sceneData, FSMData& data) override;
+	virtual bool Execute(const SceneData& sceneData, const FSMData& data) const override;
 };
 
 template <class T>
@@ -25,8 +27,10 @@ public:
 		, m_Equals(equals)
 	{}
 	virtual ~FSMDataCondition() = default;
-	virtual bool Execute(const SceneData& sceneData) const override
+	virtual bool Execute(const SceneData& sceneData, const FSMData& data) const override
 	{
+		UNREFERENCED_PARAMETER(data);
+
 		UNREFERENCED_PARAMETER(sceneData);
 		return (m_pReference != nullptr && ((*m_pReference == m_Value) == m_Equals));
 	}

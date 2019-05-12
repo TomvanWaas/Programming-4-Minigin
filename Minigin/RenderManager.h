@@ -1,6 +1,6 @@
 #pragma once
+#include "Manager.h"
 
-struct Vector2;
 struct SDL_Window;
 struct SDL_Renderer;
 class Renderable;
@@ -8,14 +8,15 @@ class RenderManager;
 struct Rect;
 class Texture2D;
 #include "FlipMode.h"
-class RenderManager final
+#include "Vector2.h"
+class RenderManager final : public Manager
 {
 public:
 	explicit RenderManager() = default;
 	~RenderManager() = default;
 
-	void Update();
-	void Render() const;
+	virtual void Update(const SceneData& sceneData) override;
+	void Render(const Vector2& scale = Vector2::One) const;
 
 	void AddRenderable(const Renderable& renderable);
 	void RemoveRenderable(const Renderable& renderable);
@@ -48,5 +49,4 @@ private:
 	static SDL_Renderer* m_pRenderer;
 
 	std::vector<const Renderable*> m_pRenderables;
-
 };

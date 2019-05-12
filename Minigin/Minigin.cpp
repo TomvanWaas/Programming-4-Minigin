@@ -10,6 +10,12 @@
 #include "RenderManager.h"
 #include "Application.h"
 #include "WindowSettings.h"
+#include "Deletor.h"
+
+WindowSettings dae::Minigin::m_WindowSettings = { 720.0f, 560.0f, "Pogramming 4 Assignment" };
+
+
+
 
 void dae::Minigin::Initialize(const WindowSettings& settings)
 {
@@ -39,32 +45,27 @@ void dae::Minigin::Initialize(const WindowSettings& settings)
 	// tell the resource manager where he can find the game data
 	ResourceManager::GetInstance().Init("../Resources/");
 }
-
-
 void dae::Minigin::Cleanup()
 {
-	InputManager::Destroy();
+	InputManager::StaticDestroy();
 
 	SDL_DestroyWindow(m_pWindow);
 	m_pWindow = nullptr;
 	SDL_Quit();
 	SAFE_DELETE(m_pApplication);
 }
-
 void dae::Minigin::Run()
 {
 	//InitializeOverride
-	auto windowSettings = WindowSettings{ 1280.0f, 720.0f, "Programming 4 Assignment" };
-
-	Initialize(windowSettings);
+	Initialize(m_WindowSettings);
 	SceneManager sceneManager{};
 	if (m_pApplication != nullptr)
 	{
-		m_pApplication->Initialize(sceneManager, windowSettings);
+		m_pApplication->Initialize(sceneManager, m_WindowSettings);
 	}
 	auto t = std::chrono::high_resolution_clock::now();
 	sceneManager.Initialize();
-	InputManager::Initialize();
+	InputManager::StaticInitialize();
 
 	//Gameloop
 	bool doContinue = true;
@@ -78,10 +79,11 @@ void dae::Minigin::Run()
 		lastTime = currentTime;
 		lag += deltaTime;
 
-		doContinue = InputManager::ProcessInput();
+		doContinue = InputManager::StaticProcessInput();
 		while (lag >= msPerUpdate)
 		{
 			sceneManager.Update(msPerUpdate);
+			Deletor::GetInstance().DeleteStore();
 			lag -= msPerUpdate;
 		}
 		sceneManager.Render();
@@ -89,8 +91,11 @@ void dae::Minigin::Run()
 
 
 	//Cleanup
+	Deletor::GetInstance().DeleteStore();
 	Cleanup();
 }
+
+
 
 void dae::Minigin::SetApplication(Application* pApp)
 {

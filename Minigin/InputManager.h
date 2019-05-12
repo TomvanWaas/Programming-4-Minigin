@@ -8,6 +8,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <Xinput.h>
+#include "Manager.h"
 #pragma comment(lib, "Xinput.lib")
 
 
@@ -94,20 +95,21 @@ struct InputAction
 	std::shared_ptr<InputCommand> pCommand;
 };
 
-class InputManager final
+class InputManager final : public Manager
 {
 public:
 	InputManager() = default;
 	~InputManager() = default;
 
-	static void Initialize();
-	static bool ProcessInput();
-	static void Destroy();
+	static void StaticInitialize();
+	static bool StaticProcessInput();
+	static void StaticDestroy();
+	static void Quit();
 
-	void UpdateActions();
+	virtual void Update(const SceneData& sceneData) override;
 	unsigned int AddInputAction(const InputAction& action, unsigned int id = 0);
 	void RemoveInputAction(unsigned int id);
-	const InputAction* GetInputAction(unsigned int id)const;
+	const InputAction* GetInputAction(unsigned int id) const;
 	
 private:
 	std::map<unsigned int,InputAction> m_InputActions;
@@ -115,6 +117,7 @@ private:
 
 
 	static bool m_IsInitialized;
+	static bool m_Continue;
 
 	//GameController
 	static XINPUT_STATE m_CurrentControllerStates[XUSER_MAX_COUNT];

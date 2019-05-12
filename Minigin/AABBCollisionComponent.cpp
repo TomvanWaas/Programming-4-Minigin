@@ -2,16 +2,12 @@
 #include "AABBCollisionComponent.h"
 #include "Transform.h"
 #include "GameObject.h"
-#include "ColliderCommand.h"
 #include "CollisionManager.h"
 #include "SceneData.h"
 
-AABBCollisionComponent::AABBCollisionComponent(const Rect& extents, bool isTrigger, const std::string& tag,
-	const std::shared_ptr<ColliderCommand>& enter, const std::shared_ptr<ColliderCommand>& exit)
+AABBCollisionComponent::AABBCollisionComponent(const Rect& extents, bool isTrigger, const std::string& tag)
 	: m_Rectangle(extents)
 	, m_IsTrigger(isTrigger)
-	, m_pOnEnter(enter)
-	, m_pOnExit(exit)
 	, m_Collider({})
 	, m_Tag(tag)
 {
@@ -19,13 +15,51 @@ AABBCollisionComponent::AABBCollisionComponent(const Rect& extents, bool isTrigg
 
 void AABBCollisionComponent::InitializeOverride(const SceneData& sceneData)
 {
-	sceneData.pCollisionManager->RegisterCollision(*this);
-}
+	m_Collider = m_Rectangle;
+	if (GetGameObject() != nullptr)
+	{
+		const auto& transform = GetGameObject()->GetTransform();
+		m_Collider.x += transform.GetWorldPosition().x;
+		m_Collider.y += transform.GetWorldPosition().y;
+		m_Collider.width *= transform.GetWorldScale().x;
+		m_Collider.height *= transform.GetWorldScale().y;
+	}
+	m_Collider.x -= m_Collider.width*0.5f;
+	m_Collider.y -= m_Collider.height*0.5f;
 
+	sceneData.GetCollision()->RegisterCollision(*this);
+}
 void AABBCollisionComponent::DestroyOverride(const SceneData& sceneData)
 {
-	sceneData.pCollisionManager->UnRegisterCollision(*this);
+	sceneData.GetCollision()->UnRegisterCollision(*this);
 }
+void AABBCollisionComponent::OnNotify(ObservedEvent event, const ObservedData& data)
+{
+	UNREFERENCED_PARAMETER(data);
+	switch (event)
+	{
+	case ObservedEvent::ScaleChanged:
+	case ObservedEvent::PositionChanged:
+
+		//Recalc collider
+		m_Collider = m_Rectangle;
+		if (GetGameObject() != nullptr)
+		{
+			const auto& transform = GetGameObject()->GetTransform();
+			m_Collider.x += transform.GetWorldPosition().x;
+			m_Collider.y += transform.GetWorldPosition().y;
+			m_Collider.width *= transform.GetWorldScale().x;
+			m_Collider.height *= transform.GetWorldScale().y;
+		}
+		m_Collider.x -= m_Collider.width*0.5f;
+		m_Collider.y -= m_Collider.height*0.5f;
+		
+		break;
+	}
+}
+
+
+
 
 bool AABBCollisionComponent::CollidesWith(AABBCollisionComponent* pCollider) const
 {
@@ -47,37 +81,26 @@ bool AABBCollisionComponent::CollidesWith(AABBCollisionComponent* pCollider) con
 
 
 
-void AABBCollisionComponent::CalculateCollider()
-{
-	m_Collider = m_Rectangle;
-	if (GetGameObject() == nullptr)return;
-	const auto& transform = GetGameObject()->GetTransform();
-
-	m_Collider.x += transform.GetWorldPosition().x;
-	m_Collider.y += transform.GetWorldPosition().y;
-	m_Collider.width *= transform.GetWorldScale().x;
-	m_Collider.height *= transform.GetWorldScale().y;
-	m_Collider.x -= m_Collider.width*0.5f;
-	m_Collider.y -= m_Collider.height*0.5f;
-}
 void AABBCollisionComponent::SetCollider(float w, float h, float offsetx, float offsety)
 {
 	m_Rectangle = Rect{ offsetx, offsety, w, h };
+
+	//Recalc collider
+	m_Collider = m_Rectangle;
+	if (GetGameObject() != nullptr)
+	{
+		const auto& transform = GetGameObject()->GetTransform();
+		m_Collider.x += transform.GetWorldPosition().x;
+		m_Collider.y += transform.GetWorldPosition().y;
+		m_Collider.width *= transform.GetWorldScale().x;
+		m_Collider.height *= transform.GetWorldScale().y;
+	}
+	m_Collider.x -= m_Collider.width*0.5f;
+	m_Collider.y -= m_Collider.height*0.5f;
 }
 const Rect& AABBCollisionComponent::GetCollider() const
 {
 	return m_Collider;
-}
-
-
-
-void AABBCollisionComponent::Enter(AABBCollisionComponent* pOther)
-{
-	if (m_pOnEnter) m_pOnEnter->Execute(pOther);
-}
-void AABBCollisionComponent::Exit(AABBCollisionComponent* pOther)
-{
-	if (m_pOnExit) m_pOnExit->Execute(pOther);
 }
 
 
@@ -91,13 +114,3 @@ const std::string& AABBCollisionComponent::GetTag() const
 	return m_Tag;
 }
 
-
-
-void AABBCollisionComponent::SetEnterCommand(const std::shared_ptr<ColliderCommand>& pCommand)
-{
-	m_pOnEnter = pCommand;
-}
-void AABBCollisionComponent::SetExitCommand(const std::shared_ptr<ColliderCommand>& pCommand)
-{
-	m_pOnExit = pCommand;
-}

@@ -13,7 +13,7 @@ class FSMDeleteGameObjectEvent final : public FSMEvent
 public:
 	explicit FSMDeleteGameObjectEvent(GameObject* pObject);
 	virtual ~FSMDeleteGameObjectEvent() = default;
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 };
 
 class FSMComponentEnableEvent final : public FSMEvent
@@ -27,7 +27,7 @@ public:
 	};
 	explicit FSMComponentEnableEvent(BaseComponent* pComponent, Operation operation);
 	virtual ~FSMComponentEnableEvent() = default;
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 private:
 	BaseComponent* m_pComponent;
 	Operation m_Operation;
@@ -40,7 +40,7 @@ class FSMSpriteSourceEvent final : public FSMEvent
 public:
 	explicit FSMSpriteSourceEvent(unsigned int id, SpriteComponent* pSpriteComponent);
 	virtual ~FSMSpriteSourceEvent() = default;
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 };
 
 class FSMDoOnceEvent final : public FSMEvent
@@ -50,8 +50,8 @@ class FSMDoOnceEvent final : public FSMEvent
 public:
 	explicit FSMDoOnceEvent(const std::shared_ptr<FSMEvent>& pEvent);
 	virtual ~FSMDoOnceEvent() = default;
-	virtual void Initialize(const SceneData& sceneData) override;
-	virtual void Execute(const SceneData& sceneData) override;
+	virtual void Initialize(const SceneData& sceneData, FSMData& data) override;
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override;
 };
 
 template <class T>
@@ -65,8 +65,10 @@ public:
 		, m_pData(&reference)
 	{}
 	virtual ~FSMSetDataEvent() = default;
-	virtual void Execute(const SceneData& sceneData) override
+	virtual void Execute(const SceneData& sceneData, FSMData& data) override
 	{
+		UNREFERENCED_PARAMETER(data);
+
 		UNREFERENCED_PARAMETER(sceneData);
 		if (m_pData) *m_pData = m_Value;
 	}

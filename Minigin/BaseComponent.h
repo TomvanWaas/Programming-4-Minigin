@@ -1,6 +1,8 @@
 #pragma once
+#include "Observer.h"
+class ObservedData;
 class GameObject;
-struct SceneData;
+class SceneData;
 class BaseComponent abstract
 {
 public:
@@ -16,6 +18,7 @@ public:
 	BaseComponent& operator=(const BaseComponent& other) = delete;
 	BaseComponent& operator=(BaseComponent&& other) noexcept = delete;
 
+	void Notify(ObservedEvent event, const ObservedData& data);
 	void Initialize(const SceneData& sceneData);
 	void UpdateFirst(const SceneData& sceneData);
 	void UpdateSecond(const SceneData& sceneData);
@@ -29,6 +32,7 @@ public:
 	bool IsEnabled() const;
 
 protected:
+	virtual void OnNotify(ObservedEvent event, const ObservedData& data);
 	virtual void InitializeOverride(const SceneData& sceneData);
 	virtual void UpdateFirstOverride(const SceneData& sceneData);
 	virtual void UpdateSecondOverride(const SceneData& sceneData);

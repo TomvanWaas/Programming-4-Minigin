@@ -62,16 +62,16 @@ void DigDug::DigDugMovementComponent::UpdateFirstOverride(const SceneData& scene
 			switch (m_CurrentDirection)
 			{
 			case Direction::Right:
-				move = Vector2(m_Speed*sceneData.pTime->GetDeltaTime(), 0);
+				move = Vector2(m_Speed*sceneData.GetTime()->GetDeltaTime(), 0);
 				break;
 			case Direction::Down:
-				move = Vector2(0, m_Speed*sceneData.pTime->GetDeltaTime());
+				move = Vector2(0, m_Speed*sceneData.GetTime()->GetDeltaTime());
 				break;
 			case Direction::Left:
-				move = Vector2(-m_Speed * sceneData.pTime->GetDeltaTime(), 0);
+				move = Vector2(-m_Speed * sceneData.GetTime()->GetDeltaTime(), 0);
 				break;
 			case Direction::Up:
-				move = Vector2(0, -m_Speed * sceneData.pTime->GetDeltaTime());
+				move = Vector2(0, -m_Speed * sceneData.GetTime()->GetDeltaTime());
 				break;
 			}
 

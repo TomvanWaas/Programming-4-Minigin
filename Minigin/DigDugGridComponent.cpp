@@ -6,10 +6,12 @@
 #include "MultiRenderComponent.h"
 #include "GameObject.h"
 #include "SceneData.h"
+#include "Scene.h"
+#include "ObservedData.h"
 
 DigDugGridComponent::DigDugGridComponent(unsigned w, unsigned h)
 #ifdef Debug
-	: Renderable(500)
+	: Renderable(DebugPriority)
 #endif
 {
 	m_GridMarks.SetWidth(w*2-1);
@@ -76,7 +78,7 @@ void DigDugGridComponent::InitializeOverride(const SceneData& sceneData)
 	m_pMultiRenderer = GetGameObject()->GetComponent<MultiRenderComponent>();
 
 #ifdef Debug
-	RegisterRenderable(sceneData.pRenderManager);
+	RegisterRenderable(sceneData.GetRender());
 #endif
 }
 
@@ -183,6 +185,37 @@ Vector2 DigDugGridComponent::ClosestGrid(const Vector2& p) const
 {
 	return GridToWorld(m_GridPositions.ClosestGrid(WorldToGrid(p)));
 }
+Vector2 DigDugGridComponent::ClosestWalkablePoint(const Vector2& p) const
+{
+	Vector2 pos = WorldToGrid(p);
+	auto i = m_GridPositions.FindIndex(m_GridPositions.ClosestPoint(pos));
+	int ix = int(int(float((i % m_GridPositions.GetWidth())) + 0.5f)* 0.5f) * 2;
+	int iy = int(int(float((i / m_GridPositions.GetWidth())) + 0.5f)* 0.5f) * 2;
+	return GridToWorld(m_GridPositions.Get(ix, iy));
+}
+Vector2 DigDugGridComponent::ClosestWalkableLine(const Vector2& p) const
+{
+	Vector2 pos = WorldToGrid(p);
+	auto i = m_GridPositions.FindIndex(m_GridPositions.ClosestPoint(pos));
+	int x = i % m_GridPositions.GetWidth();
+	int y = i / m_GridPositions.GetWidth();
+	int ix = int((float(x) + 0.5f)* 0.5f) * 2;
+	int iy = int((float(y) + 0.5f)* 0.5f) * 2;
+	if ((ix - x)*(ix - x) < (iy - y)*(iy - y))
+	{
+		return GridToWorld(m_GridPositions.Get(ix, y));
+	}
+	else
+	{
+		return GridToWorld(m_GridPositions.Get(x, iy));
+	}
+}
+Vector2 DigDugGridComponent::ClosestWalkableGrid(const Vector2& p) const
+{
+	return ClosestGrid(p);
+}
+
+
 
 
 bool DigDugGridComponent::IsMarked(const Vector2& p) const
@@ -217,6 +250,12 @@ void DigDugGridComponent::Mark(const Vector2& p)
 			m_GridMarks[i] = true;
 			UpdateSurroundings(i);
 			UpdateRender(i);
+
+			//Notify Scene
+			if (GetGameObject() && GetGameObject()->GetScene())
+			{
+				GetGameObject()->GetScene()->Notify(ObservedEvent::GridMarked, ObservedData{});
+			}
 		}
 
 	}
@@ -257,7 +296,12 @@ void DigDugGridComponent::SetHeight(unsigned h)
 
 Vector2 DigDugGridComponent::GetOffset() const
 {
-	return m_GridPositions.GetOffset()*2;
+	Vector2 offset = m_GridPositions.GetOffset() * 2;
+	if (GetGameObject())
+	{
+		offset *= GetGameObject()->GetTransform().GetWorldScale();
+	}
+	return offset;
 }
 unsigned DigDugGridComponent::GetWidth() const
 {

@@ -4,7 +4,13 @@
 #include "Scene.h"
 
 
-
+void BaseComponent::Notify(ObservedEvent event, const ObservedData& data)
+{
+	if (IsConstructed() && IsEnabled())
+	{
+		OnNotify(event, data);
+	}
+}
 void BaseComponent::Initialize(const SceneData& sceneData)
 {
 	if (IsConstructed() == false)
@@ -54,6 +60,11 @@ void BaseComponent::DestroyOverride(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
 }
+void BaseComponent::OnNotify(ObservedEvent event, const ObservedData& data)
+{
+	UNREFERENCED_PARAMETER(event);
+	UNREFERENCED_PARAMETER(data);
+}
 
 
 const GameObject* BaseComponent::GetGameObject() const
@@ -86,6 +97,9 @@ bool BaseComponent::IsEnabled() const
 {
 	return (m_State & char(State::enabled));
 }
+
+
+
 bool BaseComponent::IsConstructed() const
 {
 	return (m_State & char(State::constructed));

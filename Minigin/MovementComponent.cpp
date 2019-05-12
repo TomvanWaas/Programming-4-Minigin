@@ -45,8 +45,7 @@ void MovementComponent::UpdateSecondOverride(const SceneData& sceneData)
 			{
 				if (pCollider != nullptr)
 				{
-					pCollider->CalculateCollider();
-					if (sceneData.pCollisionManager->Collides(pCollider))
+					if (sceneData.GetCollision()->Collides(pCollider))
 					{
 						transform.SetLocalPosition(local);
 						m_MovementQueue = Vector2();

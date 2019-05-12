@@ -1,6 +1,6 @@
 #pragma once
-
-struct SceneData;
+class FSMData;
+class SceneData;
 class FSMCondition abstract
 {
 public:
@@ -12,8 +12,8 @@ public:
 	FSMCondition& operator=(const FSMCondition& other) = delete;
 	FSMCondition& operator=(FSMCondition&& other) noexcept = delete;
 
-	virtual void Initialize(const SceneData& sceneData) { UNREFERENCED_PARAMETER(sceneData); }
-	virtual bool Execute(const SceneData& sceneData) const = 0;
+	virtual void Initialize(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData); UNREFERENCED_PARAMETER(data); }
+	virtual bool Execute(const SceneData& sceneData, const FSMData& data) const = 0;
 };
 
 
@@ -30,21 +30,21 @@ public:
 	FSMMultiAndCondition& operator=(const FSMMultiAndCondition& other) = delete;
 	FSMMultiAndCondition& operator=(FSMMultiAndCondition&& other) noexcept = delete;
 
-	virtual bool Execute(const SceneData& sceneData) const override
+	virtual bool Execute(const SceneData& sceneData, const FSMData& data) const override
 	{
 		bool cond = true;
 		for (const auto& pCondition : m_pConditions)
 		{
 			if (pCondition == nullptr) continue;
-			cond = cond && pCondition->Execute(sceneData);
+			cond = cond && pCondition->Execute(sceneData, data);
 		}
 		return cond;
 	}
-	virtual void Initialize(const SceneData& sceneData) override
+	virtual void Initialize(const SceneData& sceneData, FSMData& data) override
 	{
 		for (auto& pCondition : m_pConditions)
 		{
-			if (pCondition != nullptr) pCondition->Initialize(sceneData);
+			if (pCondition != nullptr) pCondition->Initialize(sceneData, data);
 		}
 	}
 
@@ -65,13 +65,13 @@ public:
 	FSMMultiOrCondition& operator=(const FSMMultiOrCondition& other) = delete;
 	FSMMultiOrCondition& operator=(FSMMultiOrCondition&& other) noexcept = delete;
 
-	virtual bool Execute(const SceneData& sceneData) const override
+	virtual bool Execute(const SceneData& sceneData, const FSMData& data) const override
 	{
 		bool cond = false;
 		for (const auto& pCondition : m_pConditions)
 		{
 			if (pCondition == nullptr) continue;
-			cond = cond || pCondition->Execute(sceneData);
+			cond = cond || pCondition->Execute(sceneData, data);
 		}
 		return cond;
 	}
@@ -86,9 +86,9 @@ public:
 	explicit FSMNotCondition(const std::shared_ptr<FSMCondition>& pCondition)
 		: m_pCondition(pCondition)
 	{}
-	virtual bool Execute(const SceneData& sceneData) const override
+	virtual bool Execute(const SceneData& sceneData, const FSMData& data) const override
 	{
-		return (m_pCondition != nullptr && !m_pCondition->Execute(sceneData));
+		return (m_pCondition != nullptr && !m_pCondition->Execute(sceneData, data));
 	}
 private:
 	std::shared_ptr<FSMCondition> m_pCondition;

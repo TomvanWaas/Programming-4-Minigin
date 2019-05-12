@@ -36,7 +36,9 @@ public:
 	Vector2 ClosestPoint(const Vector2& p) const;
 	Vector2 ClosestLine(const Vector2& p) const;
 	Vector2 ClosestGrid(const Vector2& p) const;
-
+	Vector2 ClosestWalkablePoint(const Vector2& p) const;
+	Vector2 ClosestWalkableLine(const Vector2& p) const;
+	Vector2 ClosestWalkableGrid(const Vector2& p) const;
 
 
 	bool IsMarked(const Vector2& p) const;

@@ -12,16 +12,17 @@ FSMDeleteGameObjectEvent::FSMDeleteGameObjectEvent(GameObject* pObject)
 	: m_pObject(pObject)
 {
 }
-void FSMDeleteGameObjectEvent::Execute(const SceneData& sceneData)
+void FSMDeleteGameObjectEvent::Execute(const SceneData& sceneData, FSMData& data)
 {
 	UNREFERENCED_PARAMETER(sceneData);
-	//Delete by using parent
+	UNREFERENCED_PARAMETER(data);
+	//Deletor by using parent
 	if (m_pObject != nullptr && m_pObject->GetParent() != nullptr)
 	{
-		m_pObject->GetParent()->DeleteChild(m_pObject, sceneData);
+		m_pObject->GetParent()->DeleteChild(m_pObject);
 		m_pObject = nullptr;
 	}
-	//Delete by using Scene
+	//Deletor by using Scene
 	else if (m_pObject != nullptr && m_pObject->GetScene() != nullptr)
 	{
 		m_pObject->GetScene()->DeleteGameObject(m_pObject);
@@ -37,9 +38,10 @@ FSMComponentEnableEvent::FSMComponentEnableEvent(BaseComponent* pComponent, Oper
 	, m_Operation(operation)
 {
 }
-void FSMComponentEnableEvent::Execute(const SceneData& sceneData)
+void FSMComponentEnableEvent::Execute(const SceneData& sceneData, FSMData& data)
 {
 	UNREFERENCED_PARAMETER(sceneData);
+	UNREFERENCED_PARAMETER(data);
 	if (m_pComponent != nullptr)
 	{
 		switch (m_Operation)
@@ -65,9 +67,10 @@ FSMSpriteSourceEvent::FSMSpriteSourceEvent(unsigned id, SpriteComponent* pSprite
 	, m_ID(id)
 {
 }
-void FSMSpriteSourceEvent::Execute(const SceneData& sceneData)
+void FSMSpriteSourceEvent::Execute(const SceneData& sceneData, FSMData& data)
 {
 	UNREFERENCED_PARAMETER(sceneData);
+	UNREFERENCED_PARAMETER(data);
 	if (m_pSpriteComponent != nullptr)
 	{
 		m_pSpriteComponent->SetCurrentSource(m_ID);
@@ -77,16 +80,18 @@ void FSMSpriteSourceEvent::Execute(const SceneData& sceneData)
 
 
 //FSMDoOnceEvent
-void FSMDoOnceEvent::Initialize(const SceneData& sceneData)
+void FSMDoOnceEvent::Initialize(const SceneData& sceneData, FSMData& data)
 {
 	UNREFERENCED_PARAMETER(sceneData);
+	UNREFERENCED_PARAMETER(data);
 	m_Done = false;
 }
-void FSMDoOnceEvent::Execute(const SceneData& sceneData)
+void FSMDoOnceEvent::Execute(const SceneData& sceneData, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
 	if (!m_Done)
 	{
 		m_Done = true;
-		if (m_pEvent != nullptr) m_pEvent->Execute(sceneData);
+		if (m_pEvent != nullptr) m_pEvent->Execute(sceneData, data);
 	}
 }

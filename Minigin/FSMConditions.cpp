@@ -10,11 +10,13 @@ FSMTimeCondition::FSMTimeCondition(float dtime)
 	, m_DeltaTime(dtime)
 {
 }
-void FSMTimeCondition::Initialize(const SceneData& sceneData)
+void FSMTimeCondition::Initialize(const SceneData& sceneData, FSMData& data)
 {
-	m_StartTime = sceneData.pTime->GetTotalTime();
+	UNREFERENCED_PARAMETER(data);
+	m_StartTime = sceneData.GetTime()->GetTotalTime();
 }
-bool FSMTimeCondition::Execute(const SceneData& sceneData) const
+bool FSMTimeCondition::Execute(const SceneData& sceneData, const FSMData& data) const
 {
-	return (m_StartTime + m_DeltaTime <= sceneData.pTime->GetTotalTime());
+	UNREFERENCED_PARAMETER(data);
+	return (m_StartTime + m_DeltaTime <= sceneData.GetTime()->GetTotalTime());
 }

@@ -4,8 +4,8 @@
 #include "Transform.h"
 class Scene;
 class BaseComponent;
-struct SceneData;
-class GameObject final : public Subject
+class SceneData;
+class GameObject final
 {
 public:
 	explicit GameObject();
@@ -14,6 +14,8 @@ public:
 	GameObject(GameObject&& other) = delete;
 	GameObject& operator=(const GameObject& other) = delete;
 	GameObject& operator=(GameObject&& other) = delete;
+
+	static void DeleteObject(GameObject*& pObject);
 
 	void SetEnabled(bool e);
 	bool IsEnabled() const { return IsState(State::Enabled); }
@@ -26,6 +28,15 @@ public:
 	const std::vector<BaseComponent*>& GetAllComponents() const;
 	const std::vector<GameObject*>& GetAllChildren() const;
 
+	//Observing
+	void Notify(ObservedEvent event, const ObservedData& data);
+	void Notify(const std::string& component, ObservedEvent event, const ObservedData& data);
+	void NotifyChildren(ObservedEvent event, const ObservedData& data);
+	void NotifyChildren(const std::string& component, ObservedEvent event, const ObservedData& data);
+	void NotifyParents(ObservedEvent event, const ObservedData& data);
+	void NotifyParents(const std::string& component, ObservedEvent event, const ObservedData& data);
+
+
 	//Hierarchy
 	const GameObject* GetParent() const;
 	GameObject* GetParent();
@@ -35,19 +46,19 @@ public:
 	Scene* GetScene();
 	void SetScene(Scene* pScene);
 
-	GameObject* CreateChild(const SceneData& sceneData);
-	bool DeleteChild(GameObject*& pChild, const SceneData& sceneData);
+	GameObject* CreateChild();
+	bool DeleteChild(GameObject*& pChild);
 	bool RemoveChild(GameObject* pChild);
-	bool AddChild(GameObject* pChild, const SceneData& sceneData);
-	void SetParent(GameObject* pParent, const SceneData& sceneData);
+	bool AddChild(GameObject* pChild);
+	void SetParent(GameObject* pParent);
 
 	Transform& GetTransform();
 	const Transform& GetTransform() const;
 
 	//Components
-	bool AddComponent(BaseComponent* pComponent, const SceneData& sceneData);
+	bool AddComponent(BaseComponent* pComponent);
 	bool RemoveComponent(BaseComponent* pComponent);
-	bool DeleteComponent(BaseComponent*& pComponent, const SceneData& sceneData);
+	bool DeleteComponent(BaseComponent*& pComponent);
 
 
 	//GetComponent
@@ -58,7 +69,6 @@ public:
 	T* GetComponent() const
 	{
 		const type_info& ti = typeid(T);
-
 		for (auto* pComp : m_pComponents)
 		{
 			if (pComp != nullptr && typeid(*pComp) == ti) return static_cast<T*>(pComp);

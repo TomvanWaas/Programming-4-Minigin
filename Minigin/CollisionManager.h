@@ -1,14 +1,15 @@
 #pragma once
-struct SceneData;
+#include "Manager.h"
+class SceneData;
 class GameObject;
 struct Rect;
 class AABBCollisionComponent;
 class MovementComponent;
 #ifdef Debug
 #include "Renderable.h"
-class CollisionManager final : public Renderable
+class CollisionManager final : public Renderable, public Manager
 #else
-class CollisionManager final
+class CollisionManager final : public Manager
 #endif
 {
 	struct CollPair
@@ -39,8 +40,8 @@ public:
 	CollisionManager& operator=(const CollisionManager& other) = delete;
 	CollisionManager& operator=(CollisionManager&& other) noexcept = delete;
 
-	void Initialize(const SceneData& sceneData);
-	void UpdateBuffers();
+	virtual void Initialize(const SceneData& sceneData) override;
+	virtual void Update(const SceneData& sceneData) override;
 
 #ifdef Debug
 	virtual void Render(const RenderManager& renderer) const override;

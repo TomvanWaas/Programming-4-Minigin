@@ -1,6 +1,6 @@
 #pragma once
 #include "BaseComponent.h"
-#include <unordered_map>
+#include <map>
 
 
 class DataComponent final : public BaseComponent
@@ -127,6 +127,6 @@ public:
 
 
 private:
-	std::unordered_map<std::string, BaseData*> m_pData;
+	std::map<std::string, BaseData*> m_pData;
 };
 

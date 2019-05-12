@@ -18,8 +18,10 @@ FSMGridPositionWalkablePointCondition::FSMGridPositionWalkablePointCondition(Dig
 	, m_Target(target)
 {
 }
-bool FSMGridPositionWalkablePointCondition::Execute(const SceneData& sceneData) const
+bool FSMGridPositionWalkablePointCondition::Execute(const SceneData& sceneData, const FSMData& data) const
 {
+	UNREFERENCED_PARAMETER(data);
+
 	UNREFERENCED_PARAMETER(sceneData);
 	return (m_pGrid != nullptr &&
 		m_pTransform != nullptr &&
@@ -27,8 +29,10 @@ bool FSMGridPositionWalkablePointCondition::Execute(const SceneData& sceneData) 
 }
 
 
-bool FSMGridPositionPointCondition::Execute(const SceneData& sceneData) const
+bool FSMGridPositionPointCondition::Execute(const SceneData& sceneData, const FSMData& data) const
 {
+	UNREFERENCED_PARAMETER(data);
+
 	UNREFERENCED_PARAMETER(sceneData);
 	return (m_pGrid != nullptr &&
 		m_pTransform != nullptr &&
@@ -43,8 +47,10 @@ FSMGridMarkCondition::FSMGridMarkCondition(DigDugGridComponent& grid, GameObject
 	, m_Target(target)
 {
 }
-bool FSMGridMarkCondition::Execute(const SceneData& sceneData) const
+bool FSMGridMarkCondition::Execute(const SceneData& sceneData, const FSMData& data) const
 {
+	UNREFERENCED_PARAMETER(data);
+
 	UNREFERENCED_PARAMETER(sceneData);
 	if  (m_pGrid != nullptr && m_pTransform != nullptr)
 	{
@@ -68,11 +74,13 @@ FSMMoveEvent::FSMMoveEvent(const Vector2& velocity, GameObject& go)
 	, m_Velocity(velocity)
 {
 }
-void FSMMoveEvent::Execute(const SceneData& sceneData)
+void FSMMoveEvent::Execute(const SceneData& sceneData, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
+
 	if (m_pMovementComp != nullptr)
 	{
-		m_pMovementComp->QueueMovement(m_Velocity * sceneData.pTime->GetDeltaTime());
+		m_pMovementComp->QueueMovement(m_Velocity * sceneData.GetTime()->GetDeltaTime());
 	}
 }
 void FSMMoveEvent::SetVelocity(const Vector2& velocity)
@@ -96,8 +104,10 @@ FSMFunctionEvent::FSMFunctionEvent(GameObject& go, void func(GameObject*, const 
 	, m_Function(func)
 {
 }
-void FSMFunctionEvent::Execute(const SceneData& sceneData)
+void FSMFunctionEvent::Execute(const SceneData& sceneData, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
+
 	if (m_pGameObject != nullptr && m_Function != nullptr)
 	{
 		m_Function(m_pGameObject, sceneData);
@@ -112,8 +122,10 @@ FSMGridMarkerEvent::FSMGridMarkerEvent(GameObject& go, DigDugGridComponent& grid
 	, m_Offset(offset)
 {
 }
-void FSMGridMarkerEvent::Execute(const SceneData& sceneData)
+void FSMGridMarkerEvent::Execute(const SceneData& sceneData, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
+
 	UNREFERENCED_PARAMETER(sceneData);
 	if (m_pGrid != nullptr && m_pTransform != nullptr)
 	{
@@ -121,8 +133,10 @@ void FSMGridMarkerEvent::Execute(const SceneData& sceneData)
 	}
 }
 
-void FSMEnableComponentEvent::Execute(const SceneData& sceneData)
+void FSMEnableComponentEvent::Execute(const SceneData& sceneData, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
+
 	UNREFERENCED_PARAMETER(sceneData);
 	if (m_pComponent != nullptr)
 	{
@@ -132,8 +146,10 @@ void FSMEnableComponentEvent::Execute(const SceneData& sceneData)
 
 
 
-void FSMSetLocalPosition::Execute(const SceneData& sceneData)
+void FSMSetLocalPosition::Execute(const SceneData& sceneData, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
+
 	UNREFERENCED_PARAMETER(sceneData);
 	if (m_pTransform != nullptr)
 	{
@@ -141,16 +157,20 @@ void FSMSetLocalPosition::Execute(const SceneData& sceneData)
 	}
 }
 
-void FSMForceMoveEvent::Execute(const SceneData& sceneData)
+void FSMForceMoveEvent::Execute(const SceneData& sceneData, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
+
 	if (m_pTransform != nullptr)
 	{
-		m_pTransform->SetLocalPosition(m_pTransform->GetLocalPosition() + m_Velocity * sceneData.pTime->GetDeltaTime());
+		m_pTransform->SetLocalPosition(m_pTransform->GetLocalPosition() + m_Velocity * sceneData.GetTime()->GetDeltaTime());
 	}
 }
 
-void FSMTriggerEvent::Execute(const SceneData& sceneData)
+void FSMTriggerEvent::Execute(const SceneData& sceneData, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
+
 	UNREFERENCED_PARAMETER(sceneData);
 	if (m_pCollider)m_pCollider->SetTrigger(m_Target);
 }
@@ -172,8 +192,9 @@ FSMEventPumpSprite::FSMEventPumpSprite(Direction& dir, SpriteComponent* pSprite)
 {
 }
 
-void FSMEventPumpSprite::Execute(const SceneData& sceneData)
+void FSMEventPumpSprite::Execute(const SceneData& sceneData, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
 	if (m_pComponent != nullptr && m_pDirection != nullptr)
 	{
 		UNREFERENCED_PARAMETER(sceneData);
@@ -188,23 +209,24 @@ FSMEventGridMove::FSMEventGridMove(Direction& dir, MovementComponent* pMove, flo
 	, m_Speed(speed)
 {
 }
-void FSMEventGridMove::Execute(const SceneData& sceneData)
+void FSMEventGridMove::Execute(const SceneData& sceneData, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
 	if (m_pComponent != nullptr && m_pDirection != nullptr)
 	{
 		switch (*m_pDirection)
 		{
 		case Direction::Down:
-			m_pComponent->QueueMovement(Vector2(0, m_Speed)*sceneData.pTime->GetDeltaTime());
+			m_pComponent->QueueMovement(Vector2(0, m_Speed)*sceneData.GetTime()->GetDeltaTime());
 			break;
 		case Direction::Right:
-			m_pComponent->QueueMovement(Vector2(m_Speed, 0)*sceneData.pTime->GetDeltaTime());
+			m_pComponent->QueueMovement(Vector2(m_Speed, 0)*sceneData.GetTime()->GetDeltaTime());
 			break;
 		case Direction::Up:
-			m_pComponent->QueueMovement(Vector2(0, -m_Speed)*sceneData.pTime->GetDeltaTime());
+			m_pComponent->QueueMovement(Vector2(0, -m_Speed)*sceneData.GetTime()->GetDeltaTime());
 			break;
 		case Direction::Left:
-			m_pComponent->QueueMovement(Vector2(-m_Speed, 0)*sceneData.pTime->GetDeltaTime());
+			m_pComponent->QueueMovement(Vector2(-m_Speed, 0)*sceneData.GetTime()->GetDeltaTime());
 			break;
 		}
 	}
@@ -219,8 +241,9 @@ FSMEventPlayerSprite::FSMEventPlayerSprite(Direction& dir, SpriteComponent* pSpr
 	, m_pState(&state)
 {
 }
-void FSMEventPlayerSprite::Execute(const SceneData& sceneData)
+void FSMEventPlayerSprite::Execute(const SceneData& sceneData, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
 	if (m_pComponent != nullptr && m_pDirection != nullptr && m_pState != nullptr)
 	{
 		UNREFERENCED_PARAMETER(sceneData);

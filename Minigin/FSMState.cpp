@@ -4,83 +4,95 @@
 #include "FSMCondition.h"
 
 
-void FSMState::Initialize(const SceneData& sceneData)
+void FSMStateDefault::Initialize(const SceneData& sceneData, FSMData& data)
 {
-	if (m_pOnEnterEvent != nullptr) m_pOnEnterEvent->Initialize(sceneData);
-	if (m_pOnExitEvent != nullptr) m_pOnExitEvent->Initialize(sceneData);
-	if (m_pUpdateFirstEvent != nullptr)m_pUpdateFirstEvent->Initialize(sceneData);
-	if (m_pUpdateSecondEvent != nullptr) m_pUpdateSecondEvent->Initialize(sceneData);
+	//Initialize when this state is set
+	if (m_pOnEnterEvent != nullptr) m_pOnEnterEvent->Initialize(sceneData, data);
+	if (m_pOnExitEvent != nullptr) m_pOnExitEvent->Initialize(sceneData, data);
+	if (m_pUpdateFirstEvent != nullptr)m_pUpdateFirstEvent->Initialize(sceneData, data);
+	if (m_pUpdateSecondEvent != nullptr) m_pUpdateSecondEvent->Initialize(sceneData, data);
+	if (m_pNotifiedEvent != nullptr) m_pNotifiedEvent->Initialize(sceneData, data);
 	for (auto& trans: m_pTransitions)
 	{
-		if (trans != nullptr && trans->pCondition != nullptr) trans->pCondition->Initialize(sceneData);
+		if (trans != nullptr && trans->pCondition != nullptr) trans->pCondition->Initialize(sceneData, data);
 	}
 }
 
-FSMState* FSMState::UpdateFirst(const SceneData& sceneData)
+FSMState* FSMStateDefault::UpdateFirst(const SceneData& sceneData, FSMData& data)
 {
 	//Check Transitions
 	for (const auto& pTransition : m_pTransitions)
 	{
-		if (pTransition->pCondition != nullptr && pTransition->pCondition->Execute(sceneData))
+		if (pTransition->pCondition != nullptr && pTransition->pCondition->Execute(sceneData, data))
 		{
 			return pTransition->pState;
 		}
 	}
 
 	//Else UpdateFirstOverride Events
-	if (m_pUpdateFirstEvent != nullptr) m_pUpdateFirstEvent->Execute(sceneData);
+	if (m_pUpdateFirstEvent != nullptr) m_pUpdateFirstEvent->Execute(sceneData, data);
 	return this;
 }
-FSMState* FSMState::UpdateSecond(const SceneData& sceneData)
+FSMState* FSMStateDefault::UpdateSecond(const SceneData& sceneData, FSMData& data)
 {
 	//Check Transitions
 	for (const auto& pTransition : m_pTransitions)
 	{
-		if (pTransition->pCondition != nullptr && pTransition->pCondition->Execute(sceneData))
+		if (pTransition->pCondition != nullptr && pTransition->pCondition->Execute(sceneData, data))
 		{
 			return pTransition->pState;
 		}
 	}
 
 	//Else UpdateFirstOverride Events
-	if (m_pUpdateSecondEvent != nullptr) m_pUpdateSecondEvent->Execute(sceneData);
+	if (m_pUpdateSecondEvent != nullptr) m_pUpdateSecondEvent->Execute(sceneData, data);
+	return this;
+}
+
+FSMState* FSMStateDefault::OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data)
+{
+	if (m_pNotifiedEvent) m_pNotifiedEvent->Execute(oevent, odata, data);
 	return this;
 }
 
 
-void FSMState::AddTransition(const std::shared_ptr<FSMTransition>& pTransition)
+void FSMStateDefault::AddTransition(const std::shared_ptr<FSMTransition>& pTransition)
 {
 	if (std::find(m_pTransitions.begin(), m_pTransitions.end(), pTransition) == m_pTransitions.end())
 	{
 		m_pTransitions.push_back(pTransition);
 	}
 }
-void FSMState::SetUpdateFirstEvent(const std::shared_ptr<FSMEvent>& pEvent)
+void FSMStateDefault::SetUpdateFirstEvent(const std::shared_ptr<FSMEvent>& pEvent)
 {
 	m_pUpdateFirstEvent = pEvent;
 }
-void FSMState::SetUpdateSecondEvent(const std::shared_ptr<FSMEvent>& pEvent)
+void FSMStateDefault::SetUpdateSecondEvent(const std::shared_ptr<FSMEvent>& pEvent)
 {
 	m_pUpdateSecondEvent = pEvent;
 }
-void FSMState::SetEnterEvent(const std::shared_ptr<FSMEvent>& pEvent)
+void FSMStateDefault::SetEnterEvent(const std::shared_ptr<FSMEvent>& pEvent)
 {
 	m_pOnEnterEvent = pEvent;
 }
-void FSMState::SetExitEvent(const std::shared_ptr<FSMEvent>& pEvent)
+void FSMStateDefault::SetExitEvent(const std::shared_ptr<FSMEvent>& pEvent)
 {
 	m_pOnExitEvent = pEvent;
 }
 
-
-
-void FSMState::Enter(const SceneData& sceneData)
+void FSMStateDefault::SetNotifiedEvent(const std::shared_ptr<FSMNotifiedEvent>& pEvent)
 {
-	if (m_pOnEnterEvent != nullptr) m_pOnEnterEvent->Execute(sceneData);
+	m_pNotifiedEvent = pEvent;
 }
-void FSMState::Exit(const SceneData& sceneData)
+
+
+void FSMStateDefault::Enter(const SceneData& sceneData, FSMData& data)
 {
-	if (m_pOnExitEvent != nullptr) m_pOnExitEvent->Execute(sceneData);
+	if (m_pOnEnterEvent != nullptr) m_pOnEnterEvent->Execute(sceneData, data);
+}
+void FSMStateDefault::Exit(const SceneData& sceneData, FSMData& data)
+{
+	if (m_pOnExitEvent != nullptr) m_pOnExitEvent->Execute(sceneData, data);
 }
 
 

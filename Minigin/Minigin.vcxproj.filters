@@ -53,6 +53,9 @@
     <Filter Include="FrameworkFiles\Operations">
       <UniqueIdentifier>{627f7740-1a5f-409f-b689-9538e5b09ebf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameFiles\DigDugFSMStates">
+      <UniqueIdentifier>{dc1acba9-0470-4c3f-82a6-07d75269b08b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseComponent.h">
@@ -83,9 +86,6 @@
       <Filter>FrameworkFiles\Components</Filter>
     </ClInclude>
     <ClInclude Include="Observer.h">
-      <Filter>FrameworkFiles\Observing</Filter>
-    </ClInclude>
-    <ClInclude Include="ObserverEvents.h">
       <Filter>FrameworkFiles\Observing</Filter>
     </ClInclude>
     <ClInclude Include="Singleton.h">
@@ -187,9 +187,6 @@
     <ClInclude Include="GameFiles.h">
       <Filter>GameFiles\Functions</Filter>
     </ClInclude>
-    <ClInclude Include="GameColliderCommands.h">
-      <Filter>GameFiles\Parts</Filter>
-    </ClInclude>
     <ClInclude Include="SpriteCollisionComponent.h">
       <Filter>FrameworkFiles\Components</Filter>
     </ClInclude>
@@ -208,9 +205,6 @@
     <ClInclude Include="DigDugMovementComponent.h">
       <Filter>GameFiles\Components</Filter>
     </ClInclude>
-    <ClInclude Include="ColliderCommand.h">
-      <Filter>FrameworkFiles\Operations</Filter>
-    </ClInclude>
     <ClInclude Include="FSMConditions.h">
       <Filter>FrameworkFiles\Operations</Filter>
     </ClInclude>
@@ -223,14 +217,59 @@
     <ClInclude Include="FSMEvents.h">
       <Filter>FrameworkFiles\Operations</Filter>
     </ClInclude>
-    <ClInclude Include="FSMState.h">
-      <Filter>FrameworkFiles\Operations</Filter>
-    </ClInclude>
     <ClInclude Include="FlipMode.h">
       <Filter>FrameworkFiles\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="DigDugPlayerHealth.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
     <ClInclude Include="Manager.h">
+      <Filter>FrameworkFiles\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMState.h">
+      <Filter>FrameworkFiles\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugEnemyHealth.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerManager.h">
+      <Filter>GameFiles\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugEnemy.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugPlayer.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyManager.h">
+      <Filter>GameFiles\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="ObservedData.h">
+      <Filter>FrameworkFiles\Observing</Filter>
+    </ClInclude>
+    <ClInclude Include="Deletor.h">
+      <Filter>FrameworkFiles\Scenegraph</Filter>
+    </ClInclude>
+    <ClInclude Include="ObserverEvents.h">
       <Filter>GameFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMData.h">
+      <Filter>FrameworkFiles\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="GameFSMStates.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="GameButtons.h" />
+    <ClInclude Include="ScreenRenderComponent.h">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ObstacleParts.h">
+      <Filter>GameFiles\DigDugFSMStates</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyParts.h">
+      <Filter>GameFiles\DigDugFSMStates</Filter>
+    </ClInclude>
+    <ClInclude Include="PumpParts.h">
+      <Filter>GameFiles\DigDugFSMStates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -330,9 +369,6 @@
     <ClCompile Include="GameFiles.cpp">
       <Filter>GameFiles\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="GameColliderCommands.cpp">
-      <Filter>GameFiles\Parts</Filter>
-    </ClCompile>
     <ClCompile Include="SpriteCollisionComponent.cpp">
       <Filter>FrameworkFiles\Components</Filter>
     </ClCompile>
@@ -350,6 +386,33 @@
     </ClCompile>
     <ClCompile Include="FSMState.cpp">
       <Filter>FrameworkFiles\Operations</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerManager.cpp">
+      <Filter>GameFiles\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugEnemy.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugPlayer.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyManager.cpp">
+      <Filter>GameFiles\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="GameFSMStates.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="GameButtons.cpp" />
+    <ClCompile Include="ScreenRenderComponent.cpp">
+      <Filter>FrameworkFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ObstacleParts.cpp">
+      <Filter>GameFiles\DigDugFSMStates</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyParts.cpp">
+      <Filter>GameFiles\DigDugFSMStates</Filter>
+    </ClCompile>
+    <ClCompile Include="PumpParts.cpp">
+      <Filter>GameFiles\DigDugFSMStates</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

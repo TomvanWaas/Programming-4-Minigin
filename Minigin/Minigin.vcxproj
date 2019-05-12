@@ -194,19 +194,30 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="AABBCollisionComponent.h" />
-    <ClInclude Include="ColliderCommand.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="DataComponent.h" />
+    <ClInclude Include="Deletor.h" />
     <ClInclude Include="DigDugApplication.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="DigDugEnemy.h" />
+    <ClInclude Include="DigDugEnemyHealth.h" />
     <ClInclude Include="DigDugGridComponent.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="DigDugMovementComponent.h" />
+    <ClInclude Include="DigDugPlayer.h" />
+    <ClInclude Include="DigDugPlayerHealth.h" />
+    <ClInclude Include="EnemyManager.h" />
+    <ClInclude Include="EnemyParts.h" />
     <ClInclude Include="Enumerations.h" />
     <ClInclude Include="FlipMode.h" />
     <ClInclude Include="FSMConditions.h" />
+    <ClInclude Include="FSMData.h" />
     <ClInclude Include="FSMEvents.h" />
-    <ClInclude Include="GameColliderCommands.h" />
+    <ClInclude Include="GameButtons.h" />
+    <ClInclude Include="GameFSMStates.h" />
+    <ClInclude Include="ObservedData.h" />
+    <ClInclude Include="ObstacleParts.h" />
     <ClInclude Include="GameFiles.h" />
     <ClInclude Include="GameFSMClasses.h" />
     <ClInclude Include="GameInputCommands.h" />
@@ -228,6 +239,9 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Minigin.h" />
     <ClInclude Include="MiniginPCH.h" />
+    <ClInclude Include="PlayerManager.h" />
+    <ClInclude Include="PumpParts.h" />
+    <ClInclude Include="ScreenRenderComponent.h" />
     <ClInclude Include="SpriteCollisionComponent.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="Observer.h" />
@@ -256,11 +270,18 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClCompile Include="AABBCollisionComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="DigDugApplication.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="DigDugEnemy.cpp" />
     <ClCompile Include="DigDugGridComponent.cpp" />
     <ClCompile Include="DigDugMovementComponent.cpp" />
+    <ClCompile Include="DigDugPlayer.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
+    <ClCompile Include="EnemyParts.cpp" />
     <ClCompile Include="FSMConditions.cpp" />
     <ClCompile Include="FSMEvents.cpp" />
-    <ClCompile Include="GameColliderCommands.cpp" />
+    <ClCompile Include="GameButtons.cpp" />
+    <ClCompile Include="GameFSMStates.cpp" />
+    <ClCompile Include="ObstacleParts.cpp" />
     <ClCompile Include="GameFiles.cpp" />
     <ClCompile Include="GameFSMClasses.cpp" />
     <ClCompile Include="GameInputCommands.cpp" />
@@ -281,7 +302,10 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MiniginPCH.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="PlayerManager.cpp" />
+    <ClCompile Include="PumpParts.cpp" />
     <ClCompile Include="SceneData.cpp" />
+    <ClCompile Include="ScreenRenderComponent.cpp" />
     <ClCompile Include="SpriteCollisionComponent.cpp" />
     <ClCompile Include="Subject.cpp" />
     <ClCompile Include="Renderable.cpp" />

@@ -1,5 +1,8 @@
 #pragma once
-struct SceneData;
+
+#define DebugPriority 2147483647
+
+class SceneData;
 class Renderer;
 class RenderManager;
 class Renderable abstract

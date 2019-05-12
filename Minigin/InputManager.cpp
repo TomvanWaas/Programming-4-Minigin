@@ -11,9 +11,10 @@ XINPUT_STATE InputManager::m_PreviousControllerStates[XUSER_MAX_COUNT];
 XINPUT_STATE InputManager::m_CurrentControllerStates[XUSER_MAX_COUNT];
 bool InputManager::m_IsInitialized = false;
 bool InputManager::m_IsControllerConnected[XUSER_MAX_COUNT];
+bool InputManager::m_Continue = true;
 
 //Static
-void InputManager::Initialize()
+void InputManager::StaticInitialize()
 {
 	if (m_IsInitialized == false)
 	{
@@ -35,7 +36,7 @@ void InputManager::Initialize()
 		m_IsInitialized = true;
 	}
 }
-bool InputManager::ProcessInput()
+bool InputManager::StaticProcessInput()
 {
 	//UpdateFirstOverride Keyboard States
 	BYTE* pBuffer = m_pPreviousKeyboardState;
@@ -72,9 +73,9 @@ bool InputManager::ProcessInput()
 		}*/
 	}
 
-	return true;
+	return m_Continue;
 }
-void InputManager::Destroy()
+void InputManager::StaticDestroy()
 {
 	if (m_IsInitialized)
 	{
@@ -86,9 +87,15 @@ void InputManager::Destroy()
 	}
 }
 
-//
-void InputManager::UpdateActions()
+void InputManager::Quit()
 {
+	m_Continue = false;
+}
+
+//
+void InputManager::Update(const SceneData& sceneData)
+{
+	UNREFERENCED_PARAMETER(sceneData);
 	//Actions
 	for (auto& action : m_InputActions)
 	{

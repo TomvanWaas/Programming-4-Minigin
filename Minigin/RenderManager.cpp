@@ -34,8 +34,9 @@ void RenderManager::InitializeRenderer(SDL_Window* pWindow)
 }
 
 
-void RenderManager::Update()
+void RenderManager::Update(const SceneData& sceneData)
 {
+	UNREFERENCED_PARAMETER(sceneData);
 	//Remove all nullptr
 	auto i = std::remove_if(m_pRenderables.begin(), m_pRenderables.end(),
 		[](const Renderable* r)
@@ -44,10 +45,11 @@ void RenderManager::Update()
 	});
 	m_pRenderables.erase(i, m_pRenderables.end());
 }
-void RenderManager::Render() const
+void RenderManager::Render(const Vector2& scale) const
 {
 	if (m_pRenderer == nullptr) return;
 	SDL_RenderClear(m_pRenderer);
+	SDL_RenderSetScale(m_pRenderer, scale.x, scale.y);
 
 	for (const auto* pRenderable: m_pRenderables)
 	{
@@ -56,6 +58,7 @@ void RenderManager::Render() const
 	}
 
 	SDL_RenderPresent(m_pRenderer);
+	SDL_RenderSetScale(m_pRenderer, 1, 1);
 }
 
 

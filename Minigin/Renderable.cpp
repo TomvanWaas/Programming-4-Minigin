@@ -16,7 +16,7 @@ int Renderable::GetRenderPriority() const
 void Renderable::SetRenderPriority(int p, const SceneData& sceneData)
 {
 	m_Priority = p;
-	sceneData.pRenderManager->UpdatePriorities();
+	sceneData.GetRender()->UpdatePriorities();
 }
 
 void Renderable::RegisterRenderable(RenderManager* rendermanager)

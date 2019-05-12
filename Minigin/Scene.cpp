@@ -5,54 +5,43 @@
 #include "InputManager.h"
 #include "CollisionManager.h"
 #include "RenderManager.h"
+#include "Deletor.h"
 
 Scene::Scene(const std::string& name)
 	: m_Name(name)
 	, m_pGameObjects()
 	, m_SceneData()
 	, m_IsInitialized(false)
+	, m_SceneScale(1, 1)
 {
 }
-Scene::~Scene()
+//Scene::~Scene()
+//{
+//	for (std::shared_ptr<GameObject>* pObject : m_pGameObjects)
+//	{
+//		SAFE_DELETE(pObject);
+//	}
+//	m_pGameObjects.clear();
+//}
+
+
+
+const std::shared_ptr<GameObject>& Scene::CreateGameObject()
 {
-	for (GameObject* pObject : m_pGameObjects)
-	{
-		SAFE_DELETE(pObject);
-	}
-	m_pGameObjects.clear();
-	for (GameObject* pObject : m_pMarkedForDelete)
-	{
-		SAFE_DELETE(pObject);
-	}
-	m_pMarkedForDelete.clear();
-
-	SAFE_DELETE(m_SceneData.pInput);
-	SAFE_DELETE(m_SceneData.pCollisionManager);
-	SAFE_DELETE(m_SceneData.pRenderManager);
-}
-
-void Scene::InitSceneData(const SceneData& sceneData)
-{
-	m_SceneData.Initialize(sceneData);
-}
-
-
-
-GameObject* Scene::CreateGameObject()
-{
-	GameObject* pObject = new GameObject();
+	auto pObject = std::make_shared<GameObject>();
 	AddGameObject(pObject);
 	if (m_IsInitialized) pObject->Initialize(m_SceneData);
 	return pObject;
 }
-bool Scene::DeleteGameObject(GameObject* pObject)
+bool Scene::DeleteGameObject(std::shared_ptr<GameObject>& pObject)
 {
 	if (pObject == nullptr) return false;
-	pObject->SetParent(nullptr, m_SceneData);
-	RemoveGameObject(pObject);
-	m_pMarkedForDelete.push_back(pObject);
+	pObject->SetParent(nullptr);
+	RemoveGameObject(pObject);	//If possible	
 	pObject->Destroy(m_SceneData);
+	Deletor::GetInstance().StoreDelete(pObject);
 	pObject->SetEnabled(false);
+	pObject = nullptr;
 	return true;
 }
 bool Scene::RemoveGameObject(GameObject* pObject)
@@ -84,6 +73,7 @@ void Scene::Initialize()
 {
 	if (m_IsInitialized == false)
 	{
+		m_SceneData.Initialize();
 		//InitializeOverride all
 		for (GameObject* pObject : m_pGameObjects)
 		{
@@ -118,16 +108,6 @@ void Scene::Update(float elapsed)
 		}
 	}
 
-	//If Deleted
-	if (m_pMarkedForDelete.size() > 0)
-	{
-		for (GameObject* pObject : m_pMarkedForDelete)
-		{
-			SAFE_DELETE(pObject);
-		}
-		m_pMarkedForDelete.clear();
-	}
-
 	//Remove all nullptr from vector (if EG deleted)
 	m_pGameObjects.erase(std::remove_if(m_pGameObjects.begin(), m_pGameObjects.end(), [](const GameObject* pObject)
 	{
@@ -136,7 +116,7 @@ void Scene::Update(float elapsed)
 }
 void Scene::Render() const
 {
-	m_SceneData.pRenderManager->Render();
+	m_SceneData.GetRender()->Render(m_SceneScale);
 }
 
 
@@ -145,9 +125,22 @@ const SceneData& Scene::GetSceneData() const
 {
 	return m_SceneData;
 }
+SceneData& Scene::GetSceneData()
+{
+	return m_SceneData;
+}
+
 const std::string& Scene::GetName() const
 {
 	return m_Name;
+}
+
+void Scene::Notify(ObservedEvent event, const ObservedData& data)
+{
+	for (GameObject* pObject : m_pGameObjects)
+	{
+		if (pObject) pObject->Notify(event, data);
+	}
 }
 
 
