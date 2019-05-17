@@ -99,7 +99,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)3rdParty\SDL2_ttf\lib\x86;$(SolutionDir)3rdParty\SDL2_image\lib\x86;$(SolutionDir)3rdParty\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -123,7 +123,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x86\*.dll" "$(OutputPath)" /R /Y</Com
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)3rdParty\SDL2_ttf\lib\x64;$(SolutionDir)3rdParty\SDL2_image\lib\x64;$(SolutionDir)3rdParty\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -149,7 +149,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -177,7 +177,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x86\*.dll" "$(OutputPath)" /R /Y</Com
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -201,25 +201,31 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="DigDugApplication.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="DigDugEnemy.h" />
+    <ClInclude Include="DigDugEnemyComponent.h" />
     <ClInclude Include="DigDugEnemyHealth.h" />
     <ClInclude Include="DigDugGridComponent.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="DigDugMovementComponent.h" />
     <ClInclude Include="DigDugPlayer.h" />
+    <ClInclude Include="DigDugPlayerComponent.h" />
     <ClInclude Include="DigDugPlayerHealth.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="EnemyParts.h" />
     <ClInclude Include="Enumerations.h" />
+    <ClInclude Include="Exceptions.h" />
     <ClInclude Include="FlipMode.h" />
     <ClInclude Include="FSMConditions.h" />
     <ClInclude Include="FSMData.h" />
     <ClInclude Include="FSMEvents.h" />
     <ClInclude Include="GameButtons.h" />
+    <ClInclude Include="GameEvents.h" />
     <ClInclude Include="GameFSMStates.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="LevelData.h" />
+    <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="ObservedData.h" />
     <ClInclude Include="ObstacleParts.h" />
     <ClInclude Include="GameFiles.h" />
-    <ClInclude Include="GameFSMClasses.h" />
     <ClInclude Include="GameInputCommands.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="GridComponent.h" />
@@ -240,12 +246,13 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="Minigin.h" />
     <ClInclude Include="MiniginPCH.h" />
     <ClInclude Include="PlayerManager.h" />
+    <ClInclude Include="PlayerParts.h" />
     <ClInclude Include="PumpParts.h" />
     <ClInclude Include="ScreenRenderComponent.h" />
     <ClInclude Include="SpriteCollisionComponent.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="Observer.h" />
-    <ClInclude Include="ObserverEvents.h" />
+    <ClInclude Include="ObservedEvent.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="RenderComponent.h" />
@@ -272,18 +279,22 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClCompile Include="DigDugApplication.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="DigDugEnemy.cpp" />
+    <ClCompile Include="DigDugEnemyComponent.cpp" />
     <ClCompile Include="DigDugGridComponent.cpp" />
     <ClCompile Include="DigDugMovementComponent.cpp" />
     <ClCompile Include="DigDugPlayer.cpp" />
+    <ClCompile Include="DigDugPlayerComponent.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="EnemyParts.cpp" />
+    <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="FSMConditions.cpp" />
     <ClCompile Include="FSMEvents.cpp" />
     <ClCompile Include="GameButtons.cpp" />
     <ClCompile Include="GameFSMStates.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="LevelLoader.cpp" />
     <ClCompile Include="ObstacleParts.cpp" />
     <ClCompile Include="GameFiles.cpp" />
-    <ClCompile Include="GameFSMClasses.cpp" />
     <ClCompile Include="GameInputCommands.cpp" />
     <ClCompile Include="MultiRenderComponent.cpp" />
     <ClCompile Include="FiniteStateMachineComponent.cpp" />
@@ -303,6 +314,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MiniginPCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="PlayerManager.cpp" />
+    <ClCompile Include="PlayerParts.cpp" />
     <ClCompile Include="PumpParts.cpp" />
     <ClCompile Include="SceneData.cpp" />
     <ClCompile Include="ScreenRenderComponent.cpp" />

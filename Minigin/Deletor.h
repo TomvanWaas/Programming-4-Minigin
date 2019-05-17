@@ -28,7 +28,10 @@ class Deletor final : public Singleton<Deletor>
 		}
 		virtual void DeleteStore() override
 		{
-			//Shared
+			for (T* pObject : m_pObjects)
+			{
+				SAFE_DELETE(pObject);
+			}
 			m_pObjects.clear();
 		}
 	private:
@@ -53,7 +56,7 @@ public:
 	Deletor& operator=(Deletor&& other) noexcept = delete;
 
 	template <class T>
-	void StoreDelete(std::shared_ptr<T>& pObject)
+	void StoreDelete(T* pObject)
 	{
 		TDelete<T>::GetInstance().StoreDelete(pObject);
 		if (std::find(m_pDeletors.begin(), m_pDeletors.end(), &TDelete<T>::GetInstance()) == m_pDeletors.end())

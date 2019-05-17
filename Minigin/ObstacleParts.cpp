@@ -7,6 +7,8 @@
 #include "Enumerations.h"
 #include "Time.h"
 #include "ObservedData.h"
+#include "GameEvents.h"
+#include "ObservedEvent.h"
 
 using namespace DigDug;
 
@@ -27,7 +29,7 @@ void FSMStateObstacleIdle::Enter(const SceneData& sceneData, FSMData& data)
 		auto* pSprite = m_pObject->GetComponent<SpriteComponent>();
 		if (pSprite)
 		{
-			pSprite->SetCurrentSource(unsigned int(ObstacleSprite::Idle));
+			pSprite->SetCurrentSprite(unsigned int(ObstacleSpriteID::Idle));
 		}
 
 		auto* pCollider = m_pObject->GetComponent<AABBCollisionComponent>();
@@ -44,10 +46,10 @@ FSMState* FSMStateObstacleIdle::OnNotify(ObservedEvent oevent, const ObservedDat
 	UNREFERENCED_PARAMETER(data);
 
 	//Check if below marked on marked event
-	if (oevent == ObservedEvent::GridMarked && m_pObject && m_pGrid)
+	if (oevent == GameEvent::GridMarked && m_pObject && m_pGrid)
 	{
 		const auto& t = m_pObject->GetTransform();
-		auto o = m_pGrid->GetOffset();
+		auto o = m_pGrid->GetWalkableOffset();
 		if (m_pGrid->IsMarked(m_pGrid->ClosestPoint(t.GetWorldPosition() + Vector2(0, o.y))))
 		{
 			return m_pFallState;
@@ -64,7 +66,7 @@ void FSMStateObstacleIdle::Exit(const SceneData& sceneData, FSMData& data)
 	if (m_pObject)
 	{
 		auto* pSprite = m_pObject->GetComponent<SpriteComponent>();
-		if (pSprite) pSprite->SetCurrentSource(unsigned int(ObstacleSprite::Moving));
+		if (pSprite) pSprite->SetCurrentSprite(unsigned int(ObstacleSpriteID::Moving));
 	}
 }
 
@@ -86,7 +88,7 @@ void FSMStateObstacleFall::Enter(const SceneData& sceneData, FSMData& data)
 	if (m_pObject)
 	{
 		auto* pSprite = m_pObject->GetComponent<SpriteComponent>();
-		if (pSprite) pSprite->SetCurrentSource(unsigned int(ObstacleSprite::Moving));
+		if (pSprite) pSprite->SetCurrentSprite(unsigned int(ObstacleSpriteID::Moving));
 
 		auto* pCol = m_pObject->GetComponent<AABBCollisionComponent>();
 		if (pCol) pCol->SetTrigger(true);
@@ -95,7 +97,7 @@ void FSMStateObstacleFall::Enter(const SceneData& sceneData, FSMData& data)
 		if (m_pGrid)
 		{
 			const auto& t = m_pObject->GetTransform();
-			Vector2 offset = m_pGrid->GetOffset()*0.5f;
+			Vector2 offset = m_pGrid->GetWalkableOffset()*0.5f;
 			m_pGrid->Mark(m_pGrid->ClosestPoint(t.GetWorldPosition()));
 			m_pGrid->Mark(m_pGrid->ClosestPoint(t.GetWorldPosition() + Vector2(0, offset.y)));
 		}
@@ -112,7 +114,7 @@ FSMState* FSMStateObstacleFall::UpdateFirst(const SceneData& sceneData, FSMData&
 		t.SetLocalPosition(t.GetLocalPosition() + Vector2(0, m_Speed * sceneData.GetTime()->GetDeltaTime()));
 
 		//ToNext if !Marked below
-		Vector2 offset = m_pGrid->GetOffset()*0.5f;
+		Vector2 offset = m_pGrid->GetWalkableOffset()*0.5f;
 		if (!m_pGrid->IsMarked(m_pGrid->ClosestPoint(t.GetWorldPosition() + Vector2(0, offset.y))) && m_pGrid->IsOnPoint(t.GetWorldPosition()))
 		{
 			return m_pDestrState;
@@ -130,8 +132,8 @@ FSMState* FSMStateObstacleFall::OnNotify(ObservedEvent oevent, const ObservedDat
 		{
 			if (pCollider->GetTag() == "Player"  || pCollider->GetTag() == "Enemy")
 			{
-				pCollider->GetGameObject()->GetRoot().Notify(ObservedEvent::HitByObstacle, ObservedData{});
-				pCollider->GetGameObject()->GetRoot().NotifyChildren(ObservedEvent::HitByObstacle, ObservedData{});
+				pCollider->GetGameObject()->GetRoot().Notify(GameEvent::HitByObstacle, ObservedData{});
+				pCollider->GetGameObject()->GetRoot().NotifyChildren(GameEvent::HitByObstacle, ObservedData{});
 			}
 		}
 	}
@@ -148,7 +150,7 @@ void FSMStateObstacleFall::Exit(const SceneData& sceneData, FSMData& data)
 	if (m_pObject)
 	{
 		auto* pSprite = m_pObject->GetComponent<SpriteComponent>();
-		if (pSprite) pSprite->SetCurrentSource(unsigned int(ObstacleSprite::Destroyed));
+		if (pSprite) pSprite->SetCurrentSprite(unsigned int(ObstacleSpriteID::Destroyed));
 
 		auto* pCol = m_pObject->GetComponent<AABBCollisionComponent>();
 		if (pCol) pCol->SetEnabled(false);

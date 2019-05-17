@@ -1,5 +1,5 @@
 #pragma once
-#include "ObserverEvents.h"
+#include "ObservedEvent.h"
 class GameObject;
 class ObservedData;
 class Observer abstract

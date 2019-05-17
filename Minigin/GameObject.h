@@ -9,7 +9,7 @@ class GameObject final
 {
 public:
 	explicit GameObject();
-	virtual ~GameObject();
+	~GameObject();
 	GameObject(const GameObject& other) = delete;
 	GameObject(GameObject&& other) = delete;
 	GameObject& operator=(const GameObject& other) = delete;
@@ -62,16 +62,13 @@ public:
 
 
 	//GetComponent
-	/////////////////////////////////////////////////////////
-	//BASED ON OVERLORD_ENGINE (from Graphics Programming 2)
-	/////////////////////////////////////////////////////////
 	template <class T>
 	T* GetComponent() const
 	{
-		const type_info& ti = typeid(T);
 		for (auto* pComp : m_pComponents)
 		{
-			if (pComp != nullptr && typeid(*pComp) == ti) return static_cast<T*>(pComp);
+			T* pRes = dynamic_cast<T*>(pComp);
+			if (pRes) return pRes;
 		}
 		return nullptr;
 	}

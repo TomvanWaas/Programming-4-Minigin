@@ -2,7 +2,24 @@
 #include "FSMState.h"
 #include "FSMEvent.h"
 #include "FSMCondition.h"
+#include "FiniteStateMachineComponent.h"
 
+void FSMState::SetFSMComponent(FiniteStateMachineComponent* pComponent)
+{
+	m_pFSMComponent = pComponent;
+}
+
+FSMState* FSMState::GetState(const std::string& name) const
+{
+	if (m_pFSMComponent) return m_pFSMComponent->GetState(name);
+	return nullptr;
+}
+
+GameObject* FSMState::GetGameObject() const
+{
+	if (m_pFSMComponent) return m_pFSMComponent->GetGameObject();
+	return nullptr;
+}
 
 void FSMStateDefault::Initialize(const SceneData& sceneData, FSMData& data)
 {

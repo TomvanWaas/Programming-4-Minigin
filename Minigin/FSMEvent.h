@@ -1,8 +1,8 @@
 #pragma once
 class ObservedData;
-enum class ObservedEvent;
 class SceneData;
 class FSMData;
+#include "ObservedEvent.h"
 
 class FSMEvent abstract
 {

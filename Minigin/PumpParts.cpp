@@ -1,11 +1,14 @@
 #include "MiniginPCH.h"
 #include "PumpParts.h"
-#include "ObserverEvents.h"
+#include "ObservedEvent.h"
 #include "GameObject.h"
 #include "Components.h"
 #include "Enumerations.h"
 #include "ObservedData.h"
 #include "Time.h"
+#include "GameEvents.h"
+#include "DigDugMovementComponent.h"
+
 
 using namespace DigDug;
 
@@ -23,7 +26,11 @@ void FSMStatePumpInactive::Enter(const SceneData& sceneData, FSMData& data)
 	{
 		//Sprite
 		auto* pSprite = m_pObject->GetComponent<SpriteComponent>();
-		if (pSprite) pSprite->SetCurrentSource(unsigned int(PumpSpriteID::None));
+		if (pSprite)
+		{
+			pSprite->SetCurrentSprite(unsigned int(PumpSpriteID::None));
+			
+		}
 
 		//Collider
 		auto* pCollider = m_pObject->GetComponent<AABBCollisionComponent>();
@@ -37,7 +44,7 @@ FSMState* FSMStatePumpInactive::OnNotify(ObservedEvent oevent, const ObservedDat
 {
 	UNREFERENCED_PARAMETER(data);
 	UNREFERENCED_PARAMETER(odata);
-	if (oevent == ObservedEvent::InputPumpPressed)
+	if (oevent == GameEvent::InputPumpPressed)
 	{
 		return m_pActiveState;
 	}
@@ -65,6 +72,7 @@ FSMStatePumpActive::FSMStatePumpActive(GameObject* pObj, float offset, float dur
 	, m_Duration(duration)
 	, m_pInactiveState(pInactive)
 	, m_pHitState(pHit)
+	, m_Deactivated(false)
 {
 }
 void FSMStatePumpActive::Enter(const SceneData& sceneData, FSMData& data)
@@ -73,6 +81,21 @@ void FSMStatePumpActive::Enter(const SceneData& sceneData, FSMData& data)
 	if (m_pObject)
 	{
 		m_Accu = 0;
+		m_Deactivated = false;
+
+		//Set data
+		auto parent = GetGameObject()->GetParent();
+		if (parent)
+		{
+			auto move = parent->GetComponent<DigDugMovementComponent>();
+			if (move)
+			{
+				if (!data.SetData("Direction", move->GetLookDirection()))
+				{
+					data.AddData("Direction", move->GetLookDirection());
+				}				
+			}
+		}
 
 		//Sprite & Direction
 		if (!data.GetData("Direction", m_CurrentDirection)) m_CurrentDirection = Direction::Right;
@@ -85,16 +108,16 @@ void FSMStatePumpActive::Enter(const SceneData& sceneData, FSMData& data)
 			switch (m_CurrentDirection)
 			{
 			case Direction::Right:
-				pSprite->SetCurrentSource(unsigned int(PumpSpriteID::Right));
+				pSprite->SetCurrentSprite(unsigned int(PumpSpriteID::Right));
 				break;
 			case Direction::Left:
-				pSprite->SetCurrentSource(unsigned int(PumpSpriteID::Left));
+				pSprite->SetCurrentSprite(unsigned int(PumpSpriteID::Left));
 				break;
 			case Direction::Down:
-				pSprite->SetCurrentSource(unsigned int(PumpSpriteID::Down));
+				pSprite->SetCurrentSprite(unsigned int(PumpSpriteID::Down));
 				break;
 			case Direction::Up:
-				pSprite->SetCurrentSource(unsigned int(PumpSpriteID::Up));
+				pSprite->SetCurrentSprite(unsigned int(PumpSpriteID::Up));
 				break;
 			}
 		}
@@ -119,35 +142,42 @@ FSMState* FSMStatePumpActive::OnNotify(ObservedEvent oevent, const ObservedData&
 			{
 				if (pOther->GetTag() == "Enemy")
 				{
-					//Notify enemy
-					ObservedData d{};
-					if (pOther->GetGameObject())
+					if (!m_Deactivated)
 					{
-						pOther->GetGameObject()->GetRoot().Notify(ObservedEvent::PumpHit, d);
-						pOther->GetGameObject()->GetRoot().NotifyChildren(ObservedEvent::PumpHit, d);
-
-						//Save Enemy in FSMData
-						if (!data.AddData<GameObject*>("Enemy", pOther->GetGameObject()))
+						//Notify player
+						if (m_pObject)
 						{
-							data.SetData("Enemy", pOther->GetGameObject());
+							ObservedData d{};
+							m_pObject->GetRoot().Notify(GameEvent::PumpHit, d);
+							m_pObject->GetRoot().NotifyChildren(GameEvent::PumpHit, d);
 						}
+						//Return
+						return m_pHitState;
 					}
-					//Notify player
-					if (m_pObject && m_pObject->GetParent())
+					else
 					{
-						m_pObject->GetRoot().Notify(ObservedEvent::PumpHit, d);
-						m_pObject->GetRoot().NotifyChildren(ObservedEvent::PumpHit, d);
+						//Notify player
+						if (m_pObject )
+						{
+							ObservedData d{};
+							m_pObject->GetRoot().Notify(GameEvent::PumpMissed, d);
+							m_pObject->GetRoot().NotifyChildren(GameEvent::PumpMissed, d);
+						}
+						//Return
+						return m_pInactiveState;
 					}
-					//Return
-					return m_pHitState;
 				}
 			}
 		}
 		break;
-	case ObservedEvent::InputPumpReleased:
+	case GameEvent::InputPumpReleased:
 		{
-		data.SetData("Enemy", nullptr);
-		return m_pInactiveState;
+		m_Deactivated = true;
+		}
+		break;
+	case GameEvent::InputPumpPressed:
+		{
+		m_Deactivated = false;
 		}
 		break;
 	}
@@ -166,20 +196,31 @@ FSMState* FSMStatePumpActive::UpdateFirst(const SceneData& sceneData, FSMData& d
 			//Used for offset
 			auto r = pSprite->GetCurrentSource();
 			auto& t = m_pObject->GetTransform();
+			const Vector2& scale = m_pObject->GetTransform().GetWorldScale();
 
+			Vector2 offset = Vector2::Zero;
+			if (m_pObject->GetParent())
+			{
+				AABBCollisionComponent* pC = m_pObject->GetParent()->GetComponent<AABBCollisionComponent>();
+				if (pC)
+				{
+					offset.x = pC->GetCollider().width * 0.5f;
+					offset.y = pC->GetCollider().height * 0.5f;
+				}
+			}
 			switch (m_CurrentDirection)
 			{
 			case Direction::Right:
-				t.SetLocalPosition(r.width + m_PlayerOffset, 0);
+				t.SetLocalPosition(r.width*0.5f * scale.x + m_PlayerOffset + offset.x, 0);
 				break;
 			case Direction::Left:
-				t.SetLocalPosition(-(r.width + m_PlayerOffset), 0);
+				t.SetLocalPosition(-(r.width*0.5f * scale.x + m_PlayerOffset + offset.x), 0);
 				break;
 			case Direction::Down:
-				t.SetLocalPosition(0, r.height + m_PlayerOffset);
+				t.SetLocalPosition(0, r.height*0.5f * scale.y + m_PlayerOffset + offset.y);
 				break;
 			case Direction::Up:
-				t.SetLocalPosition(0, - (r.height + m_PlayerOffset));
+				t.SetLocalPosition(0, - (r.height*0.5f * scale.y + m_PlayerOffset + offset.y));
 				break;
 			}
 		}
@@ -188,8 +229,9 @@ FSMState* FSMStatePumpActive::UpdateFirst(const SceneData& sceneData, FSMData& d
 		if (m_Accu >= m_Duration)
 		{
 			ObservedData d{};
-			m_pObject->GetRoot().Notify(ObservedEvent::InputPumpReleased, d);
-			m_pObject->GetRoot().NotifyChildren(ObservedEvent::InputPumpReleased, d);
+			m_pObject->GetRoot().Notify(GameEvent::PumpMissed, d);
+			m_pObject->GetRoot().NotifyChildren(GameEvent::PumpMissed, d);
+			return m_pInactiveState;
 		}
 	}
 	return this;
@@ -228,21 +270,34 @@ void FSMStatePumpPumping::Exit(const SceneData& sceneData, FSMData& data)
 }
 FSMState* FSMStatePumpPumping::OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data)
 {
+	UNREFERENCED_PARAMETER(data);
 	UNREFERENCED_PARAMETER(odata);
 
 	switch (oevent)
 	{
-	case ObservedEvent::InputPumpReleased:
-		//Notify enemy
-	{
-		GameObject* pEnemy = nullptr;
-		if (data.GetData<GameObject*>("Enemy", pEnemy) && pEnemy)
-		{
-			pEnemy->GetRoot().Notify(ObservedEvent::PumpReleased, ObservedData{});
-		}
-	}
+	case GameEvent::InputMovePressed:
+	case GameEvent::InputPumpReleased:
+		if (GetGameObject()) GetGameObject()->GetRoot().Notify(GameEvent::PumpMissed, ObservedData{});
 		return m_pInactiveState;
 		break;
+	case ObservedEvent::ColliderExited:
+	{
+		AABBCollisionComponent* pOther = nullptr;
+		if (odata.GetData<AABBCollisionComponent*>("Collider", pOther) && pOther)
+		{
+			if (pOther->GetTag() == "Enemy")
+			{
+				//Notify player
+				if (m_pObject && m_pObject->GetParent())
+				{
+					ObservedData d{};
+					m_pObject->GetRoot().Notify(GameEvent::PumpMissed, d);
+				}
+				//Return
+				return m_pInactiveState;
+			}
+		}
+	}
 	}
 	return this;
 }

@@ -8,7 +8,7 @@ FiniteStateMachineComponent::~FiniteStateMachineComponent()
 {
 	for (auto& pState : m_pSavedStates)
 	{
-		SAFE_DELETE(pState);
+		SAFE_DELETE(pState.second);
 	}
 	m_pSavedStates.clear();
 	m_pCurrentState = nullptr;
@@ -59,18 +59,25 @@ void FiniteStateMachineComponent::SetState(FSMState* pState)
 }
 
 
-void FiniteStateMachineComponent::SaveState(FSMState* pState)
+bool FiniteStateMachineComponent::SaveState(const std::string& name, FSMState* pState)
 {
-	if (pState == nullptr) return;
-	if (std::find(m_pSavedStates.begin(), m_pSavedStates.end(), pState) == m_pSavedStates.end())
+	if (pState == nullptr) return false;
+	auto i = m_pSavedStates.find(name);
+	if (i == m_pSavedStates.end())
 	{
-		m_pSavedStates.push_back(pState);
+		m_pSavedStates[name] = pState;
+		pState->SetFSMComponent(this);
+		return true;
 	}
+	return false;
 }
-void FiniteStateMachineComponent::SaveStates(const std::vector<FSMState*>& pStates)
+
+FSMState* FiniteStateMachineComponent::GetState(const std::string& name) const
 {
-	for (const auto& pState : pStates)
+	auto i = m_pSavedStates.find(name);
+	if (i != m_pSavedStates.end())
 	{
-		SaveState(pState);
+		return (*i).second;
 	}
+	return nullptr;
 }

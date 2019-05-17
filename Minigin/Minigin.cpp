@@ -43,7 +43,7 @@ void dae::Minigin::Initialize(const WindowSettings& settings)
 
 	//Initialze ResourceManager
 	// tell the resource manager where he can find the game data
-	ResourceManager::GetInstance().Init("../Resources/");
+	ResourceManager::GetInstance().Initialize("../Resources/");
 }
 void dae::Minigin::Cleanup()
 {
@@ -67,26 +67,34 @@ void dae::Minigin::Run()
 	sceneManager.Initialize();
 	InputManager::StaticInitialize();
 
-	//Gameloop
-	bool doContinue = true;
-	auto lastTime = std::chrono::high_resolution_clock::now();
-	float lag = 0.0f;
-	const float msPerUpdate = 0.001f * m_MsPerFrame;
-	while (doContinue)
+	try
 	{
-		const auto currentTime = std::chrono::high_resolution_clock::now();
-		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
-		lastTime = currentTime;
-		lag += deltaTime;
-
-		doContinue = InputManager::StaticProcessInput();
-		while (lag >= msPerUpdate)
+		//Gameloop
+		bool doContinue = true;
+		auto lastTime = std::chrono::high_resolution_clock::now();
+		float lag = 0.0f;
+		const float msPerUpdate = 0.001f * m_MsPerFrame;
+		while (doContinue)
 		{
-			sceneManager.Update(msPerUpdate);
-			Deletor::GetInstance().DeleteStore();
-			lag -= msPerUpdate;
+			const auto currentTime = std::chrono::high_resolution_clock::now();
+			float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+			lastTime = currentTime;
+			lag += deltaTime;
+
+			doContinue = InputManager::StaticProcessInput();
+			while (lag >= msPerUpdate)
+			{
+				sceneManager.Update(msPerUpdate);
+				Deletor::GetInstance().DeleteStore();
+				lag -= msPerUpdate;
+			}
+			sceneManager.Render();
 		}
-		sceneManager.Render();
+	}
+	catch (std::exception e)
+	{
+		std::cout << "Exception!";
+		std::cout << e.what();
 	}
 
 

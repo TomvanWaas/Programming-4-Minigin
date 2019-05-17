@@ -9,6 +9,7 @@ namespace DigDug
 	{
 	public:
 		explicit FSMStateObstacleIdle(DigDugGridComponent* pGrid, GameObject* pObject, FSMState* pFallState);
+		virtual ~FSMStateObstacleIdle() = default;
 		virtual void Enter(const SceneData& sceneData, FSMData& data) override;
 		virtual FSMState* OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data) override;
 		virtual void Exit(const SceneData& sceneData, FSMData& data) override;

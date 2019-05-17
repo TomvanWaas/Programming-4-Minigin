@@ -43,9 +43,10 @@ void DigDug::DigDugMovementComponent::UpdateFirstOverride(const SceneData& scene
 			//Cross
 			else
 			{
-				if (m_pGrid->IsOnWalkablePoint(GetGameObject()->GetTransform().GetWorldPosition()))
+				if (m_pGrid->IsOnWalkablePoint(GetGameObject()->GetTransform().GetWorldPosition(), m_Speed * 0.05f))
 				{
 					m_CurrentDirection = m_WantedDirection;
+					GetGameObject()->GetTransform().SetWorldPosition(m_pGrid->ClosestPoint(GetGameObject()->GetTransform().GetWorldPosition()));
 				}
 				else
 				{
@@ -78,7 +79,7 @@ void DigDug::DigDugMovementComponent::UpdateFirstOverride(const SceneData& scene
 			const auto wp = GetGameObject()->GetTransform().GetWorldPosition();
 
 			//Clamp to grid
-			move = m_pGrid->ClosestGrid(move + wp) - wp;
+			move = m_pGrid->ClosestWalkableGrid(move + wp) - wp;
 			m_pMovement->QueueMovement(move);
 		}
 	}

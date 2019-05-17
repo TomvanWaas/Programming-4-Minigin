@@ -1,20 +1,24 @@
 #include "MiniginPCH.h"
 #include "Font.h"
+#include "Exceptions.h"
 
 TTF_Font* Font::GetFont() const {
-	return mFont;
+	return m_pFont;
 }
 
-Font::Font(const std::string& fullPath, unsigned size) : mFont(nullptr), mSize(size)
+Font::Font(const std::string& fullPath, unsigned size) : m_pFont(nullptr), m_Size(size)
 {
-	mFont = TTF_OpenFont(fullPath.c_str(), size);
-	if (mFont == nullptr) 
+	m_pFont = TTF_OpenFont(fullPath.c_str(), size);
+	if (m_pFont == nullptr) 
 	{
-		throw std::runtime_error(std::string("Failed to load font: ") + SDL_GetError());
+		std::stringstream msg{};
+		msg << "Font > Failed to load font: " << fullPath << " : " << size;
+		Logger::GetInstance().LogError(msg.str());
+		throw ResourceException(fullPath);
 	}
 }
 
 Font::~Font()
 {
-	TTF_CloseFont(mFont);
+	TTF_CloseFont(m_pFont);
 }

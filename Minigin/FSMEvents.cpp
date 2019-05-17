@@ -73,7 +73,7 @@ void FSMSpriteSourceEvent::Execute(const SceneData& sceneData, FSMData& data)
 	UNREFERENCED_PARAMETER(data);
 	if (m_pSpriteComponent != nullptr)
 	{
-		m_pSpriteComponent->SetCurrentSource(m_ID);
+		m_pSpriteComponent->SetCurrentSprite(m_ID);
 	}
 }
 

@@ -110,19 +110,17 @@ void CollisionManager::Update(const SceneData& sceneData)
 		//Else Entered
 		if (pI.pFirst && pI.pFirst->GetGameObject())
 		{
-			auto& root = pI.pFirst->GetGameObject()->GetRoot();
+			auto* obj = pI.pFirst->GetGameObject();
 			ObservedData data{};
 			data.AddData<AABBCollisionComponent*>("Collider", pI.pSecond);
-			root.Notify(ObservedEvent::ColliderEntered, data);
-			root.NotifyChildren(ObservedEvent::ColliderEntered, data);
+			obj->Notify(ObservedEvent::ColliderEntered, data);
 		}
 		if (pI.pSecond && pI.pSecond->GetGameObject())
 		{
-			auto& root = pI.pSecond->GetGameObject()->GetRoot();
+			auto* obj = pI.pSecond->GetGameObject();
 			ObservedData data{};
 			data.AddData<AABBCollisionComponent*>("Collider", pI.pFirst);
-			root.Notify(ObservedEvent::ColliderEntered, data);
-			root.NotifyChildren(ObservedEvent::ColliderEntered, data);
+			obj->Notify(ObservedEvent::ColliderEntered, data);
 		}
 	}
 

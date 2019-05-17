@@ -1,4 +1,6 @@
 #pragma once
+#include "ObservedEvent.h"
+class ObservedData;
 class SceneData;
 
 class Manager abstract
@@ -14,4 +16,5 @@ public:
 
 	virtual void Initialize(const SceneData& sceneData) { UNREFERENCED_PARAMETER(sceneData); }
 	virtual void Update(const SceneData& sceneData) { UNREFERENCED_PARAMETER(sceneData); }
+	virtual void OnNotify(ObservedEvent event, const ObservedData& data) { UNREFERENCED_PARAMETER(event); UNREFERENCED_PARAMETER(data); }
 };

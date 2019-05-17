@@ -27,12 +27,12 @@ public:
 
 
 
-	bool IsOnPoint(const Vector2& p) const;
-	bool IsOnLine(const Vector2& p) const;
-	bool IsOnGrid(const Vector2& p) const;
-	bool IsOnWalkablePoint(const Vector2& p) const;
-	bool IsOnWalkableLine(const Vector2& p) const;
-	bool IsOnWalkableGrid(const Vector2& p) const;
+	bool IsOnPoint(const Vector2& p, float epsilon = 0.5f) const;
+	bool IsOnLine(const Vector2& p, float epsilon = 0.5f) const;
+	bool IsOnGrid(const Vector2& p, float epsilon = 0.5f) const;
+	bool IsOnWalkablePoint(const Vector2& p, float epsilon = 0.5f) const;
+	bool IsOnWalkableLine(const Vector2& p, float epsilon = 0.5f) const;
+	bool IsOnWalkableGrid(const Vector2& p, float epsilon = 0.5f) const;
 	Vector2 ClosestPoint(const Vector2& p) const;
 	Vector2 ClosestLine(const Vector2& p) const;
 	Vector2 ClosestGrid(const Vector2& p) const;
@@ -44,27 +44,41 @@ public:
 	bool IsMarked(const Vector2& p) const;
 	void Mark(const Vector2& p);
 	Vector2 GetPosition(unsigned int w, unsigned int h) const;
+	Vector2 GetWalkablePosition(unsigned int w, unsigned int h)const;
 	unsigned int GetIndex(const Vector2& v) const;
 
 
 	void SetOffset(const Vector2& o);
 	void SetWidth(unsigned int w);
 	void SetHeight(unsigned int h);
-	Vector2 GetOffset() const;
+	Vector2 GetWalkableOffset() const;
+	Vector2 GetOffset() const { return m_Offset; }
 	unsigned int GetWidth() const;
 	unsigned int GetHeight() const;
 
+
+
+	
 private:
 	Grid<bool> m_GridMarks;
-	Grid<Vector2> m_GridPositions;
+	Vector2 m_Offset;
 	MultiRenderComponent* m_pMultiRenderer;
 
 
+
+	//Helpers
 	void UpdateRender(unsigned int idx);
 	void UpdateSurroundings(unsigned int w, unsigned int h);
 	void UpdateSurroundings(unsigned int i);
 
 	Vector2 WorldToGrid(const Vector2& p) const;
 	Vector2 GridToWorld(const Vector2& p) const;
+
+	Vector2 GetWorld(unsigned int w, unsigned int h) const;
+	Vector2 GetLocal(unsigned int w, unsigned int h) const;
+	int GetIdx(const Vector2& world) const;
+	int CloseIdx(const Vector2& world) const;
+
+
 };
 

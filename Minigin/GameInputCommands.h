@@ -1,7 +1,6 @@
 #pragma once
 #include "InputCommand.h"
-#include "ObservedData.h"
-#include "ObserverEvents.h"
+#include "ObservedEvent.h"
 #include "GameObject.h"
 
 

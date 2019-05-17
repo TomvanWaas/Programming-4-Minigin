@@ -7,14 +7,15 @@ namespace DigDug
 {
 	enum class Direction;
 
-	class FSMStateEnemyMoving final : public FSMState
+	class FSMStatePookaMoving final : public FSMState
 	{
 	public:
-		explicit FSMStateEnemyMoving(float speed, DigDugGridComponent* pGrid, GameObject* pObject, FSMState* pPumped, FSMState* pGhost, FSMState* pCrushed, float ghostDelay);
-		virtual ~FSMStateEnemyMoving() = default;
+		explicit FSMStatePookaMoving(float speed, DigDugGridComponent* pGrid, GameObject* pObject, FSMState* pPumped, FSMState* pGhost, FSMState* pCrushed, float ghostDelay);
+		virtual ~FSMStatePookaMoving() = default;
 		virtual void Enter(const SceneData& sceneData, FSMData& data) override;
 		virtual FSMState* UpdateFirst(const SceneData& sceneData, FSMData& data) override;
 		virtual FSMState* OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data) override;
+		virtual void Exit(const SceneData& sceneData, FSMData& data) override;
 
 		void SetPumpState(FSMState* pPump) { m_pPumpedState = pPump; }
 		void SetCrushState(FSMState* pCrush) { m_pCrushedState = pCrush; }
@@ -107,6 +108,51 @@ namespace DigDug
 
 
 
+	class FSMStateFygarMoving final : public FSMState
+	{
+	public:
+		explicit FSMStateFygarMoving(float speed, float fireDelay, float ghostDelay, DigDugGridComponent* pGrid, 
+			const std::string& pumpedState, const std::string& ghostState, 
+			const std::string& crushedState, const std::string& fireState);
+		virtual ~FSMStateFygarMoving() = default;
+		virtual void Enter(const SceneData& sceneData, FSMData& data) override;
+		virtual FSMState* UpdateFirst(const SceneData& sceneData, FSMData& data) override;
+		virtual FSMState* OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data) override;
+		virtual void Exit(const SceneData& sceneData, FSMData& data) override;
+	private:	
+		std::string m_PumpedState;
+		std::string m_GhostState;
+		std::string m_CrushedState;
+		std::string m_FireState;
+		float m_Speed;
+		float m_GhostAccu;
+		float m_FireAccu;
+		float m_FireTime;
+		float m_GhostTime;
+		DigDugGridComponent* m_pGrid;
+		Direction m_CurrentDirection;
+
+
+		void SetDirection(Direction d, FSMData& data);
+		Direction GetRandomDirection(bool* marks);
+		void SetSprite(unsigned i);
+	};
+	
+	class FSMStateFygarFire final : public FSMState
+	{
+	public:
+		explicit FSMStateFygarFire(float time, const std::string& pumpedState, const std::string& crushedState, const std::string& moveState);
+		virtual ~FSMStateFygarFire() = default;
+		virtual void Enter(const SceneData& sceneData, FSMData& data) override;
+		virtual FSMState* UpdateFirst(const SceneData& sceneData, FSMData& data) override;
+		virtual FSMState* OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data) override;
+	private:
+		std::string m_PumpedState;
+		std::string m_CrushedState;
+		std::string m_MoveState;
+		float m_Time;
+		float m_Accu;
+	};
 
 
 
@@ -115,8 +161,30 @@ namespace DigDug
 
 
 
-
-
+	class FSMStateFireIdle final : public FSMState
+	{
+	public:
+		explicit FSMStateFireIdle(const std::string& activeState);
+		virtual ~FSMStateFireIdle() = default;
+		virtual void Enter(const SceneData& sceneData, FSMData& data) override;
+		virtual FSMState* OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data) override;
+	private:
+		std::string m_ActiveState;
+	};
+	class FSMStateFireActive final : public FSMState
+	{
+	public:
+		explicit FSMStateFireActive(const std::string& inactiveState, float duration);
+		virtual ~FSMStateFireActive() = default;
+		virtual void Enter(const SceneData& sceneData, FSMData& data) override;
+		virtual FSMState* OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data) override;
+		virtual FSMState* UpdateFirst(const SceneData& sceneData, FSMData& data) override;
+	private:
+		std::string m_InactiveState;
+		float m_Duration;
+		float m_Accu;
+		Direction m_Direction;
+	};
 
 
 

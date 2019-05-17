@@ -3,6 +3,8 @@
 #include "Enumerations.h"
 #include "DigDugMovementComponent.h"
 #include "Button.h"
+#include "ObservedData.h"
+#include "GameEvents.h"
 
 using namespace DigDug;
 
@@ -17,6 +19,12 @@ void PlayerInput::Execute()
 	if (m_pMovement != nullptr)
 	{
 		m_pMovement->Move(m_Direction);
+		if (m_pMovement->GetGameObject() && m_Direction != Direction::None)
+		{
+			ObservedData d{};
+			m_pMovement->GetGameObject()->GetRoot().Notify(GameEvent::InputMovePressed, d);
+			m_pMovement->GetGameObject()->GetRoot().NotifyChildren(GameEvent::InputMovePressed, d);
+		}
 	}
 }
 

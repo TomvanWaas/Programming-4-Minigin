@@ -9,416 +9,20 @@
 #include "FSMEvent.h"
 #include "FSMState.h"
 #include "DigDugGridComponent.h"
-#include "GameFSMClasses.h"
 #include "GameInputCommands.h"
 #include "SpriteCollisionComponent.h"
-#include "FSMConditions.h"
-#include "FSMEvents.h"
 #include "DigDugMovementComponent.h"
-#include "DigDugPlayer.h"
-#include "DigDugEnemy.h"
-#include "DigDugEnemyHealth.h"
 #include "ObstacleParts.h"
 #include "GameFSMStates.h"
 #include "EnemyManager.h"
 #include "EnemyParts.h"
 #include "PumpParts.h"
+#include "GameEvents.h"
+#include "DigDugEnemyComponent.h"
+#include "DigDugPlayerComponent.h"
+#include "PlayerParts.h"
 
 using namespace DigDug;
-typedef std::shared_ptr<FSMCondition> Condition;
-typedef std::shared_ptr<FSMEvent> Event;
-typedef std::shared_ptr<FSMTransition> Transition;
-typedef std::vector<std::shared_ptr<FSMCondition>> Conditions;
-typedef std::vector<std::shared_ptr<FSMEvent>> Events;
-
-
-
-
-
-
-GameObject* DigDug::MakePlayerObject(Scene& scene, const DigDugSettings& settings, char up, char down, char left,
-	char right, char pump)
-{
-	auto* pPlayer = scene.CreateGameObject();
-
-	//Components
-	pPlayer->AddComponent(new RenderComponent());
-	auto pMove = new MovementComponent();
-	pPlayer->AddComponent(pMove);
-	auto pCollider = new AABBCollisionComponent();
-	pPlayer->AddComponent(pCollider);
-	auto pFSM = new FiniteStateMachineComponent();
-	pPlayer->AddComponent(pFSM);
-	auto pMovement = new DigDugMovementComponent(*settings.pGrid, 100.0f);
-	pPlayer->AddComponent(pMovement);
-	auto pSprite = new SpriteComponent();
-	pPlayer->AddComponent(pSprite);
-	auto pData = new DataComponent();
-	pPlayer->AddComponent(pData);
-	pPlayer->AddComponent(new DigDugPlayer());
-
-	//Set Values
-	pCollider->SetTrigger(false);
-	pCollider->SetTag("Player");
-	pCollider->SetCollider(settings.spriteWidth, settings.spriteHeight, 0, 0);
-	pSprite->SetSpriteSpeed(settings.spriteSpeed);
-	pSprite->SetTexture(settings.spriteTexture);
-	pData->AddData("Pump", PumpStatus::Deactivated);
-	pData->AddData("Health", PlayerHealth::Alive);
-	pData->AddData("Status", PlayerState::Idle);
-
-	//Make
-	MakePlayerSprites(pSprite, settings);
-	MakePlayerInput(pPlayer, settings, up, down, left, right, pump);
-	MakePlayerFSM(pPlayer, settings);
-	//MakePlayerPump(scene, *pPlayer, settings);
-	CreatePump(*pPlayer, settings);
-
-
-	return pPlayer;
-}
-
-void DigDug::MakePlayerSprites(SpriteComponent* pSpriteComp, const DigDugSettings& settings)
-{
-	if (pSpriteComp == nullptr) return;
-
-	Rect s(0, settings.spriteHeight, settings.spriteWidth, settings.spriteHeight);
-
-	//Moving
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::MoveRight), new TickSource(s, 2, true));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::MoveUp), new TickSource(s, 2, true));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::MoveLeft), new TickSource(s, 2, true));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::MoveDown), new TickSource(s, 2, true));
-
-	//Throwing
-	s.x = 0.0f;
-	s.y += settings.spriteHeight;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::ThrowRight), new TickSource(s, 1, false));
-	s.x += settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::ThrowUp), new TickSource(s, 1, false));
-	s.x += settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::ThrowLeft), new TickSource(s, 1, false));
-	s.x += settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::ThrowDown), new TickSource(s, 1, false));
-
-	//Pumping
-	s.x = 0.0f;
-	s.y += settings.spriteHeight;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::PumpRight), new TickSource(s, 2, true));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::PumpUp), new TickSource(s, 2, true));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::PumpLeft), new TickSource(s, 2, true));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::PumpDown), new TickSource(s, 2, true));
-
-	//Being Crushed
-	s.x = 0.0f;
-	s.y += settings.spriteHeight;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::CrushedRight), new TickSource(s, 2, false));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::CrushedUp), new TickSource(s, 2, false));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::CrushedLeft), new TickSource(s, 2, false));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::CrushedDown), new TickSource(s, 2, false));
-
-	//Being Dead
-	s.x = 0.0f;
-	s.y += settings.spriteHeight;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::DiedRight), new TickSource(s, 4, false));
-	s.x += 4 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::DiedUp), new TickSource(s, 4, false));
-	s.x = 0.0f;
-	s.y += settings.spriteHeight;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::DiedLeft), new TickSource(s, 4, false));
-	s.x += 4 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::DiedDown), new TickSource(s, 4, false));
-
-	//Being Idle
-	s.x = 0.0f;
-	s.y = settings.spriteHeight;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::IdleRight), new TickSource(s, 1, false));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::IdleUp), new TickSource(s, 1, false));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::IdleLeft), new TickSource(s, 1, false));
-	s.x += 2 * settings.spriteWidth;
-	pSpriteComp->AddSprite(unsigned int(PlayerSprite::IdleDown), new TickSource(s, 1, false));
-
-}
-
-void DigDug::MakePlayerInput(GameObject* pPlayer, const DigDugSettings& settings, char up, char down, char left, char right, char pump)
-{
-	UNREFERENCED_PARAMETER(settings);
-	auto* pMove = pPlayer->GetComponent<DigDugMovementComponent>();
-	auto* pInput = pPlayer->GetScene()->GetSceneData().GetInput();
-	auto* pData = pPlayer->GetComponent<DataComponent>();
-	PumpStatus* pPump = nullptr;
-	pData->GetData("Pump", pPump);
-
-	auto pLeftDown = std::make_shared<PlayerInput>(Direction::Left, pMove);
-	auto pRightDown = std::make_shared<PlayerInput>(Direction::Right, pMove);
-	auto pUpDown = std::make_shared<PlayerInput>(Direction::Up, pMove);
-	auto pDownDown = std::make_shared<PlayerInput>(Direction::Down, pMove);
-	//auto pPumpPressed = std::make_shared<InputSetData<PumpStatus>>(*pPump, PumpStatus::Activated);
-	//auto pPumpReleased = std::make_shared<InputSetData<PumpStatus>>(*pPump, PumpStatus::Deactivated);
-	auto pNone = std::make_shared<PlayerInput>(Direction::None, pMove);
-
-	auto pPmpPressed = std::make_shared<InputNotifier>(pPlayer, ObservedEvent::InputPumpPressed);
-	auto pPmpReleased = std::make_shared<InputNotifier>(pPlayer, ObservedEvent::InputPumpReleased);
-
-	InputAction leftA{ InputTriggerState::Down, pLeftDown, -1, left, -1 };
-	InputAction rightA{ InputTriggerState::Down, pRightDown, -1, right, -1 };
-	InputAction upA{ InputTriggerState::Down, pUpDown, -1, up, -1 };
-	InputAction downA{ InputTriggerState::Down, pDownDown, -1, down, -1 };
-	InputAction pumpPressedA{ InputTriggerState::Pressed, pPmpPressed, -1, pump, -1 };
-	InputAction pumpReleasedA{ InputTriggerState::Released, pPmpReleased, -1, pump, -1 };
-
-	InputAction leftB{ InputTriggerState::Up, pNone, -1, left, -1 };
-	InputAction rightB{ InputTriggerState::Up, pNone, -1, left, -1 };
-	InputAction upB{ InputTriggerState::Up, pNone, -1, left, -1 };
-	InputAction downB{ InputTriggerState::Up, pNone, -1, left, -1 };
-
-	pInput->AddInputAction(leftA);
-	pInput->AddInputAction(rightA);
-	pInput->AddInputAction(upA);
-	pInput->AddInputAction(downA);
-	pInput->AddInputAction(pumpPressedA);
-	pInput->AddInputAction(pumpReleasedA);
-	pInput->AddInputAction(leftB);
-	pInput->AddInputAction(rightB);
-	pInput->AddInputAction(upB);
-	pInput->AddInputAction(downB);
-
-}
-
-void DigDug::MakePlayerFSM(GameObject* pPlayer, const DigDugSettings& settings)
-{
-	UNREFERENCED_PARAMETER(settings);
-	auto* pFSM = pPlayer->GetComponent<FiniteStateMachineComponent>();
-	auto* pData = pPlayer->GetComponent<DataComponent>();
-	auto* pMove = pPlayer->GetComponent<DigDugMovementComponent>();
-	auto* pSprite = pPlayer->GetComponent<SpriteComponent>();
-	PlayerHealth* pHealth = nullptr;
-	PlayerState* pState = nullptr;
-	PumpStatus* pPump = nullptr;
-	Direction* pLookDirection = &pMove->GetLookDirection();
-	Direction* pMoveDirection = &pMove->GetMoveDirection();
-	pData->GetData("Health", pHealth);
-	pData->GetData("Status", pState);
-	pData->GetData("Pump", pPump);
-
-	//States
-	FSMStateDefault* pIdleState = new FSMStateDefault();
-	FSMStateDefault* pMovingState = new FSMStateDefault();
-	FSMStateDefault* pThrowingState = new FSMStateDefault();
-	FSMStateDefault* pPumpingState = new FSMStateDefault();
-	FSMStateDefault* pKilledState = new FSMStateDefault();
-	FSMStateDefault* pCrushedStartState = new FSMStateDefault();
-	FSMStateDefault* pCrushedEndState = new FSMStateDefault();
-	pFSM->SaveState(pIdleState);
-	pFSM->SaveState(pMovingState);
-	pFSM->SaveState(pThrowingState);
-	pFSM->SaveState(pPumpingState);
-	pFSM->SaveState(pKilledState);
-	pFSM->SaveState(pCrushedStartState);
-	pFSM->SaveState(pCrushedEndState);
-
-	//Events
-	Event pUnlockMovementEvent = std::make_shared<FSMComponentEnableEvent>(pMove, FSMComponentEnableEvent::Operation::SetTrue);
-	Event pLockMovementEvent = std::make_shared<FSMComponentEnableEvent>(pMove, FSMComponentEnableEvent::Operation::SetFalse);
-	Event pSpriteEvent = std::make_shared<FSMEventPlayerSprite>(*pLookDirection, pSprite, *pState);
-	Event pMarkEvent = std::make_shared<FSMGridMarkerEvent>(*pPlayer, *settings.pGrid);
-
-	Event pStateSetIdleEvent = std::make_shared<FSMSetDataEvent<PlayerState>>(*pState, PlayerState::Idle);
-	Event pStateSetMovingEvent = std::make_shared<FSMSetDataEvent<PlayerState>>(*pState, PlayerState::Moving);
-	Event pStateSetThrownEvent = std::make_shared<FSMSetDataEvent<PlayerState>>(*pState, PlayerState::Thrown);
-	Event pStateSetKilledEvent = std::make_shared<FSMSetDataEvent<PlayerState>>(*pState, PlayerState::Killed);
-	Event pStateSetCrushedEvent = std::make_shared<FSMSetDataEvent<PlayerState>>(*pState, PlayerState::Crushed);
-	Event pStateSetPumpingEvent = std::make_shared<FSMSetDataEvent<PlayerState>>(*pState, PlayerState::Pumping);
-	Event pMoveDownOnCrushedEvent = std::make_shared<FSMMoveEvent>(Vector2(0, 100), *pPlayer);
-
-	//Conditions
-	Condition pPumpStateActivatedCondition = std::make_shared<FSMDataCondition<PumpStatus>>(*pPump, PumpStatus::Activated);
-	Condition pPumpStateHitCondition = std::make_shared<FSMDataCondition<PumpStatus>>(*pPump, PumpStatus::Hit);
-	Condition pPumpStateMissedCondition = std::make_shared<FSMDataCondition<PumpStatus>>(*pPump, PumpStatus::Missed);
-	Condition pPumpStateDeactivatedCondition = std::make_shared<FSMDataCondition<PumpStatus>>(*pPump, PumpStatus::Deactivated);
-	Condition pIsDeadCondition = std::make_shared<FSMDataCondition<PlayerHealth>>(*pHealth, PlayerHealth::Killed);
-	Condition pIsCrushedCondition = std::make_shared<FSMDataCondition<PlayerHealth>>(*pHealth, PlayerHealth::Crushed);
-	Condition pIdleCondition = std::make_shared<FSMDataCondition<Direction>>(*pMoveDirection, Direction::None);
-	Condition pMoveCondition = std::make_shared<FSMNotCondition>(pIdleCondition);
-	Condition pBelowNotMarkedCondition = std::make_shared<FSMGridMarkCondition>(*settings.pGrid, *pPlayer, Vector2{ 0, settings.gridOffset.y*0.25f }, false);
-	Condition pTimerCondition = std::make_shared<FSMTimeCondition>(1.5f);
-	Condition pOnPointCondition = std::make_shared<FSMGridPositionPointCondition>(*settings.pGrid, pPlayer->GetTransform());
-
-	//Transitions
-	Transition pToDead = std::make_shared<FSMTransition>(pKilledState, pIsDeadCondition);
-	Transition pToCrushedStart = std::make_shared<FSMTransition>(pCrushedStartState, pIsCrushedCondition);
-	Transition pToIdle = std::make_shared<FSMTransition>(pIdleState, pIdleCondition);
-	Transition pToMove = std::make_shared<FSMTransition>(pMovingState, pMoveCondition);
-	Transition pToThrow = std::make_shared<FSMTransition>(pThrowingState, pPumpStateActivatedCondition);
-	Transition pToPump = std::make_shared<FSMTransition>(pPumpingState, pPumpStateHitCondition);
-	Transition pFromPump = std::make_shared<FSMTransition>(pIdleState, pPumpStateDeactivatedCondition);
-	Transition pFromThrow = std::make_shared<FSMTransition>(pIdleState, pPumpStateMissedCondition);
-	Transition pToCrushedEnd = std::make_shared<FSMTransition>(pCrushedEndState, std::make_shared<FSMMultiAndCondition>(Conditions{ pBelowNotMarkedCondition, pOnPointCondition }));
-	Transition pToCrushedDead = std::make_shared<FSMTransition>(pKilledState, pTimerCondition);
-
-	//Make
-	pIdleState->SetEnterEvent(std::make_shared<FSMMultiEvent>(Events{ pUnlockMovementEvent,pStateSetIdleEvent, pSpriteEvent }));
-	pIdleState->AddTransition(pToThrow);
-	pIdleState->AddTransition(pToMove);
-	pIdleState->AddTransition(pToDead);
-	pIdleState->AddTransition(pToCrushedStart);
-
-	pMovingState->SetEnterEvent(std::make_shared<FSMMultiEvent>(Events{ pUnlockMovementEvent, pStateSetMovingEvent }));
-	pMovingState->AddTransition(pToIdle);
-	pMovingState->AddTransition(pToDead);
-	pMovingState->AddTransition(pToCrushedStart);
-	pMovingState->AddTransition(pToThrow);
-	pMovingState->SetUpdateFirstEvent(std::make_shared<FSMMultiEvent>(Events{ pSpriteEvent, pMarkEvent }));
-
-	pThrowingState->SetEnterEvent(std::make_shared<FSMMultiEvent>(Events{ pLockMovementEvent, pStateSetThrownEvent ,pSpriteEvent }));
-	pThrowingState->AddTransition(pFromThrow);
-	pThrowingState->AddTransition(pFromPump);
-	pThrowingState->AddTransition(pToPump);
-
-	pPumpingState->SetEnterEvent(std::make_shared<FSMMultiEvent>(Events{ pStateSetPumpingEvent,pSpriteEvent }));
-	pPumpingState->AddTransition(pFromPump);
-	pPumpingState->AddTransition(pFromThrow);
-	pPumpingState->AddTransition(pToDead);
-	pPumpingState->AddTransition(pToCrushedStart);
-
-	pCrushedStartState->SetEnterEvent(std::make_shared<FSMMultiEvent>(Events{ pLockMovementEvent, pStateSetIdleEvent,pSpriteEvent }));
-	pCrushedStartState->AddTransition(pToCrushedEnd);
-	pCrushedStartState->SetUpdateFirstEvent(pMoveDownOnCrushedEvent);
-
-	pCrushedEndState->SetEnterEvent(std::make_shared<FSMMultiEvent>(Events{ pStateSetCrushedEvent,pSpriteEvent }));
-	pCrushedEndState->AddTransition(pToCrushedDead);
-
-	pKilledState->SetEnterEvent(std::make_shared<FSMMultiEvent>(Events{ pLockMovementEvent , pStateSetKilledEvent,pSpriteEvent }));
-
-
-
-
-	
-	pFSM->SetState(pIdleState);
-}
-
-GameObject* DigDug::MakePlayerPump(Scene& scene, GameObject& parent, const DigDugSettings& settings)
-{
-	UNREFERENCED_PARAMETER(scene);
-	UNREFERENCED_PARAMETER(parent);
-	UNREFERENCED_PARAMETER(settings);
-
-	auto pObject = parent.CreateChild();
-	auto* pData = parent.GetComponent<DataComponent>();
-	auto* pPlayerMove = parent.GetComponent<DigDugMovementComponent>();
-	//PlayerHealth* pHealth = nullptr;
-	PlayerState* pState = nullptr;
-	PumpStatus* pPump = nullptr;
-	Direction* pDirection = &pPlayerMove->GetLookDirection();
-	//pData->GetData("Health", pHealth);
-	pData->GetData("Status", pState);
-	pData->GetData("Pump", pPump);
-
-
-	//Components
-	pObject->AddComponent(new RenderComponent());
-	auto pCollider = new SpriteCollisionComponent();
-	pObject->AddComponent(pCollider);
-	auto pFSM = new FiniteStateMachineComponent();
-	pObject->AddComponent(pFSM);
-	auto pSprite = new SpriteComponent();
-	pObject->AddComponent(pSprite);
-	auto pMove = new MovementComponent();
-	pObject->AddComponent(pMove);
-
-	//Set Values
-	{
-		//Collider
-		pCollider->SetTrigger(true);
-		pCollider->SetOffset(0, 0, 0, 0);
-		pCollider->SetTag("Pump");
-		//pCollider->SetEnterCommand(std::make_shared<PumpColliderCommand>(true, *pPump));
-		//pCollider->SetExitCommand(std::make_shared<PumpColliderCommand>(false, *pPump));
-	}
-	{
-		//Sprite
-		pSprite->SetSpriteSpeed(0.05f);
-		pSprite->SetTexture(settings.spriteTexture);
-		Rect start{ 0, 7 * settings.spriteHeight, settings.spriteWidth,settings.spriteHeight };
-		pSprite->AddSprite(unsigned int(Direction::Up), new SweepSource(Rect(start.x, start.y, start.width, 0), Rect(start.x, start.y, start.width, 2 * start.height), 2, false));
-		pSprite->AddSprite(unsigned int(Direction::Right), new SweepSource(Rect(start.x + 3 * start.width, start.y, 0, start.height), Rect(start.x + start.width, start.y, 2 * start.width, start.height), 2, false));
-		pSprite->AddSprite(unsigned int(Direction::Down), new SweepSource(Rect(start.x + 3 * start.width, start.y + 2 * start.height, start.width, 0), Rect(start.x + 3 * start.width, start.y, start.width, 2 * start.height), 2, false));
-		pSprite->AddSprite(unsigned int(Direction::Left), new SweepSource(Rect(start.x + 4 * start.width, start.y, 0, start.height), Rect(start.x + 4 * start.width, start.y, 2 * start.width, start.height), 2, false));
-		pSprite->AddSprite(unsigned int(Direction::None), new FixedSource(Rect(0, 0, -1, -1)));
-	}
-	{
-		//FSM
-
-		//States
-		FSMStateDefault* pNoneState = new FSMStateDefault();
-		FSMStateDefault* pThrownState = new FSMStateDefault();
-		FSMStateDefault* pMissedState = new FSMStateDefault();
-		FSMStateDefault* pHitState = new FSMStateDefault();
-		pFSM->SaveState(pNoneState);
-		pFSM->SaveState(pThrownState);
-		pFSM->SaveState(pMissedState);
-		pFSM->SaveState(pHitState);
-
-		//Events
-		Event pSpriteEvent = std::make_shared<FSMEventPumpSprite>(*pDirection, pSprite);
-		Event pSpriteRemoveEvent = std::make_shared<FSMSpriteSourceEvent>(unsigned int(Direction::None), pSprite);
-		Event pMoveEvent = std::make_shared<FSMEventGridMove>(*pDirection, pMove, 300.0f);
-		Event pResetLocalEvent = std::make_shared<FSMSetLocalPosition>(Vector2{}, pObject->GetTransform());
-		Event pLockSpriteEvent = std::make_shared<FSMComponentEnableEvent>(pSprite, FSMComponentEnableEvent::Operation::SetFalse);
-		Event pUnlockSpriteEvent = std::make_shared<FSMComponentEnableEvent>(pSprite, FSMComponentEnableEvent::Operation::SetTrue);
-		Event pSetHitStatusEvent = std::make_shared<FSMSetDataEvent<PumpStatus>>(*pPump, PumpStatus::Hit);
-		Event pSetMissStatusEvent = std::make_shared<FSMSetDataEvent<PumpStatus>>(*pPump, PumpStatus::Missed);
-
-
-		//Conditions
-		Condition pInputPressedCondition = std::make_shared<FSMDataCondition<PumpStatus>>(*pPump, PumpStatus::Activated);
-		Condition pTimerCondition = std::make_shared<FSMTimeCondition>(0.2f);
-		Condition pInputReleasedConition = std::make_shared<FSMDataCondition<PumpStatus>>(*pPump, PumpStatus::Deactivated);
-
-		//Transitions
-		Transition pActivateTransition = std::make_shared<FSMTransition>(pThrownState, pInputPressedCondition);
-		//Transition pHitTransition = std::make_shared<FSMTransition>(pHitState, //TODO: Hashit);
-		Transition pMissedTransition = std::make_shared<FSMTransition>(pMissedState, pTimerCondition);
-		Transition pDeactivateTransition = std::make_shared<FSMTransition>(pNoneState, pInputReleasedConition);
-
-
-
-
-
-		//Make
-		pNoneState->AddTransition(pActivateTransition);
-		pNoneState->SetEnterEvent(std::make_shared<FSMMultiEvent>(Events{ pSpriteRemoveEvent,pResetLocalEvent }));
-
-		pThrownState->SetEnterEvent(pSpriteEvent);
-		//pThrownState->AddTransition(pHitTransition);	//Todo
-		pThrownState->AddTransition(pMissedTransition);
-		pThrownState->AddTransition(pDeactivateTransition);
-		pThrownState->SetUpdateFirstEvent(pMoveEvent);
-
-		pMissedState->AddTransition(pDeactivateTransition);
-		pMissedState->SetEnterEvent(std::make_shared<FSMMultiEvent>(Events{ pSpriteRemoveEvent,pResetLocalEvent, pSetMissStatusEvent }));
-
-		pHitState->AddTransition(pDeactivateTransition);
-		pHitState->SetEnterEvent(std::make_shared<FSMMultiEvent>(Events{ pLockSpriteEvent ,pSetHitStatusEvent}));
-		pHitState->SetExitEvent(pUnlockSpriteEvent);
-
-
-		//Set
-		pFSM->SetState(pNoneState);
-	}
-	return pObject;
-}
 
 
 
@@ -441,7 +45,7 @@ GameObject* DigDug::MakeBackground(Scene& scene, const DigDugSettings& settings)
 	//Texture
 	auto pTextureObject = pBackground->CreateChild();
 	{
-		auto pRenderComp = new RenderComponent(settings.backgroundTexture);
+		auto pRenderComp = new RenderComponent(settings.pBackgroundTexture);
 		if (pTextureObject->AddComponent(pRenderComp))
 		{
 			pTextureObject->GetTransform().SetLocalScale(3.25f, 2.25f);
@@ -462,7 +66,7 @@ GameObject* DigDug::MakeBackground(Scene& scene, const DigDugSettings& settings)
 
 			pGridComp->SetOffset(settings.gridOffset);
 
-			auto pGridRender = new MultiRenderComponent(settings.cavesTexture);
+			auto pGridRender = new MultiRenderComponent(settings.pCaveTexture);
 			if (pGridObject->AddComponent(pGridRender))
 			{
 				pGridRender->SetRenderPriority(-25, scene.GetSceneData());
@@ -509,13 +113,13 @@ GameObject* DigDug::CreateObstacle(Scene& scene, const DigDugSettings& settings)
 	pColliderC->SetCollider(settings.spriteWidth, settings.spriteHeight, 0, 0);
 
 	//Sprite
-	pSpriteC->SetTexture("Sprites_Other.png");
+	pSpriteC->SetTexture(settings.pOtherTexture);
 	pSpriteC->SetSpriteSpeed(settings.spriteSpeed);
 	Rect src{ 0,0, settings.spriteWidth, settings.spriteHeight };
-	pSpriteC->AddSprite(unsigned int(ObstacleSprite::Idle), new FixedSource(src));
-	pSpriteC->AddSprite(unsigned int(ObstacleSprite::Moving), new TickSource(src, 2, true));
+	pSpriteC->AddSprite(unsigned int(ObstacleSpriteID::Idle), new FixedSource(src));
+	pSpriteC->AddSprite(unsigned int(ObstacleSpriteID::Moving), new TickSource(src, 2, true));
 	src.x += 2 * src.width;
-	pSpriteC->AddSprite(unsigned int(ObstacleSprite::Destroyed), new FixedSource(src));
+	pSpriteC->AddSprite(unsigned int(ObstacleSpriteID::Destroyed), new FixedSource(src));
 
 	//Fsm
 	FSMState* pDestrState = new FSMStateDestroyObject(pObject);
@@ -523,12 +127,12 @@ GameObject* DigDug::CreateObstacle(Scene& scene, const DigDugSettings& settings)
 	FSMState* pFallState = new FSMStateObstacleFall(pObject, settings.pGrid, 100.0f, pDestrDelayState);
 	FSMState* pFallDelayState = new FSMStateDelay(1.5f, pFallState);
 	FSMState* pIdleState = new FSMStateObstacleIdle(settings.pGrid, pObject, pFallDelayState);
-	pFsmC->SaveState(pDestrState);
-	pFsmC->SaveState(pDestrDelayState);
-	pFsmC->SaveState(pFallState);
-	pFsmC->SaveState(pFallDelayState);
-	pFsmC->SaveState(pIdleState);
-
+	pFsmC->SaveState("DestoyedState",pDestrState);
+	pFsmC->SaveState("DestroyedDelayState", pDestrDelayState);
+	pFsmC->SaveState("FallState",pFallState);
+	pFsmC->SaveState("FallDelayState",pFallDelayState);
+	pFsmC->SaveState("IdleState",pIdleState);
+					 
 	pFsmC->SetState(pIdleState);
 	return pObject;
 }
@@ -550,7 +154,7 @@ GameObject* DigDug::CreatePooka(Scene& scene, const DigDugSettings& settings)
 
 	auto* em = scene.GetSceneData().GetManager<EnemyManager>();
 	if (em)em->RegisterEnemy(pObject);
-
+	pObject->AddComponent(new DigDugEnemyComponent());
 
 	//Construct
 	{
@@ -562,41 +166,41 @@ GameObject* DigDug::CreatePooka(Scene& scene, const DigDugSettings& settings)
 	{
 		//Sprite
 		pSprite->SetSpriteSpeed(settings.spriteSpeed);
-		pSprite->SetTexture("Sprites_Pooka.png");
+		pSprite->SetTexture(settings.pPookaTexture);
 
 		Rect start = Rect{ 0, 0, settings.spriteWidth, settings.spriteHeight };
-		pSprite->AddSprite(unsigned int(EnemySprite::IdleRight), new FixedSource(start));
-		pSprite->AddSprite(unsigned int(EnemySprite::MoveRight), new TickSource(start, 2, true));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::IdleRight), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::MoveRight), new TickSource(start, 2, true));
 		start.x += 2 * start.width;
-		pSprite->AddSprite(unsigned int(EnemySprite::CrushedRight), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::CrushedRight), new FixedSource(start));
 		start.x += start.width;
-		pSprite->AddSprite(unsigned int(EnemySprite::Ghost), new TickSource(start, 2, true));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::Ghost), new TickSource(start, 2, true));
 		start.x = 0;
 		start.y += start.height;
-		pSprite->AddSprite(unsigned int(EnemySprite::IdleLeft), new FixedSource(start));
-		pSprite->AddSprite(unsigned int(EnemySprite::MoveLeft), new TickSource(start, 2, true));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::IdleLeft), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::MoveLeft), new TickSource(start, 2, true));
 		start.x += 2 * start.width;
-		pSprite->AddSprite(unsigned int(EnemySprite::CrushedLeft), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::CrushedLeft), new FixedSource(start));
 		start.x = 0;
 		start.y += start.height;
 		start.width = 2 * start.width;
 		start.height = 2 * start.height;
-		pSprite->AddSprite(unsigned int(EnemySprite::PumpedRightTier1), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedRightTier1), new FixedSource(start));
 		start.x += start.width;
-		pSprite->AddSprite(unsigned int(EnemySprite::PumpedRightTier2), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedRightTier2), new FixedSource(start));
 		start.x += start.width;
-		pSprite->AddSprite(unsigned int(EnemySprite::PumpedRightTier3), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedRightTier3), new FixedSource(start));
 		start.x += start.width;
-		pSprite->AddSprite(unsigned int(EnemySprite::PumpedRightTier4), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedRightTier4), new FixedSource(start));
 		start.x = 0;
 		start.y += start.height;
-		pSprite->AddSprite(unsigned int(EnemySprite::PumpedLeftTier1), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedLeftTier1), new FixedSource(start));
 		start.x += start.width;
-		pSprite->AddSprite(unsigned int(EnemySprite::PumpedLeftTier2), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedLeftTier2), new FixedSource(start));
 		start.x += start.width;
-		pSprite->AddSprite(unsigned int(EnemySprite::PumpedLeftTier3), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedLeftTier3), new FixedSource(start));
 		start.x += start.width;
-		pSprite->AddSprite(unsigned int(EnemySprite::PumpedLeftTier4), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedLeftTier4), new FixedSource(start));
 	}
 	{
 
@@ -606,16 +210,16 @@ GameObject* DigDug::CreatePooka(Scene& scene, const DigDugSettings& settings)
 
 		FSMStateEnemyPumping* pPumpedState = new FSMStateEnemyPumping(pObject, 2.0f, 0.5f, nullptr, pDeadDelayState, pCrushedState);
 		FSMStateEnemyGhost* pGhostState = new FSMStateEnemyGhost(pObject, 60.0f, 5.0f, settings.pGrid, nullptr, pCrushedState, pPumpedState);
-		FSMState* pMoveState = new FSMStateEnemyMoving(60.0f, settings.pGrid, pObject, pPumpedState, pGhostState, pCrushedState, 10.0f);
+		FSMState* pMoveState = new FSMStatePookaMoving(60.0f, settings.pGrid, pObject, pPumpedState, pGhostState, pCrushedState, 10.0f);
 		pPumpedState->SetMoveState(pMoveState);
 		pGhostState->SetMoveState(pMoveState);
 
-		pFSM->SaveState(pDeadState);
-		pFSM->SaveState(pDeadDelayState);
-		pFSM->SaveState(pCrushedState);
-		pFSM->SaveState(pPumpedState);
-		pFSM->SaveState(pGhostState);
-		pFSM->SaveState(pMoveState);
+		pFSM->SaveState("DeadState",pDeadState);
+		pFSM->SaveState("DeadDelayedState", pDeadDelayState);
+		pFSM->SaveState("CrushedState",pCrushedState);
+		pFSM->SaveState("PumpedState",pPumpedState);
+		pFSM->SaveState("GhostState",pGhostState);
+		pFSM->SaveState("MoveState",pMoveState);
 
 
 		pFSM->SetState(pMoveState);
@@ -629,6 +233,7 @@ GameObject* DigDug::CreatePump(GameObject& parent, const DigDugSettings& setting
 {
 	UNREFERENCED_PARAMETER(settings);
 	GameObject* pPump = parent.CreateChild();
+	float speed = 0.65f * settings.spriteSpeed;
 
 	//Components
 	auto* pCollider = new SpriteCollisionComponent();
@@ -650,8 +255,8 @@ GameObject* DigDug::CreatePump(GameObject& parent, const DigDugSettings& setting
 		pCollider->SetOffset(0, 0, 0, 0);
 	}
 	{
-		pSprite->SetTexture("Sprites_Pump.png");
-		pSprite->SetSpriteSpeed(settings.spriteSpeed);
+		pSprite->SetTexture(settings.pPumpTexture);
+		pSprite->SetSpriteSpeed(speed);
 		pSprite->AddSprite(unsigned int(PumpSpriteID::None), new FixedSource(Rect{ 0,0,0,0 }));
 		Rect src{ 0,0, settings.spriteWidth, settings.spriteHeight };
 		pSprite->AddSprite(unsigned int(PumpSpriteID::Up), new SweepSource(Rect{ 0,0, src.width,0 }, Rect{ 0,0, src.width, src.height * 2 }, 2, false));
@@ -661,14 +266,14 @@ GameObject* DigDug::CreatePump(GameObject& parent, const DigDugSettings& setting
 	}
 	{
 		FSMStatePumpInactive* pInactiveState = new FSMStatePumpInactive(nullptr, pPump);
-		FSMStatePumpActive* pActiveState = new FSMStatePumpActive(pPump, 0, 2 * settings.spriteSpeed, pInactiveState, nullptr);
+		FSMStatePumpActive* pActiveState = new FSMStatePumpActive(pPump, 0, 2 * speed, pInactiveState, nullptr);
 		FSMState* pHitState = new FSMStatePumpPumping(pPump, pInactiveState);
 		pInactiveState->SetActiveState(pActiveState);
 		pActiveState->SetPumpState(pHitState);
 
-		pFSM->SaveState(pInactiveState);
-		pFSM->SaveState(pActiveState);
-		pFSM->SaveState(pHitState);
+		pFSM->SaveState("InactiveState", pInactiveState);
+		pFSM->SaveState("ActiveState",pActiveState);
+		pFSM->SaveState("HitState",pHitState);
 
 
 		pFSM->SetState(pInactiveState);
@@ -676,3 +281,335 @@ GameObject* DigDug::CreatePump(GameObject& parent, const DigDugSettings& setting
 
 	return pPump;
 }
+
+GameObject* DigDug::CreatePlayer(Scene& scene, const DigDugSettings& settings, char up, char down, char left, char right, char pump)
+{
+	UNREFERENCED_PARAMETER(pump);
+	UNREFERENCED_PARAMETER(up);
+	UNREFERENCED_PARAMETER(down);
+	UNREFERENCED_PARAMETER(left);
+	UNREFERENCED_PARAMETER(right);
+
+	GameObject* pObject = scene.CreateGameObject();
+
+	pObject->AddComponent(new DigDugPlayerComponent());
+	auto* pFSM = new FiniteStateMachineComponent();
+	pObject->AddComponent(pFSM);
+	auto* pCollider = new AABBCollisionComponent();
+	pObject->AddComponent(pCollider);
+	pObject->AddComponent(new RenderComponent());
+	auto pMove = new MovementComponent();
+	pObject->AddComponent(pMove);
+	auto pMovement = new DigDugMovementComponent(*settings.pGrid, 75.0f);
+	pObject->AddComponent(pMovement);
+	auto pSprite = new SpriteComponent();
+	pObject->AddComponent(pSprite);
+
+	//Construct
+	//Set Values
+	pCollider->SetTrigger(false);
+	pCollider->SetTag("Player");
+	pCollider->SetCollider(settings.spriteWidth, settings.spriteHeight, 0, 0);
+	pSprite->SetSpriteSpeed(settings.spriteSpeed);
+	pSprite->SetTexture(settings.pDigDugTexture);
+	pMovement->SetEnabled(false);
+	HelpPlayerSprites(*pSprite, settings);
+
+	//Input
+	auto pInput = scene.GetSceneData().GetInput();
+	auto pLeftDown = std::make_shared<PlayerInput>(Direction::Left, pMovement);
+	auto pRightDown = std::make_shared<PlayerInput>(Direction::Right, pMovement);
+	auto pUpDown = std::make_shared<PlayerInput>(Direction::Up, pMovement);
+	auto pDownDown = std::make_shared<PlayerInput>(Direction::Down, pMovement);
+	auto pNone = std::make_shared<PlayerInput>(Direction::None, pMovement);
+
+	auto pPmpPressed = std::make_shared<InputNotifier>(pObject, GameEvent::InputPumpPressed);
+	auto pPmpReleased = std::make_shared<InputNotifier>(pObject, GameEvent::InputPumpReleased);
+
+	InputAction leftA{ InputTriggerState::Down, pLeftDown, -1, left, -1 };
+	InputAction rightA{ InputTriggerState::Down, pRightDown, -1, right, -1 };
+	InputAction upA{ InputTriggerState::Down, pUpDown, -1, up, -1 };
+	InputAction downA{ InputTriggerState::Down, pDownDown, -1, down, -1 };
+	InputAction pumpPressedA{ InputTriggerState::Pressed, pPmpPressed, -1, pump, -1 };
+	InputAction pumpReleasedA{ InputTriggerState::Released, pPmpReleased, -1, pump, -1 };
+
+	InputAction leftB{ InputTriggerState::Up, pNone, -1, left, -1 };
+	InputAction rightB{ InputTriggerState::Up, pNone, -1, left, -1 };
+	InputAction upB{ InputTriggerState::Up, pNone, -1, left, -1 };
+	InputAction downB{ InputTriggerState::Up, pNone, -1, left, -1 };
+
+	pInput->AddInputAction(leftA);
+	pInput->AddInputAction(rightA);
+	pInput->AddInputAction(upA);
+	pInput->AddInputAction(downA);
+	pInput->AddInputAction(pumpPressedA);
+	pInput->AddInputAction(pumpReleasedA);
+	pInput->AddInputAction(leftB);
+	pInput->AddInputAction(rightB);
+	pInput->AddInputAction(upB);
+	pInput->AddInputAction(downB);
+
+
+	//FSM
+	FSMState* pIdleState = new FSMStatePlayerIdle("DeadState", "CrushedState", "ThrowState", "MoveState");
+	FSMState* pMoveState = new FSMStatePlayerMoving("DeadState", "CrushedState", "ThrowState", "IdleState", settings.pGrid);
+	FSMState* pCrushedState = new FSMStatePlayerCrushed("CrushDelay", settings.pGrid, 100.0f);
+	FSMState* pDeadState = new FSMStatePlayerDead();
+	FSMState* pThrowState = new FSMStatePlayerThrowing("DeadState", "CrushedState", "IdleState", "PumpState");
+	FSMState* pPumpState = new FSMStatePlayerPumping("DeadState", "CrushedState", "IdleState", "MoveState");
+	FSMState* pCrushDelay = new FSMStateDelay(1.0f, pDeadState);
+	pFSM->SaveState("IdleState", pIdleState);
+	pFSM->SaveState("MoveState", pMoveState);
+	pFSM->SaveState("CrushedState", pCrushedState);
+	pFSM->SaveState("DeadState", pDeadState);
+	pFSM->SaveState("ThrowState", pThrowState);
+	pFSM->SaveState("CrushDelay", pCrushDelay);
+	pFSM->SaveState("PumpState", pPumpState);
+
+	pFSM->SetState(pIdleState);
+
+
+
+	CreatePump(*pObject, settings);
+	return pObject;
+}
+
+void DigDug::HelpPlayerSprites(SpriteComponent& comp, const DigDugSettings& settings)
+{
+	Rect s(0, 0, settings.spriteWidth, settings.spriteHeight);
+
+	//Move
+	comp.AddSprite(unsigned int(PlayerSpriteID::MoveRight), new TickSource(s, 2, true));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::MoveUp), new TickSource(s, 2, true));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::MoveLeft), new TickSource(s, 2, true));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::MoveDown), new TickSource(s, 2, true));
+
+	//Dig
+	s.x = 0;
+	s.y += s.height;
+	comp.AddSprite(unsigned int(PlayerSpriteID::DigRight), new TickSource(s, 2, true));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::DigUp), new TickSource(s, 2, true));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::DigLeft), new TickSource(s, 2, true));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::DigDown), new TickSource(s, 2, true));
+
+	//Throw
+	s.x = 0;
+	s.y += s.height;
+	comp.AddSprite(unsigned int(PlayerSpriteID::ThrowRight), new FixedSource(s));
+	s.x += s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::ThrowUp), new FixedSource(s));
+	s.x += s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::ThrowLeft), new FixedSource(s));
+	s.x += s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::ThrowDown), new FixedSource(s));
+
+	//Pumping
+	s.x = 0;
+	s.y += s.height;
+	comp.AddSprite(unsigned int(PlayerSpriteID::PumpRight), new TickSource(s, 2, true));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::PumpUp), new TickSource(s, 2, true));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::PumpLeft), new TickSource(s, 2, true));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::PumpDown), new TickSource(s, 2, true));
+
+	//Crushed
+	s.x = 0;
+	s.y += s.height;
+	comp.AddSprite(unsigned int(PlayerSpriteID::CrushedRight), new TickSource(s, 2, false));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::CrushedUp), new TickSource(s, 2, false));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::CrushedLeft), new TickSource(s, 2, false));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::CrushedDown), new TickSource(s, 2, false));
+
+	//Dead
+	s.x = 0;
+	s.y += s.height;
+	comp.AddSprite(unsigned int(PlayerSpriteID::DiedRight), new TickSource(s, 4, false));
+	s.x += 4 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::DiedUp), new TickSource(s, 4, false));
+	s.x = 0;
+	s.y += s.height;
+	comp.AddSprite(unsigned int(PlayerSpriteID::DiedLeft), new TickSource(s, 4, false));
+	s.x += 4 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::DiedDown), new TickSource(s, 4, false));
+
+
+	//Idle
+	s.x = s.width;
+	s.y = 0;
+	comp.AddSprite(unsigned int(PlayerSpriteID::IdleRight), new FixedSource(s));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::IdleUp), new FixedSource(s));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::IdleLeft), new FixedSource(s));
+	s.x += 2 * s.width;
+	comp.AddSprite(unsigned int(PlayerSpriteID::IdleDown), new FixedSource(s));
+
+
+}
+
+
+
+
+
+
+
+GameObject* DigDug::CreateFygar(Scene& scene, const DigDugSettings& settings)
+{
+	auto pObject = scene.CreateGameObject();
+
+	//Components
+	auto pSprite = new SpriteComponent();
+	auto pCol = new AABBCollisionComponent();
+	auto pFsm = new FiniteStateMachineComponent();
+	pObject->AddComponent(pSprite);
+	pObject->AddComponent(pCol);
+	pObject->AddComponent(pFsm);
+	pObject->AddComponent(new RenderComponent());
+	pObject->AddComponent(new MovementComponent());
+
+	auto* em = scene.GetSceneData().GetManager<EnemyManager>();
+	if (em)em->RegisterEnemy(pObject);
+	pObject->AddComponent(new DigDugEnemyComponent());
+
+	//Constr
+	{
+		pCol->SetTrigger(true);
+		pCol->SetTag("Enemy");
+		pCol->SetCollider(settings.spriteWidth, settings.spriteHeight, 0, 0);
+	}
+	{
+		//Sprite
+		pSprite->SetSpriteSpeed(settings.spriteSpeed);
+		pSprite->SetTexture(settings.pFygarTexture);
+
+		Rect start = Rect{ 0, 0, settings.spriteWidth, settings.spriteHeight };
+		pSprite->AddSprite(unsigned int(EnemySpriteID::IdleRight), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::MoveRight), new TickSource(start, 2, true));
+		start.x += 2 * start.width;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::CrushedRight), new FixedSource(start));
+		start.x += start.width;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::FireRight), new TickSource(start, 2, true));
+		start.x += 3 * start.width;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::Ghost), new TickSource(start, 2, true));
+		start.x = 0;
+		start.y += start.height;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::IdleLeft), new FixedSource(start));
+		pSprite->AddSprite(unsigned int(EnemySpriteID::MoveLeft), new TickSource(start, 2, true));
+		start.x += 2 * start.width;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::CrushedLeft), new FixedSource(start));
+		start.x += start.width;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::FireLeft), new TickSource(start, 2, true));
+		start.x = 0;
+		start.y += 3*start.height;
+		start.width = 2 * start.width;
+		start.height = 2 * start.height;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedRightTier1), new FixedSource(start));
+		start.x += start.width;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedRightTier2), new FixedSource(start));
+		start.x += start.width;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedRightTier3), new FixedSource(start));
+		start.x += start.width;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedRightTier4), new FixedSource(start));
+		start.x = 0;
+		start.y += start.height;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedLeftTier1), new FixedSource(start));
+		start.x += start.width;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedLeftTier2), new FixedSource(start));
+		start.x += start.width;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedLeftTier3), new FixedSource(start));
+		start.x += start.width;
+		pSprite->AddSprite(unsigned int(EnemySpriteID::PumpedLeftTier4), new FixedSource(start));
+	}
+	{
+		//FSM
+		FSMState* pDeadState = new FSMStateDestroyObject(pObject);
+		FSMState* pDeadDelayState = new FSMStateDelay(1.5f, pDeadState);
+		FSMState* pCrushedState = new FSMStateEnemyCrushed(settings.pGrid, pObject, 100.0f, pDeadDelayState);
+
+		FSMState* pMoveState = new FSMStateFygarMoving(60.0f, 3.0f, 10.0f, settings.pGrid, "PumpedState", "GhostState", "CrushedState", "FireState");
+		FSMState* pFireState = new FSMStateFygarFire(3 * settings.spriteSpeed, "PumpedState", "CrushedState", "MoveState");
+		FSMStateEnemyPumping* pPumpedState = new FSMStateEnemyPumping(pObject, 2.0f, 0.5f, pMoveState, pDeadDelayState, pCrushedState);
+		FSMStateEnemyGhost* pGhostState = new FSMStateEnemyGhost(pObject, 60.0f, 5.0f, settings.pGrid, pMoveState, pCrushedState, pPumpedState);
+
+		pFsm->SaveState("DeadState", pDeadState);
+		pFsm->SaveState("DeadDelayedState", pDeadDelayState);
+		pFsm->SaveState("CrushedState", pCrushedState);
+		pFsm->SaveState("PumpedState", pPumpedState);
+		pFsm->SaveState("GhostState", pGhostState);
+		pFsm->SaveState("MoveState", pMoveState);
+		pFsm->SaveState("FireState", pFireState);
+
+		pFsm->SetState(pMoveState);
+
+
+	}
+	CreateFire(*pObject, settings);
+
+	return pObject;
+}
+
+GameObject* DigDug::CreateFire(GameObject& parent, const DigDugSettings& settings)
+{
+	auto pObject = parent.CreateChild();
+
+	//Components
+	auto pCol = new SpriteCollisionComponent();
+	auto pSprite = new SpriteComponent();
+	auto pFsm = new FiniteStateMachineComponent();
+	pObject->AddComponent(new RenderComponent());
+	pObject->AddComponent(pCol);
+	pObject->AddComponent(pSprite);
+	pObject->AddComponent(pFsm);
+
+	//Constr
+	{
+		//Collider
+		pCol->SetTrigger(true);
+		pCol->SetTag("Fire");
+	}
+	{
+		//Sprite
+		pSprite->SetTexture(settings.pFygarTexture);
+		pSprite->SetSpriteSpeed(settings.spriteSpeed);
+		
+		Rect s{ 0, 2 * settings.spriteHeight, settings.spriteWidth, settings.spriteHeight };
+		pSprite->AddSprite(unsigned int(FireSpriteID::None), new FixedSource(Rect{}));
+		GrowSource* pS = new GrowSource(false);
+		pS->sources.push_back(s);
+		pS->sources.push_back(Rect{ s.x + s.width, s.y, s.width * 2, s.height });
+		pS->sources.push_back(Rect{ s.x + s.width * 3, s.y, s.width * 3, s.height });
+		pSprite->AddSprite(unsigned int(FireSpriteID::Right), pS);
+		pS = new GrowSource(false);
+		s.y += s.height;
+		pS->sources.push_back(s);
+		pS->sources.push_back(Rect{ s.x + s.width, s.y, s.width * 2, s.height });
+		pS->sources.push_back(Rect{ s.x + s.width * 3, s.y, s.width * 3, s.height });
+		pSprite->AddSprite(unsigned int(FireSpriteID::Left), pS);
+	}
+	{
+		//FSM
+		FSMState* pNoneState = new FSMStateFireIdle("ActiveState");
+		FSMState* pActiveState = new FSMStateFireActive("InactiveState", 3 * settings.spriteSpeed);
+		pFsm->SaveState("ActiveState", pActiveState);
+		pFsm->SaveState("InactiveState", pNoneState);
+		pFsm->SetState(pNoneState);
+	}
+
+	return pObject;
+}
+
+
+
+
+

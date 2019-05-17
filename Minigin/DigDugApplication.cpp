@@ -16,6 +16,8 @@
 #include "GameButtons.h"
 #include "GameInputCommands.h"
 #include "ScreenRenderComponent.h"
+#include "GameManager.h"
+#include "LevelLoader.h"
 
 using namespace DigDug;
 
@@ -24,12 +26,34 @@ using namespace DigDug;
 #include "SpriteCollisionComponent.h"
 void DigDugApplication::Initialize(SceneManager& sceneManager, const WindowSettings& windowSettings)
 {
+	//UNREFERENCED_PARAMETER(windowSettings);
+	//auto s = sceneManager.CreateScene("Test");
+	//GameObject* pTest = s->CreateGameObject();
+	//auto* pG = new DigDugGridComponent();
+	//pG->SetHeight(3);
+	//pG->SetWidth(3);
+	//pG->SetOffset(Vector2{ 48, 48 });
+	//pTest->AddComponent(pG);
+	//s->Initialize();
+
+	//Test Values
+
+	//auto m = pG->ClosestLine(Vector2(0, 0));
+	//auto n = pG->ClosestLine(Vector2(12, 36));
+	//auto x = pG->ClosestLine(Vector2(-48, 12));
+	//UNREFERENCED_PARAMETER(m);
+	//UNREFERENCED_PARAMETER(n);
+	//UNREFERENCED_PARAMETER(x);
+
+
+
 	UNREFERENCED_PARAMETER(windowSettings);
 	auto* pGameScene = CreateGameScene(sceneManager, windowSettings);
 	auto* pMenuScene = CreateMenuScene(sceneManager, windowSettings);
 	sceneManager.SetActiveScene("Menu");
 	UNREFERENCED_PARAMETER(pMenuScene);
 	UNREFERENCED_PARAMETER(pGameScene);
+
 }
 
 
@@ -124,54 +148,79 @@ Scene* DigDugApplication::CreateMenuScene(SceneManager& sceneManager, const Wind
 
 Scene* DigDugApplication::CreateGameScene(SceneManager& sceneManager, const WindowSettings& windowSettings)
 {
-	Vector2 objectScale(2.0f, 2.0f);
+	UNREFERENCED_PARAMETER(windowSettings);
 
 	auto pGameScene = sceneManager.CreateScene("SingleplayerScene");
 
-	//Settings
-	DigDugSettings settings;
-	settings.spriteHeight = 16;
-	settings.spriteWidth = 16;
-	settings.spriteSpeed = 0.25f;
-	settings.spriteTexture = ResourceManager::GetInstance().LoadTexture("DigDugSprites_Usable.png");
-	settings.backgroundTexture = ResourceManager::GetInstance().LoadTexture("background.png");
-	settings.cavesTexture = ResourceManager::GetInstance().LoadTexture("Cave.png");
-
-	//Managers
-	auto* pPManager = new PlayerManager();
-	auto* pEManager = new EnemyManager();
-	pGameScene->GetSceneData().AddManager(pPManager);
-	pGameScene->GetSceneData().AddManager(pEManager);
-
-
-	//Background
-	auto pBackgroundObject = MakeBackground(*pGameScene, settings);
-	settings.pGrid = pBackgroundObject->GetComponentInChildren<DigDugGridComponent>();
-	if (settings.pGrid == nullptr) return pGameScene;
-	pBackgroundObject->GetTransform().SetLocalPosition(windowSettings.width*0.5f, windowSettings.height*0.5f);
-
-
-	//Stone TEST
-	for (int w = 4; w <= 16; w += 2)
-	{
-		auto pStone = CreateObstacle(*pGameScene, settings);
-		pStone->GetTransform().SetWorldPosition(settings.pGrid->GetPosition(w, 4));
-		pStone->GetTransform().SetWorldScale(objectScale);
-	}
-
-
-	//Make player
-	auto pPlayer = MakePlayerObject(*pGameScene, settings, 'W', 'S', 'A', 'D', 'E');
-	auto& pPlayerTransform = pPlayer->GetTransform();
-	pPlayerTransform.SetWorldPosition(settings.pGrid->GetPosition(2, 2));
-	pPlayerTransform.SetWorldScale(objectScale);
-	pPManager->RegisterPlayer(pPlayer);
-
-
-	auto* pPooka = CreatePooka(*pGameScene, settings);
-	pPooka->GetTransform().SetWorldScale(objectScale);
-	pPooka->GetTransform().SetWorldPosition(settings.pGrid->GetPosition(10, 10));
-	pEManager->RegisterEnemy(pPooka);
+	pGameScene->GetSceneData().AddManager(new PlayerManager());
+	pGameScene->GetSceneData().AddManager(new EnemyManager());
+	pGameScene->GetSceneData().AddManager(new GameManager(3, "Level.txt"));
 
 	return pGameScene;
+
+
+
+	//Vector2 objectScale(2.0f, 2.0f);
+
+	//auto pGameScene = sceneManager.CreateScene("SingleplayerScene");
+
+	////Settings
+	//DigDugSettings settings;
+	//settings.spriteHeight = 16;
+	//settings.spriteWidth = 16;
+	//settings.spriteSpeed = 0.25f;
+
+	//settings.pBackgroundTexture = ResourceManager::GetInstance().LoadTexture("background.png");
+	//settings.pCaveTexture = ResourceManager::GetInstance().LoadTexture("Cave.png");
+	//settings.pDigDugTexture = ResourceManager::GetInstance().LoadTexture("Sprites_DigDug.png");
+	//settings.pFygarTexture = ResourceManager::GetInstance().LoadTexture("Sprites_Fygar.png");
+	//settings.pOtherTexture = ResourceManager::GetInstance().LoadTexture("Sprites_Other.png");
+	//settings.pPookaTexture = ResourceManager::GetInstance().LoadTexture("Sprites_Pooka.png");
+	//settings.pPumpTexture = ResourceManager::GetInstance().LoadTexture("Sprites_Pump.png");
+
+	////Managers
+	//auto* pPManager = new PlayerManager();
+	//auto* pEManager = new EnemyManager();
+	//pGameScene->GetSceneData().AddManager(pPManager);
+	//pGameScene->GetSceneData().AddManager(pEManager);
+
+	////Background
+	//auto pBackgroundObject = MakeBackground(*pGameScene, settings);
+	//settings.pGrid = pBackgroundObject->GetComponentInChildren<DigDugGridComponent>();
+	//if (settings.pGrid == nullptr) return pGameScene;
+	//pBackgroundObject->GetTransform().SetLocalPosition(windowSettings.width*0.5f, windowSettings.height*0.5f);
+
+
+	////Stone TEST
+	//for (int w = 4; w <= 16; w += 2)
+	//{
+	//	auto pStone = CreateObstacle(*pGameScene, settings);
+	//	pStone->GetTransform().SetWorldPosition(settings.pGrid->GetPosition(w, 4));
+	//	pStone->GetTransform().SetWorldScale(objectScale);
+	//}
+
+
+	////Make player
+	//auto pPlayer = CreatePlayer(*pGameScene, settings, 'W', 'S', 'A', 'D', 'E');
+	//auto& pPlayerTransform = pPlayer->GetTransform();
+	//pPlayerTransform.SetWorldPosition(settings.pGrid->GetPosition(2, 2));
+	//pPlayerTransform.SetWorldScale(objectScale);
+	//pPManager->RegisterPlayer(pPlayer);
+
+
+	////Pooka
+	//auto* pPooka = CreatePooka(*pGameScene, settings);
+	//pPooka->GetTransform().SetWorldScale(objectScale);
+	//pPooka->GetTransform().SetWorldPosition(settings.pGrid->GetPosition(10, 10));
+	//settings.pGrid->Mark(settings.pGrid->GetPosition(10, 10));
+	//pEManager->RegisterEnemy(pPooka);
+
+	////Fygar
+	//auto* pFygar = CreateFygar(*pGameScene, settings);
+	//pFygar->GetTransform().SetWorldScale(objectScale);
+	//pFygar->GetTransform().SetWorldPosition(settings.pGrid->GetPosition(16, 16));
+	//settings.pGrid->Mark(settings.pGrid->GetPosition(16, 16));
+	//pEManager->RegisterEnemy(pFygar);
+
+	//return pGameScene;
 }

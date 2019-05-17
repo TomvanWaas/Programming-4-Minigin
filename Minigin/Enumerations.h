@@ -1,13 +1,28 @@
 #pragma once
 namespace DigDug
 {
-	enum class PlayerSprite
+	enum class Direction
 	{
-		//Order: Up -> Down -> Left -> Right
+		Up,
+		Down,
+		Left,
+		Right,
+		None
+	};
+
+
+
+	enum class PlayerSpriteID
+	{
 		IdleUp,
 		IdleDown,
 		IdleLeft,
 		IdleRight,
+
+		DigUp,
+		DigDown,
+		DigLeft,
+		DigRight,
 
 		MoveUp,
 		MoveDown,
@@ -34,24 +49,12 @@ namespace DigDug
 		DiedLeft,
 		DiedRight
 	};
-
-	enum class PlayerState
-	{
-		Idle,
-		Moving,
-		Thrown,
-		Pumping,
-		Crushed,
-		Killed
-	};
-
-	enum class ObstacleSprite
+	enum class ObstacleSpriteID
 	{
 		Idle,
 		Moving,
 		Destroyed
 	};
-
 	enum class PumpSpriteID
 	{
 		Up,
@@ -60,32 +63,7 @@ namespace DigDug
 		Left,
 		None
 	};
-
-
-	enum class PlayerHealth
-	{
-		Alive,
-		Killed,
-		Crushed
-	};
-	enum class PumpStatus
-	{
-		Deactivated,
-		Hit,
-		Missed,
-		Activated
-	};
-	enum class Direction
-	{
-		Up,
-		Down,
-		Left,
-		Right,
-		None
-	};
-
-
-	enum class EnemySprite
+	enum class EnemySpriteID
 	{
 		IdleRight,
 		MoveRight,
@@ -101,8 +79,18 @@ namespace DigDug
 		PumpedLeftTier1,
 		PumpedLeftTier2,
 		PumpedLeftTier3,
-		PumpedLeftTier4
+		PumpedLeftTier4,
+		FireLeft,
+		FireRight
 	};
+	enum class FireSpriteID
+	{
+		None,
+		Right,
+		Left
+	};
+
+
 
 
 }

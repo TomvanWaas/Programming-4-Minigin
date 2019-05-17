@@ -16,8 +16,8 @@ public:
 	virtual void OnNotify(ObservedEvent event, const ObservedData& data) override;
 	void SetState(FSMState* pState);
 
-	void SaveState(FSMState* pState);
-	void SaveStates(const std::vector<FSMState*>& pStates);
+	bool SaveState(const std::string& name, FSMState* pState);
+	FSMState* GetState(const std::string& name) const;
 
 	FSMData& GetData() { return m_Data; }
 	const FSMData& GetData() const { return m_Data; }
@@ -28,6 +28,6 @@ private:
 	FSMData m_Data;
 
 	//So they are guaranteed to exist when used
-	std::vector<FSMState*> m_pSavedStates;
+	std::map<std::string, FSMState*> m_pSavedStates;
 };
 

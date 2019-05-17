@@ -1,18 +1,22 @@
 #pragma once
 #include <memory>
 #include "SceneData.h"
+class GameObject;
 class ObservedData;
-enum class ObservedEvent;
 class FSMCondition;
 class FSMEvent;
 class FSMNotifiedEvent;
 class FSMData;
+class FiniteStateMachineComponent;
+#include "ObservedEvent.h"
 
 class FSMState abstract
 {
 public:
 	explicit FSMState() = default;
 	virtual ~FSMState() = default;
+
+	void SetFSMComponent(FiniteStateMachineComponent* pComponent);
 
 	FSMState(const FSMState& other) = delete;
 	FSMState(FSMState&& other) noexcept = delete;
@@ -25,6 +29,13 @@ public:
 	virtual void Enter(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData);  UNREFERENCED_PARAMETER(data); }
 	virtual void Exit(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData); UNREFERENCED_PARAMETER(data); }
 	virtual FSMState* OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data) { UNREFERENCED_PARAMETER(oevent); UNREFERENCED_PARAMETER(odata); UNREFERENCED_PARAMETER(data); return this; };
+
+protected:
+	FSMState* GetState(const std::string& name) const;
+	GameObject* GetGameObject() const;
+private:
+	FiniteStateMachineComponent* m_pFSMComponent;
+
 };
 
 struct FSMTransition
