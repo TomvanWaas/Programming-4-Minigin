@@ -6,7 +6,7 @@ class FSMStateDelay final : public FSMState
 public:
 	explicit FSMStateDelay(float delay, FSMState* pNext);
 	virtual ~FSMStateDelay() = default;
-	virtual void Initialize(const SceneData& sceneData, FSMData& data) override;
+	virtual void Enter(const SceneData& sceneData, FSMData& data) override;
 	virtual FSMState* UpdateFirst(const SceneData& sceneData, FSMData& data) override;
 private:
 	float m_Accu;

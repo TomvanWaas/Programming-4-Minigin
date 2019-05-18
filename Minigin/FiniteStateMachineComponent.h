@@ -15,6 +15,7 @@ public:
 	virtual void UpdateSecondOverride(const SceneData& sceneData) override;
 	virtual void OnNotify(ObservedEvent event, const ObservedData& data) override;
 	void SetState(FSMState* pState);
+	void SetState(const std::string& state);
 
 	bool SaveState(const std::string& name, FSMState* pState);
 	FSMState* GetState(const std::string& name) const;

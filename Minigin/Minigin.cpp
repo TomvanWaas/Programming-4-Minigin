@@ -11,102 +11,149 @@
 #include "Application.h"
 #include "WindowSettings.h"
 #include "Deletor.h"
+#include "ApplicationSelector.h"
 
-WindowSettings dae::Minigin::m_WindowSettings = { 720.0f, 560.0f, "Pogramming 4 Assignment" };
+WindowSettings dae::Minigin::m_WindowSettings = { 224*2.5f, 288*2.5f, "Programming 4 Assignment: DigDug" };
+bool dae::Minigin::m_Continue = true;
+bool dae::Minigin::m_Run = true;
 
 
 
-
-void dae::Minigin::Initialize(const WindowSettings& settings)
+void dae::Minigin::InitializeEngine()
 {
-	//InitializeOverride Window
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) 
+	//Initialize SDL
+	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
+		Logger::GetInstance().LogError("Minigin::Initialize > Failed to Initialize SDL");
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 	}
-
-	m_pWindow = SDL_CreateWindow(
-		settings.name.c_str(),
-		SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED,
-		int(settings.width),
-		int(settings.height),
-		SDL_WINDOW_OPENGL
-	);
-	if (m_pWindow == nullptr) 
+	//Initialize Window
+	m_pWindow = SDL_CreateWindow(m_WindowSettings.name.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, int(m_WindowSettings.width), int(m_WindowSettings.height), SDL_WINDOW_OPENGL);
+	if (m_pWindow == nullptr)
 	{
+		Logger::GetInstance().LogError("Minigin::Initialize > Failed to Initialize Window");
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
 
-	//InitializeOverride RenderManager
+	//Initialize RenderManager
 	RenderManager::InitializeRenderer(m_pWindow);
 
-	//Initialze ResourceManager
-	// tell the resource manager where he can find the game data
+	//Initialize ResourceManager
 	ResourceManager::GetInstance().Initialize("../Resources/");
+
+	//Initialize Input
+	InputManager::StaticInitialize();
+}
+void dae::Minigin::CleanupEngine()
+{
+	//Destroy Renderer
+	RenderManager::DestroyRenderer();
+
+	//Destroy Window
+	SDL_DestroyWindow(m_pWindow);
+	m_pWindow = nullptr;
+
+	//Quit SDL
+	SDL_Quit();
+
+	//Destroy Input
+	InputManager::StaticDestroy();
+}
+
+
+
+void dae::Minigin::Initialize(SceneManager& sceneManager)
+{
+	m_pApplication = Selector::GetApplication();
+
+	//Initialize Application
+	if (m_pApplication != nullptr)m_pApplication->Initialize(sceneManager, m_WindowSettings);
+	else Logger::GetInstance().LogError("Minigin::Initialize > No Application Selected");
+	
+	//Initialize SceneManager
+	sceneManager.Initialize();
 }
 void dae::Minigin::Cleanup()
 {
-	InputManager::StaticDestroy();
-
-	SDL_DestroyWindow(m_pWindow);
-	m_pWindow = nullptr;
-	SDL_Quit();
+	//Destroy Application
 	SAFE_DELETE(m_pApplication);
+
+	//Destroy DeleteStore
+	Deletor::GetInstance().DeleteStore();
 }
+
+
 void dae::Minigin::Run()
 {
-	//InitializeOverride
-	Initialize(m_WindowSettings);
-	SceneManager sceneManager{};
-	if (m_pApplication != nullptr)
-	{
-		m_pApplication->Initialize(sceneManager, m_WindowSettings);
-	}
-	auto t = std::chrono::high_resolution_clock::now();
-	sceneManager.Initialize();
-	InputManager::StaticInitialize();
+	InitializeEngine();
 
-	try
+	//Loop to enable Reloading
+	while (m_Run)
 	{
-		//Gameloop
-		bool doContinue = true;
-		auto lastTime = std::chrono::high_resolution_clock::now();
-		float lag = 0.0f;
-		const float msPerUpdate = 0.001f * m_MsPerFrame;
-		while (doContinue)
+		m_Run = false;
+
+		//SceneManager
+		SceneManager sceneManager{};
+
+		//Initialize
+		Initialize(sceneManager);
+
+		//Run
+		try
 		{
-			const auto currentTime = std::chrono::high_resolution_clock::now();
-			float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
-			lastTime = currentTime;
-			lag += deltaTime;
+			m_Continue = true;
 
-			doContinue = InputManager::StaticProcessInput();
-			while (lag >= msPerUpdate)
+			auto t = std::chrono::high_resolution_clock::now();
+			auto lastTime = std::chrono::high_resolution_clock::now();
+
+			float lag = 0.0f;
+			const float msPerUpdate = 0.001f * m_MsPerFrame;
+
+			while (m_Continue)
 			{
-				sceneManager.Update(msPerUpdate);
-				Deletor::GetInstance().DeleteStore();
-				lag -= msPerUpdate;
+				const auto currentTime = std::chrono::high_resolution_clock::now();
+				float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+				lastTime = currentTime;
+				lag += deltaTime;
+
+				m_Continue &= InputManager::StaticProcessInput();
+				while (lag >= msPerUpdate)
+				{
+					sceneManager.Update(msPerUpdate);
+					Deletor::GetInstance().DeleteStore();
+					lag -= msPerUpdate;
+				}
+				sceneManager.Render();
 			}
-			sceneManager.Render();
 		}
-	}
-	catch (std::exception e)
-	{
-		std::cout << "Exception!";
-		std::cout << e.what();
-	}
+		catch (std::exception e)
+		{
+			std::cout << "Exception!";
+			std::cout << e.what();
+		}
 
 
-	//Cleanup
-	Deletor::GetInstance().DeleteStore();
-	Cleanup();
+		//Cleanup
+		Cleanup();
+	}
+
+	CleanupEngine();
 }
 
 
 
-void dae::Minigin::SetApplication(Application* pApp)
+
+void dae::Minigin::Quit()
 {
-	if (pApp != nullptr) m_pApplication = pApp;
+	m_Continue = false;
+	m_Run = false;
 }
+void dae::Minigin::Reload()
+{
+	m_Run = true;
+	m_Continue = false;
+}
+
+
+
 

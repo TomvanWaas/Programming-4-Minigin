@@ -5,8 +5,6 @@
 #include "Scene.h"
 #include "Components.h"
 #include "InputManager.h"
-#include "FSMCondition.h"
-#include "FSMEvent.h"
 #include "FSMState.h"
 #include "DigDugGridComponent.h"
 #include "GameInputCommands.h"
@@ -21,6 +19,7 @@
 #include "DigDugEnemyComponent.h"
 #include "DigDugPlayerComponent.h"
 #include "PlayerParts.h"
+#include "ScreenRenderComponent.h"
 
 using namespace DigDug;
 
@@ -45,7 +44,8 @@ GameObject* DigDug::MakeBackground(Scene& scene, const DigDugSettings& settings)
 	//Texture
 	auto pTextureObject = pBackground->CreateChild();
 	{
-		auto pRenderComp = new RenderComponent(settings.pBackgroundTexture);
+		auto pRenderComp = new ScreenRenderComponent();
+		pRenderComp->SetTexture(settings.pBackgroundTexture);
 		if (pTextureObject->AddComponent(pRenderComp))
 		{
 			pTextureObject->GetTransform().SetLocalScale(3.25f, 2.25f);
@@ -66,7 +66,8 @@ GameObject* DigDug::MakeBackground(Scene& scene, const DigDugSettings& settings)
 
 			pGridComp->SetOffset(settings.gridOffset);
 
-			auto pGridRender = new MultiRenderComponent(settings.pCaveTexture);
+			auto pGridRender = new MultiRenderComponent(settings.pOtherTexture);
+			pGridRender->SetSource(Rect{ settings.spriteWidth * 6, 0, settings.spriteWidth, settings.spriteHeight });
 			if (pGridObject->AddComponent(pGridRender))
 			{
 				pGridRender->SetRenderPriority(-25, scene.GetSceneData());
@@ -95,9 +96,10 @@ GameObject* DigDug::MakeBackground(Scene& scene, const DigDugSettings& settings)
 
 
 
-GameObject* DigDug::CreateObstacle(Scene& scene, const DigDugSettings& settings)
+GameObject* DigDug::CreateObstacle(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver)
 {
 	GameObject* pObject = scene.CreateGameObject();
+	pObject->AddObserver(pScoreObserver);
 
 	//Components
 	pObject->AddComponent(new RenderComponent());
@@ -119,7 +121,7 @@ GameObject* DigDug::CreateObstacle(Scene& scene, const DigDugSettings& settings)
 	pSpriteC->AddSprite(unsigned int(ObstacleSpriteID::Idle), new FixedSource(src));
 	pSpriteC->AddSprite(unsigned int(ObstacleSpriteID::Moving), new TickSource(src, 2, true));
 	src.x += 2 * src.width;
-	pSpriteC->AddSprite(unsigned int(ObstacleSpriteID::Destroyed), new FixedSource(src));
+	pSpriteC->AddSprite(unsigned int(ObstacleSpriteID::Destroyed), new TickSource(src, 2, false));
 
 	//Fsm
 	FSMState* pDestrState = new FSMStateDestroyObject(pObject);
@@ -137,10 +139,11 @@ GameObject* DigDug::CreateObstacle(Scene& scene, const DigDugSettings& settings)
 	return pObject;
 }
 
-GameObject* DigDug::CreatePooka(Scene& scene, const DigDugSettings& settings)
+GameObject* DigDug::CreatePooka(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver)
 {
 
 	GameObject* pObject = scene.CreateGameObject();
+	pObject->AddObserver(pScoreObserver);
 
 	//Components
 	AABBCollisionComponent* pCollider = new AABBCollisionComponent();
@@ -464,9 +467,10 @@ void DigDug::HelpPlayerSprites(SpriteComponent& comp, const DigDugSettings& sett
 
 
 
-GameObject* DigDug::CreateFygar(Scene& scene, const DigDugSettings& settings)
+GameObject* DigDug::CreateFygar(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver)
 {
 	auto pObject = scene.CreateGameObject();
+	pObject->AddObserver(pScoreObserver);
 
 	//Components
 	auto pSprite = new SpriteComponent();

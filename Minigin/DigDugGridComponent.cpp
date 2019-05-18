@@ -29,46 +29,24 @@ void DigDugGridComponent::Render(const RenderManager& renderer) const
 	const auto width = m_GridMarks.GetWidth();
 	const auto height = m_GridMarks.GetHeight();
 
-	////Walkable: White
-	//renderer.SetRenderColor(255, 255, 255);;
-	//for (unsigned int i = 0; i < width; i += 2)
-	//{		
-	//	renderer.RenderLine(m_GridPositions.Get(i, 0) * scale + pos, m_GridPositions.Get(i, height - 1) * scale + pos);
-	//}
-	//for (unsigned int i = 0; i < height; i += 2)
+	////float TEST = 5;
+	//renderer.SetRenderColor(0, 255, 0);
+	//for (unsigned int i = 0; i < height*2; ++i)
 	//{
-	//	renderer.RenderLine(m_GridPositions.Get(0, i) * scale + pos, m_GridPositions.Get(width - 1, i) * scale + pos);
-	//}
+	//	for (unsigned int j = 0; j < width*2; ++j)
+	//	{
+	//		Vector2 r{};
+	//		r.x = (j*0.5f - (width - 1) * 0.5f) * m_Offset.x;
+	//		r.y = (i*0.5f - (height - 1) * 0.5f) * m_Offset.y;
+	//		r = GridToWorld(r);
+	//		auto idx = GetIdx(r);
 
-	////Inbetween: Red
-	//renderer.SetRenderColor(255, 0, 0);
-	//for (unsigned int i = 1; i < width; i += 2)
-	//{
-	//	renderer.RenderLine(m_GridPositions.Get(i, 0) * scale + pos, m_GridPositions.Get(i, height - 1) * scale + pos);
+	//		if (m_GridMarks.IsValid(idx))
+	//		{
+	//			renderer.RenderPoint(r, 2.0f);
+	//		}
+	//	}
 	//}
-	//for (unsigned int i = 1; i < height; i += 2)
-	//{
-	//	renderer.RenderLine(m_GridPositions.Get(0, i) * scale + pos, m_GridPositions.Get(width - 1, i) * scale + pos);
-	//}
-
-	//float TEST = 5;
-	renderer.SetRenderColor(0, 255, 0);
-	for (unsigned int i = 0; i < height*2; ++i)
-	{
-		for (unsigned int j = 0; j < width*2; ++j)
-		{
-			Vector2 r{};
-			r.x = (j*0.5f - (width - 1) * 0.5f) * m_Offset.x;
-			r.y = (i*0.5f - (height - 1) * 0.5f) * m_Offset.y;
-			r = GridToWorld(r);
-			auto idx = GetIdx(r);
-
-			if (m_GridMarks.IsValid(idx))
-			{
-				renderer.RenderPoint(r, 2.0f);
-			}
-		}
-	}
 
 
 	//Walkable: White
@@ -214,11 +192,11 @@ Vector2 DigDugGridComponent::ClosestWalkableGrid(const Vector2& p) const
 
 
 
-bool DigDugGridComponent::IsMarked(const Vector2& p) const
+bool DigDugGridComponent::IsMarked(const Vector2& p, float epsilon) const
 {
 	if (m_GridMarks.IsMade())
 	{
-		int idx = GetIdx(p);
+		int idx = GetIdx(p, epsilon);
 		if (m_GridMarks.IsValid(idx))
 		{
 			return m_GridMarks[idx];
@@ -226,11 +204,11 @@ bool DigDugGridComponent::IsMarked(const Vector2& p) const
 	}
 	return false;
 }
-void DigDugGridComponent::Mark(const Vector2& p)
+void DigDugGridComponent::Mark(const Vector2& p, float epsilon)
 {
 	if (m_GridMarks.IsMade())
 	{
-		auto i = GetIdx(p);
+		auto i = GetIdx(p, epsilon);
 		if (m_GridMarks.IsValid(i) && !m_GridMarks[i])
 		{
 			m_GridMarks[i] = true;
@@ -243,26 +221,6 @@ void DigDugGridComponent::Mark(const Vector2& p)
 				GetGameObject()->GetScene()->Notify(GameEvent::GridMarked, ObservedData{});
 			}
 		}
-
-		//Vector2 rp = WorldToGrid(p);
-		//auto i = m_GridPositions.FindIndex(rp, [](const Vector2& a, const Vector2& b)
-		//{
-		//	return ((a.x - b.x)*(a.x - b.x) < 1 && (a.y - b.y)*(a.y - b.y) < 1);
-		//});
-		//if (m_GridPositions.IsValid(i)
-		//	&& !m_GridMarks[i])
-		//{
-
-		//	m_GridMarks[i] = true;
-		//	UpdateSurroundings(i);
-		//	UpdateRender(i);
-
-		//	//Notify Scene
-		//	if (GetGameObject() && GetGameObject()->GetScene())
-		//	{
-		//		GetGameObject()->GetScene()->Notify(GameEvent::GridMarked, ObservedData{});
-		//	}
-		//}
 
 	}
 }
@@ -331,21 +289,14 @@ void DigDugGridComponent::UpdateRender(unsigned idx)
 	if (m_pMultiRenderer != nullptr)
 	{
 		//Update on RenderComp
-		MultiRenderComponent::RenderInfo info{};
-		/*Vector2 p = m_GridPositions.Get(idx);
-		info.hasSrc = false;
-		info.dst.width = m_GridPositions.GetWalkableOffset().x * 1.5f;
-		info.dst.height = m_GridPositions.GetWalkableOffset().y * 1.5f;
-		info.dst.x = p.x - info.dst.width*0.5f;
-		info.dst.y = p.y - info.dst.height*0.5f;
-		m_pMultiRenderer->AddRenderInfo(idx, info);*/
+		
+		Rect d{};
 		Vector2 dst = GetLocal(idx % m_GridMarks.GetWidth(), idx / m_GridMarks.GetWidth());
-		info.hasSrc = false;
-		info.dst.width = m_Offset.x * 1.5f;
-		info.dst.height = m_Offset.y * 1.5f;
-		info.dst.x = dst.x - info.dst.width*0.5f;
-		info.dst.y = dst.y - info.dst.height*0.5f;
-		m_pMultiRenderer->AddRenderInfo(idx, info); 
+		d.width = m_Offset.x * 1.5f;
+		d.height = m_Offset.y * 1.5f;
+		d.x = dst.x - d.width*0.5f;
+		d.y = dst.y - d.height*0.5f;
+		m_pMultiRenderer->AddRenderDst(idx, d); 
 
 	}
 }
@@ -356,21 +307,21 @@ void DigDugGridComponent::UpdateSurroundings(unsigned int w, unsigned int h)
 	{
 		const auto width = m_GridMarks.GetWidth();
 
-		for (unsigned int i = h - 1; i <= h + 1; ++i)
+		for (int i = int(h) - 1; i <= int(h) + 1; ++i)
 		{
-			for (unsigned int j = w - 1; j <= w + 1; ++j)
+			for (int j = int(w) - 1; j <= int(w) + 1; ++j)
 			{
-				int idx = i * width + j;
-				if (m_GridMarks[idx] == false
-					&& m_GridMarks.GetVal(idx - 1, false)
-					&& m_GridMarks.GetVal(idx + 1, false)
-					&& m_GridMarks.GetVal(idx - width - 1, false)
-					&& m_GridMarks.GetVal(idx - width + 1, false)
-					&& m_GridMarks.GetVal(idx + width - 1, false)
-					&& m_GridMarks.GetVal(idx + width + 1, false)
-					&& m_GridMarks.GetVal(idx + width, false)
-					&& m_GridMarks.GetVal(idx - width, false))
+				if (m_GridMarks.GetVal(j, i, true) == false
+					&& m_GridMarks.GetVal(j - 1, i, false)
+					&& m_GridMarks.GetVal(j + 1, i, false)
+					&& m_GridMarks.GetVal(j - 1, i - 1, false)
+					&& m_GridMarks.GetVal(j - 1, i + 1, false)
+					&& m_GridMarks.GetVal(j + 1, i - 1, false)
+					&& m_GridMarks.GetVal(j + 1, i + 1, false)
+					&& m_GridMarks.GetVal(j, i - 1, false)
+					&& m_GridMarks.GetVal(j, i + 1, false))
 				{
+					int idx = i * width + j;
 					m_GridMarks[idx] = true;
 					UpdateRender(idx);
 				}
@@ -443,7 +394,7 @@ Vector2 DigDugGridComponent::GetLocal(unsigned w, unsigned h)const
 
 
 
-int DigDugGridComponent::GetIdx(const Vector2& world) const
+int DigDugGridComponent::GetIdx(const Vector2& world, float epsilon) const
 {
 	//./
 	
@@ -451,7 +402,7 @@ int DigDugGridComponent::GetIdx(const Vector2& world) const
 	lp /= m_Offset;
 	int x = (lp.x != 0) ? int(lp.x + 0.5f*abs(lp.x) / lp.x) : int(lp.x);
 	int y = (lp.y != 0) ? int(lp.y + 0.5f*abs(lp.y) / lp.y) : int(lp.y);
-	if ((x - lp.x)*(x - lp.x) < 0.001f && (y - lp.y)*(y - lp.y) < 0.001f)
+	if ((x - lp.x)*(x - lp.x) < epsilon && (y - lp.y)*(y - lp.y) < epsilon)
 	{
 		auto width = m_GridMarks.GetWidth();
 		auto height = m_GridMarks.GetHeight();

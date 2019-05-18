@@ -58,6 +58,12 @@ void FiniteStateMachineComponent::SetState(FSMState* pState)
 	m_StateChanged = true;
 }
 
+void FiniteStateMachineComponent::SetState(const std::string& state)
+{
+	auto pState = GetState(state);
+	SetState(pState);
+}
+
 
 bool FiniteStateMachineComponent::SaveState(const std::string& name, FSMState* pState)
 {

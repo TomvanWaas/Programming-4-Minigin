@@ -4,29 +4,47 @@
 #include "GameObject.h"
 #include "Transform.h"
 
-bool EnemyManager::RegisterEnemy(GameObject* pPlayer)
+void EnemyManager::LateInitialize(const SceneData& sceneData)
 {
-	if (pPlayer != nullptr)
+	UNREFERENCED_PARAMETER(sceneData);
+	for( const auto* pEnemy : m_pEnemies)
 	{
-		if (std::find(m_pEnemies.begin(), m_pEnemies.end(), pPlayer) == m_pEnemies.end())
+		if (pEnemy)
 		{
-			m_pEnemies.push_back(pPlayer);
+			m_InitialPositions.push_back(pEnemy->GetTransform().GetWorldPosition());
+		}
+	}
+}
+
+bool EnemyManager::RegisterEnemy(GameObject* pEnemy)
+{
+	if (pEnemy != nullptr)
+	{
+		if (std::find(m_pEnemies.begin(), m_pEnemies.end(), pEnemy) == m_pEnemies.end())
+		{
+			m_pEnemies.push_back(pEnemy);
 			return true;
 		}
 	}
 	return false;
 }
 
-bool EnemyManager::UnregisterEnemy(GameObject* pPlayer)
+bool EnemyManager::UnregisterEnemy(GameObject* pEnemy)
 {
-	if (pPlayer != nullptr)
+	if (pEnemy != nullptr)
 	{
-		auto i = std::find(m_pEnemies.begin(), m_pEnemies.end(), pPlayer);
-		if (i != m_pEnemies.end())
+		for (size_t i = 0; i < m_pEnemies.size(); ++i)
 		{
-			m_pEnemies.erase(i);
-			return true;
-		}
+			if (m_pEnemies[i] == pEnemy)
+			{
+				m_pEnemies.erase(m_pEnemies.begin() + i);
+				if (m_InitialPositions.size() > i)
+				{
+					m_InitialPositions.erase(m_InitialPositions.begin() + i);
+				}
+				return true;
+			}
+		}		
 	}
 	return false;
 }

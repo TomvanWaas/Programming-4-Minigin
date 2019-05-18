@@ -54,12 +54,16 @@ void GameObject::DeleteObject(GameObject*& pObject)
 	//Remove in Scene
 	if (pObject->m_pScene)
 	{
+		//Destroy
+		pObject->Destroy(pObject->m_pScene->GetSceneData());
 		pObject->m_pScene->RemoveGameObject(pObject);
 	}	
 	pObject->m_pScene = nullptr;
 
 	//Set State
 	pObject->SetState(false, State::Enabled);
+
+
 
 	Deletor::GetInstance().StoreDelete(pObject);
 }
@@ -171,6 +175,13 @@ void GameObject::Destroy(const SceneData& sceneData)
 {
 	if (!IsState(State::Destroyed))
 	{
+		//Only Notify Observers as components & children get also destroyed and notify themselves also
+		ObservedData d{};
+		d.AddData<GameObject*>("GameObject", this);
+		NotifyObservers(ObservedEvent::Destroyed, d);
+
+
+
 		SetState(true, State::Destroyed);
 		for (BaseComponent* pC : m_pComponents)
 		{
@@ -180,7 +191,10 @@ void GameObject::Destroy(const SceneData& sceneData)
 		{
 			if (pC) pC->Destroy(sceneData);
 		}
+		
 	}
+	DestroyObserver();
+	DestroySubject();
 }
 
 
@@ -198,14 +212,18 @@ const std::vector<GameObject*>& GameObject::GetAllChildren() const
 
 void GameObject::Notify(ObservedEvent event, const ObservedData& data)
 {
+
 	m_Transform.OnNotify(event, data);
 	for (BaseComponent* pComponent : m_pComponents)
 	{
 		if (pComponent) pComponent->Notify(event, data);
 	}
+	NotifyObservers(event, data);
+
 }
 void GameObject::Notify(const std::string& component, ObservedEvent event, const ObservedData& data)
 {
+
 	if (component == typeid(Transform).name())
 	{
 		m_Transform.OnNotify(event, data);
@@ -221,9 +239,11 @@ void GameObject::Notify(const std::string& component, ObservedEvent event, const
 			}
 		}
 	}
+
 }
 void GameObject::NotifyChildren(ObservedEvent event, const ObservedData& data)
 {
+
 	for (GameObject* pChild : m_pChildren)
 	{
 		if (pChild)
@@ -232,9 +252,11 @@ void GameObject::NotifyChildren(ObservedEvent event, const ObservedData& data)
 			pChild->NotifyChildren(event, data);
 		}
 	}
+
 }
 void GameObject::NotifyChildren(const std::string& component, ObservedEvent event, const ObservedData& data)
 {
+
 	for (GameObject* pChild : m_pChildren)
 	{
 		if (pChild)
@@ -243,6 +265,7 @@ void GameObject::NotifyChildren(const std::string& component, ObservedEvent even
 			pChild->NotifyChildren(component, event, data);
 		}
 	}
+
 }
 void GameObject::NotifyParents(ObservedEvent event, const ObservedData& data)
 {
@@ -446,10 +469,13 @@ bool GameObject::AddComponent(BaseComponent* pComponent)
 	if (pComponent == nullptr) return false;
 	const type_info& ti = typeid(*pComponent);
 
+	//Already owns Component?
 	for (BaseComponent* pComp : m_pComponents)
 	{
 		if (pComp && typeid(pComp) == ti) return false;
 	}
+
+	//Else => Add
 	m_pComponents.push_back(pComponent);
 	pComponent->SetGameObject(this);
 	if (IsState(State::Initialized) && m_pScene)
@@ -481,6 +507,10 @@ bool GameObject::DeleteComponent(BaseComponent*& pComponent)
 	}
 	return false;
 }
+
+
+
+
 
 
 

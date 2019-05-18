@@ -15,7 +15,9 @@ public:
 	static const int PositionChanged = 2;
 	static const int ScaleChanged = 3;
 	static const int RotationChanged = 4;
-	static const int BASE_END = 5;
+	static const int Destroyed = 5;
+
+	static const int BASE_END = 6;
 
 	
 

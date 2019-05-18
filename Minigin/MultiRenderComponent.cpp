@@ -10,12 +10,16 @@
 
 MultiRenderComponent::MultiRenderComponent(const std::string& texturePath)
 	: m_pTexture(ResourceManager::GetInstance().LoadTexture(texturePath))
-	, m_RenderInfos()
+	, m_RenderDestinations()
+	, m_Source()
+	, m_HasSource(false)
 {
 }
 MultiRenderComponent::MultiRenderComponent(const std::shared_ptr<Texture2D>& texture)
 	: m_pTexture(texture)
-	, m_RenderInfos()
+	, m_RenderDestinations()
+	, m_Source()
+	, m_HasSource(false)
 {
 }
 
@@ -38,23 +42,27 @@ void MultiRenderComponent::Render(const RenderManager& renderer) const
 		const auto position = transform.GetWorldPosition();
 		const auto scale = transform.GetWorldScale();
 
-		for (const std::pair<unsigned int, RenderInfo>& info : m_RenderInfos)
+		for (const std::pair<unsigned int, Rect>& dstpair : m_RenderDestinations)
 		{
-			auto& rinfo = info.second;			
+			auto& dst = dstpair.second;			
 
 			Vector2 center{};
-			center.x = (rinfo.dst.x + rinfo.dst.width * scale.x * 0.5f) * scale.x;
-			center.y = (rinfo.dst.y + rinfo.dst.height * scale.y * 0.5f) * scale.y;
+			center.x = (dst.x + dst.width * scale.x * 0.5f) * scale.x;
+			center.y = (dst.y + dst.height * scale.y * 0.5f) * scale.y;
 			center += position;
-			Vector2 scl{};
-			scl.x = scale.x * rinfo.dst.width / m_pTexture->GetWidth();
-			scl.y = scale.y * rinfo.dst.height / m_pTexture->GetHeight();
-			if (rinfo.hasSrc)
+			
+			if (m_HasSource)
 			{
-				renderer.RenderTexture(*m_pTexture, center, scl, rinfo.src);
+				Vector2 scl{};
+				scl.x = scale.x * dst.width / m_Source.width;
+				scl.y = scale.y * dst.height / m_Source.height;
+				renderer.RenderTexture(*m_pTexture, center, scl, m_Source);
 			}
 			else
 			{
+				Vector2 scl{};
+				scl.x = scale.x * dst.width / m_pTexture->GetWidth();
+				scl.y = scale.y * dst.height / m_pTexture->GetHeight();
 				renderer.RenderTexture(*m_pTexture, center, scl);
 			}
 		}
@@ -63,42 +71,42 @@ void MultiRenderComponent::Render(const RenderManager& renderer) const
 
 
 
-void MultiRenderComponent::AddRenderInfo(unsigned id, const RenderInfo& info)
+void MultiRenderComponent::AddRenderDst(unsigned id, const Rect& dst)
 {
-	auto i = m_RenderInfos.find(id);
-	if (i == m_RenderInfos.end())
+	auto i = m_RenderDestinations.find(id);
+	if (i == m_RenderDestinations.end())
 	{
-		m_RenderInfos[id] = info;
+		m_RenderDestinations[id] = dst;
 	}
 	else
 	{
 		Logger::GetInstance().LogWarning("MultiRenderComponent::AddRenderInfo > Id already used");
 	}
 }
-void MultiRenderComponent::RemoveRenderInfo(unsigned id)
+void MultiRenderComponent::RemoveRenderDst(unsigned id)
 {
-	auto i = m_RenderInfos.find(id);
-	if (i != m_RenderInfos.end())
+	auto i = m_RenderDestinations.find(id);
+	if (i != m_RenderDestinations.end())
 	{
-		m_RenderInfos.erase(i);
+		m_RenderDestinations.erase(i);
 	}
 	else
 	{
 		Logger::GetInstance().LogWarning("MultiRenderComponent::RemoveRenderInfo > Id not found");
 	}
 }
-const MultiRenderComponent::RenderInfo* MultiRenderComponent::GetRenderInfo(unsigned id) const
+const Rect* MultiRenderComponent::GetRenderDst(unsigned id) const
 {
-	auto i = m_RenderInfos.find(id);
-	if (i != m_RenderInfos.end())
+	auto i = m_RenderDestinations.find(id);
+	if (i != m_RenderDestinations.end())
 	{
 		return &(*i).second;
 	}
 	return nullptr;
 }
-void MultiRenderComponent::ClearRenderInfos()
+void MultiRenderComponent::ClearRenderDst()
 {
-	m_RenderInfos.clear();
+	m_RenderDestinations.clear();
 }
 
 

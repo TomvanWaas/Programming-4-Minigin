@@ -1,23 +1,32 @@
 #pragma once
 #include "ObservedEvent.h"
-class GameObject;
+#include "Subject.h"
 class ObservedData;
 class Observer abstract
 {
+	friend Subject;
 public:
-	explicit Observer() = default;
-	virtual ~Observer() = default;
-
-	virtual void Notify(ObservedEvent event, const ObservedData& data)
-	{
-		UNREFERENCED_PARAMETER(event);
-		UNREFERENCED_PARAMETER(data);
-	}
+	Observer() = default;
+	virtual ~Observer();
 
 	Observer(const Observer& other) = delete;
 	Observer(Observer&& other) noexcept = delete;
 	Observer& operator=(const Observer& other) = delete;
 	Observer& operator=(Observer&& other) noexcept = delete;
 
+	void DestroyObserver();
+	virtual void Notify(ObservedEvent event, const ObservedData& data)
+	{
+		UNREFERENCED_PARAMETER(event);
+		UNREFERENCED_PARAMETER(data);
+	}
+private:
+	//Used to unregister from subjects if self gets destroyed
+	std::vector<Subject*> m_pSubjects;
+
+	//Friend func (Used to remove subject when a subject gets destroyed)
+	bool AddSubject(Subject* pSubject);
+	bool RemoveSubject(Subject* pSubject);
 };
+
 

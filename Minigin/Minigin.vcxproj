@@ -191,6 +191,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ApplicationSelector.h" />
     <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="AABBCollisionComponent.h" />
@@ -205,12 +206,15 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="DigDugEnemyHealth.h" />
     <ClInclude Include="DigDugGridComponent.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="DigDugMenuScene.h" />
     <ClInclude Include="DigDugMovementComponent.h" />
     <ClInclude Include="DigDugPlayer.h" />
     <ClInclude Include="DigDugPlayerComponent.h" />
     <ClInclude Include="DigDugPlayerHealth.h" />
+    <ClInclude Include="DigDugSingleplayerScene.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="EnemyParts.h" />
+    <ClInclude Include="EnemyScoreObserver.h" />
     <ClInclude Include="Enumerations.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="FlipMode.h" />
@@ -220,10 +224,10 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="GameButtons.h" />
     <ClInclude Include="GameEvents.h" />
     <ClInclude Include="GameFSMStates.h" />
-    <ClInclude Include="GameManager.h" />
     <ClInclude Include="LevelData.h" />
     <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="ObservedData.h" />
+    <ClInclude Include="ObserverManager.h" />
     <ClInclude Include="ObstacleParts.h" />
     <ClInclude Include="GameFiles.h" />
     <ClInclude Include="GameInputCommands.h" />
@@ -245,12 +249,13 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Minigin.h" />
     <ClInclude Include="MiniginPCH.h" />
+    <ClInclude Include="ObstacleScoreObserver.h" />
     <ClInclude Include="PlayerManager.h" />
     <ClInclude Include="PlayerParts.h" />
     <ClInclude Include="PumpParts.h" />
+    <ClInclude Include="ScoreObserver.h" />
     <ClInclude Include="ScreenRenderComponent.h" />
     <ClInclude Include="SpriteCollisionComponent.h" />
-    <ClInclude Include="Subject.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="ObservedEvent.h" />
     <ClInclude Include="Rect.h" />
@@ -264,6 +269,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SpriteComponent.h" />
+    <ClInclude Include="Subject.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TextComponent.h" />
     <ClInclude Include="Texture2D.h" />
@@ -273,6 +279,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="WindowSettings.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ApplicationSelector.cpp" />
     <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="AABBCollisionComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
@@ -281,18 +288,22 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClCompile Include="DigDugEnemy.cpp" />
     <ClCompile Include="DigDugEnemyComponent.cpp" />
     <ClCompile Include="DigDugGridComponent.cpp" />
+    <ClCompile Include="DigDugMenuScene.cpp" />
     <ClCompile Include="DigDugMovementComponent.cpp" />
     <ClCompile Include="DigDugPlayer.cpp" />
     <ClCompile Include="DigDugPlayerComponent.cpp" />
+    <ClCompile Include="DigDugSingleplayerScene.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="EnemyParts.cpp" />
+    <ClCompile Include="EnemyScoreObserver.cpp" />
     <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="FSMConditions.cpp" />
     <ClCompile Include="FSMEvents.cpp" />
     <ClCompile Include="GameButtons.cpp" />
     <ClCompile Include="GameFSMStates.cpp" />
-    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="LevelLoader.cpp" />
+    <ClCompile Include="Observer.cpp" />
+    <ClCompile Include="ObserverManager.cpp" />
     <ClCompile Include="ObstacleParts.cpp" />
     <ClCompile Include="GameFiles.cpp" />
     <ClCompile Include="GameInputCommands.cpp" />
@@ -313,13 +324,14 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MiniginPCH.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="ObstacleScoreObserver.cpp" />
     <ClCompile Include="PlayerManager.cpp" />
     <ClCompile Include="PlayerParts.cpp" />
     <ClCompile Include="PumpParts.cpp" />
     <ClCompile Include="SceneData.cpp" />
+    <ClCompile Include="ScoreObserver.cpp" />
     <ClCompile Include="ScreenRenderComponent.cpp" />
     <ClCompile Include="SpriteCollisionComponent.cpp" />
-    <ClCompile Include="Subject.cpp" />
     <ClCompile Include="Renderable.cpp" />
     <ClCompile Include="RenderComponent.cpp" />
     <ClCompile Include="RenderManager.cpp" />
@@ -328,6 +340,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SpriteComponent.cpp" />
+    <ClCompile Include="Subject.cpp" />
     <ClCompile Include="TextComponent.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Time.cpp" />

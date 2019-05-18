@@ -1,7 +1,7 @@
 #pragma once
 
 
-
+class Observer;
 struct InputAction;
 class GameObject;
 class Scene;
@@ -35,7 +35,6 @@ namespace DigDug
 		std::shared_ptr<Texture2D> pPookaTexture = nullptr;
 		std::shared_ptr<Texture2D> pFygarTexture = nullptr;
 		std::shared_ptr<Texture2D> pBackgroundTexture = nullptr;
-		std::shared_ptr<Texture2D> pCaveTexture = nullptr;
 		std::shared_ptr<Texture2D> pPumpTexture = nullptr;
 		std::shared_ptr<Texture2D> pOtherTexture = nullptr;
 
@@ -58,13 +57,13 @@ namespace DigDug
 
 
 
-	GameObject* CreateObstacle(Scene& scene, const DigDugSettings& settings);
-	GameObject* CreatePooka(Scene& scene, const DigDugSettings& settings);
+	GameObject* CreateObstacle(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver);
+	GameObject* CreatePooka(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver);
 	GameObject* CreatePump(GameObject &parent, const DigDugSettings& settings);
 	GameObject* CreatePlayer(Scene& scene, const DigDugSettings& settings, char up, char down, char left, char right, char pump);
 	void HelpPlayerSprites(SpriteComponent& comp, const DigDugSettings& settings);
 
-	GameObject* CreateFygar(Scene& scene, const DigDugSettings& settings);
+	GameObject* CreateFygar(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver);
 	GameObject* CreateFire(GameObject& parent, const DigDugSettings& settings);
 
 }

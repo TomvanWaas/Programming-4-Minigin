@@ -41,8 +41,8 @@ public:
 	Vector2 ClosestWalkableGrid(const Vector2& p) const;
 
 
-	bool IsMarked(const Vector2& p) const;
-	void Mark(const Vector2& p);
+	bool IsMarked(const Vector2& p, float epsilon = 0.001f) const;
+	void Mark(const Vector2& p, float epsilon = 0.001f);
 	Vector2 GetPosition(unsigned int w, unsigned int h) const;
 	Vector2 GetWalkablePosition(unsigned int w, unsigned int h)const;
 	unsigned int GetIndex(const Vector2& v) const;
@@ -76,7 +76,7 @@ private:
 
 	Vector2 GetWorld(unsigned int w, unsigned int h) const;
 	Vector2 GetLocal(unsigned int w, unsigned int h) const;
-	int GetIdx(const Vector2& world) const;
+	int GetIdx(const Vector2& world, float epsilon = 0.001f) const;
 	int CloseIdx(const Vector2& world) const;
 
 

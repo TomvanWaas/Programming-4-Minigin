@@ -12,7 +12,9 @@ FSMStateDelay::FSMStateDelay(float delay, FSMState* pNext)
 {
 }
 
-void FSMStateDelay::Initialize(const SceneData& sceneData, FSMData& data)
+
+
+void FSMStateDelay::Enter(const SceneData& sceneData, FSMData& data)
 {
 	UNREFERENCED_PARAMETER(data);
 	UNREFERENCED_PARAMETER(sceneData);

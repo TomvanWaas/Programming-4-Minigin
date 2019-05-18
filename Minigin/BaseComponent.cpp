@@ -2,7 +2,7 @@
 #include "BaseComponent.h"
 #include "GameObject.h"
 #include "Scene.h"
-
+#include "ObservedData.h"
 
 void BaseComponent::Notify(ObservedEvent event, const ObservedData& data)
 {
@@ -37,9 +37,14 @@ void BaseComponent::Destroy(const SceneData& sceneData)
 {
 	if (IsDestroyed() == false)
 	{
+		ObservedData d{};
+		d.AddData<BaseComponent*>("BaseComponent", this);
+		Notify(ObservedEvent::Destroyed, d);
+
 		SetDestroyed(true);
 		DestroyOverride(sceneData);
 	}
+	DestroyObserver();
 }
 
 

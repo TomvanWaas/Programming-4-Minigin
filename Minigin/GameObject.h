@@ -1,11 +1,11 @@
 #pragma once
 #include <vector>
-#include "Subject.h"
 #include "Transform.h"
+#include "Observer.h"
 class Scene;
 class BaseComponent;
 class SceneData;
-class GameObject final
+class GameObject final : public Observer, public Subject
 {
 public:
 	explicit GameObject();
@@ -29,7 +29,7 @@ public:
 	const std::vector<GameObject*>& GetAllChildren() const;
 
 	//Observing
-	void Notify(ObservedEvent event, const ObservedData& data);
+	virtual void Notify(ObservedEvent event, const ObservedData& data) override;
 	void Notify(const std::string& component, ObservedEvent event, const ObservedData& data);
 	void NotifyChildren(ObservedEvent event, const ObservedData& data);
 	void NotifyChildren(const std::string& component, ObservedEvent event, const ObservedData& data);
@@ -133,8 +133,6 @@ public:
 		}
 		return pResult;
 	}
-
-
 	
 private:
 	enum class State : char
@@ -144,15 +142,18 @@ private:
 		Destroyed = 4
 	};
 
-	Scene* m_pScene;
-	GameObject* m_pParent;
 	std::vector<GameObject*> m_pChildren;
-
-	Transform m_Transform;
 	std::vector<BaseComponent*> m_pComponents;
 
+	Transform m_Transform;
+
+	GameObject* m_pParent;
+	Scene* m_pScene;
 
 	char m_State = 1;
+
+
+
 	void SetState(bool set, State state)
 	{
 		if (set)

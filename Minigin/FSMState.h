@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "SceneData.h"
+#include "Observer.h"
 class GameObject;
 class ObservedData;
 class FSMCondition;

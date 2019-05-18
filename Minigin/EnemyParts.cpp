@@ -85,6 +85,8 @@ FSMState* FSMStatePookaMoving::UpdateFirst(const SceneData& sceneData, FSMData& 
 	if (m_pObject && m_pGrid)
 	{
 		auto& t = m_pObject->GetTransform();
+
+
 		auto* pMove = m_pObject->GetComponent<MovementComponent>();
 		if (pMove)
 		{
@@ -139,6 +141,7 @@ FSMState* FSMStatePookaMoving::UpdateFirst(const SceneData& sceneData, FSMData& 
 
 			pMove->QueueMovement(dir);
 		}
+
 	}
 	return this;
 }
@@ -494,6 +497,8 @@ FSMState* FSMStateEnemyGhost::UpdateFirst(const SceneData& sceneData, FSMData& d
 		m_Accu += sceneData.GetTime()->GetDeltaTime();
 		if (m_Accu >= m_MinDuration)
 		{
+
+
 			//Close to marked point & duration ran out => Move to closest point
 			Vector2 closest = m_pGrid->ClosestWalkablePoint(t.GetWorldPosition());
 			if (m_pGrid->IsMarked(closest))
@@ -507,15 +512,16 @@ FSMState* FSMStateEnemyGhost::UpdateFirst(const SceneData& sceneData, FSMData& d
 				{
 					t.SetLocalPosition((closest - t.GetWorldPosition()).Normalized() * m_Speed * sceneData.GetTime()->GetDeltaTime() + t.GetLocalPosition());
 				}
+				return this;
 			}
 		}
-		else
-		{
-			Vector2 dir = m_pClosestPlayer->GetTransform().GetWorldPosition();
-			dir -= t.GetWorldPosition();
-			dir.Normalize();
-			t.SetLocalPosition(t.GetLocalPosition() + dir * m_Speed * sceneData.GetTime()->GetDeltaTime());
-		}
+
+
+		Vector2 dir = m_pClosestPlayer->GetTransform().GetWorldPosition();
+		dir -= t.GetWorldPosition();
+		dir.Normalize();
+		t.SetLocalPosition(t.GetLocalPosition() + dir * m_Speed * sceneData.GetTime()->GetDeltaTime());
+
 	}
 	return this;
 }
