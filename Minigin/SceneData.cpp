@@ -4,28 +4,71 @@
 #include "RenderManager.h"
 #include "CollisionManager.h"
 #include "InputManager.h"
+#include "Manager.h"
 
-void SceneData::Initialize(const SceneData& other)
+SceneData::~SceneData()
+{
+	SAFE_DELETE(m_pCollisionManager);
+	SAFE_DELETE(m_pInputManager);
+	SAFE_DELETE(m_pRenderManager);
+	SAFE_DELETE(m_pTimeManager);
+	for (Manager* pManager : m_pManagers)
+	{
+		SAFE_DELETE(pManager);
+	}
+	m_pManagers.clear();
+}
+
+void SceneData::Initialize()
 {
 	if (m_Initialized == false)
 	{
 		m_Initialized = true;
-		pTime = (other.pTime != nullptr) ? other.pTime : new Time();
-		pCollisionManager = (other.pCollisionManager != nullptr) ? other.pCollisionManager : new CollisionManager();
-		pInput = (other.pInput != nullptr) ? other.pInput : new InputManager();
-		pRenderManager = (other.pRenderManager != nullptr) ? other.pRenderManager : new RenderManager();
+		m_pTimeManager =  new Time();
+		m_pCollisionManager =  new CollisionManager();
+		m_pInputManager =  new InputManager();
+		m_pRenderManager = new RenderManager();
 
-		//InitializeOverride
-		pCollisionManager->Initialize(*this);
+		m_pCollisionManager->Initialize(*this);
+		m_pInputManager->Initialize(*this);
+		m_pRenderManager->Initialize(*this);
+	}
 
+	for (Manager* pManager : m_pManagers)
+	{
+		if (pManager) pManager->Initialize(*this);
 	}
 }
 
 
 void SceneData::Update(float elapsed)
 {
-	pTime->Update(elapsed);
-	pCollisionManager->UpdateBuffers();
-	pInput->UpdateActions();
-	pRenderManager->Update();
+	m_pTimeManager->Update(elapsed);
+	m_pCollisionManager->Update(*this);
+	m_pInputManager->Update(*this);
+	m_pRenderManager->Update(*this);
+
+	for (Manager* pManager : m_pManagers)
+	{
+		if (pManager) pManager->Update(*this);
+	}
+}
+
+void SceneData::Notify(ObservedEvent event, const ObservedData& data)
+{
+	m_pCollisionManager->Notify(event, data);
+	m_pInputManager->Notify(event, data);
+	m_pRenderManager->Notify(event, data);
+	for (Manager* pManager : m_pManagers)
+	{
+		if (pManager) pManager->Notify(event, data);
+	}
+}
+
+void SceneData::LateInitialize()
+{
+	for (Manager* pManager : m_pManagers)
+	{
+		if (pManager) pManager->LateInitialize(*this);
+	}
 }

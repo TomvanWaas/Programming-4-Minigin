@@ -17,7 +17,6 @@ public:
 	TextComponent& operator=(const TextComponent& other) = delete;
 	TextComponent& operator=(TextComponent&& other) noexcept = delete;
 
-	virtual void InitializeOverride(const SceneData& sceneData) override;
 	virtual void UpdateFirstOverride(const SceneData& sceneData) override;
 
 	void SetText(const std::string& text);
@@ -30,6 +29,5 @@ private:
 	SDL_Color m_Color;
 	std::shared_ptr<Font> m_pFont;
 	bool m_bNeedsUpdate = true;
-	RenderComponent* m_pRenderComponent;
 };
 

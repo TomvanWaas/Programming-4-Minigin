@@ -9,10 +9,6 @@ Time::Time()
 }
 
 
-Time::~Time()
-{
-}
-
 void Time::Update(float elapsed)
 {
 	m_TotalTime += elapsed;

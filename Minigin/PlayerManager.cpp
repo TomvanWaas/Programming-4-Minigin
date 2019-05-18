@@ -4,6 +4,18 @@
 #include "GameObject.h"
 #include "Transform.h"
 
+void PlayerManager::LateInitialize(const SceneData& sceneData)
+{
+	UNREFERENCED_PARAMETER(sceneData);
+	for (const auto* pPlayer : m_pPlayers)
+	{
+		if (pPlayer)
+		{
+			m_InitialPositions.push_back(pPlayer->GetTransform().GetWorldPosition());
+		}
+	}
+}
+
 bool PlayerManager::RegisterPlayer(GameObject* pPlayer)
 {
 	if (pPlayer != nullptr)
@@ -21,11 +33,17 @@ bool PlayerManager::UnregisterPlayer(GameObject* pPlayer)
 {
 	if (pPlayer != nullptr)
 	{
-		auto i = std::find(m_pPlayers.begin(), m_pPlayers.end(), pPlayer);
-		if (i != m_pPlayers.end())
+		for (size_t i = 0; i < m_pPlayers.size(); ++i)
 		{
-			m_pPlayers.erase(i);
-			return true;
+			if (m_pPlayers[i] == pPlayer)
+			{
+				m_pPlayers.erase(m_pPlayers.begin() + i);
+				if (m_InitialPositions.size() > i)
+				{
+					m_InitialPositions.erase(m_InitialPositions.begin() + i);
+				}
+				return true;
+			}
 		}
 	}
 	return false;

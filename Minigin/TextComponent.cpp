@@ -11,21 +11,9 @@
 
 
 
-void TextComponent::InitializeOverride(const SceneData& sceneData)
-{
-	UNREFERENCED_PARAMETER(sceneData);
-
-	if (GetGameObject() != nullptr)
-	{
-		m_pRenderComponent = GetGameObject()->GetComponent<RenderComponent>();
-		if (m_pRenderComponent == nullptr)
-		{
-			Logger::GetInstance().LogWarning("TextComponent::InitializeOverride > Cannot find RenderComponent");
-		}
-	}
-}
 void TextComponent::UpdateFirstOverride(const SceneData& sceneData)
 {
+	UNREFERENCED_PARAMETER(sceneData);
 	//Make texture
 	if (m_bNeedsUpdate && m_Text != "" && m_pFont != nullptr)
 	{
@@ -34,7 +22,7 @@ void TextComponent::UpdateFirstOverride(const SceneData& sceneData)
 		{
 			throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
 		}
-		auto texture = SDL_CreateTextureFromSurface(sceneData.pRenderManager->GetSDLRenderer(), surf);
+		auto texture = SDL_CreateTextureFromSurface(RenderManager::GetSDLRenderer(), surf);
 		if (texture == nullptr)
 		{
 			throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
@@ -43,9 +31,10 @@ void TextComponent::UpdateFirstOverride(const SceneData& sceneData)
 		auto pTexture = std::make_shared<Texture2D>(texture);
 		m_bNeedsUpdate = false;
 
-		if (m_pRenderComponent != nullptr)
+		auto pRender = GetGameObject()->GetComponent<RenderComponent>();
+		if (pRender != nullptr)
 		{
-			m_pRenderComponent->SetTexture(pTexture);
+			pRender->SetTexture(pTexture);
 		}
 	}
 }

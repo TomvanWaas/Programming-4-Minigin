@@ -38,6 +38,7 @@ namespace DigDug
 		float m_PlayerOffset;
 		float m_Duration;
 		float m_Accu;
+		bool m_Deactivated;
 	};
 
 	class FSMStatePumpPumping final : public FSMState

@@ -1,28 +1,26 @@
 #pragma once
-#include <map>
-#include <memory>
-#include "ObserverEvents.h"
-class GameObject;
+#include "ObservedEvent.h"
+class ObservedData;
 class Observer;
+
 class Subject abstract
 {
 public:
-	explicit Subject() = default;
-	virtual ~Subject() = default;
+	Subject() = default;
+	virtual ~Subject();
 
 	Subject(const Subject& other) = delete;
 	Subject(Subject&& other) noexcept = delete;
 	Subject& operator=(const Subject& other) = delete;
 	Subject& operator=(Subject&& other) noexcept = delete;
 
-	bool AddObserver(const std::string& name, const std::shared_ptr<Observer>& pObserver);
-	std::shared_ptr<Observer> RemoveObserver(const std::string& name);
-
-	void Notify(GameObject* pObject, const std::string& observername, ObservedEvent event);
-	void Notify(GameObject* pObject, ObservedEvent event);
-
+	void DestroySubject();
+	bool AddObserver(Observer* pObserver);
+	bool RemoveObserver(Observer* pObserver);
+protected:
+	void NotifyObservers(ObservedEvent event, const ObservedData& data);
 private:
-	std::map<std::string, std::shared_ptr<Observer>> m_pObservers;
+	std::vector<Observer*> m_pObservers;
 
 };
 

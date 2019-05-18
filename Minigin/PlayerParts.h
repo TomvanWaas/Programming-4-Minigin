@@ -88,7 +88,10 @@ namespace DigDug
 		virtual ~FSMStatePlayerDead() = default;
 		virtual void Enter(const SceneData& sceneData, FSMData& data) override;
 		virtual FSMState* UpdateFirst(const SceneData& sceneData, FSMData& data) override;
+		virtual void Exit(const SceneData& sceneData, FSMData& data) override;
 	private:
+		float m_Delay = 2.0f;
+		float m_Accu = 0.0f;
 	};
 
 

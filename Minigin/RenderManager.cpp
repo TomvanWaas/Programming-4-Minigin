@@ -34,17 +34,7 @@ void RenderManager::InitializeRenderer(SDL_Window* pWindow)
 }
 
 
-void RenderManager::Update(const SceneData& sceneData)
-{
-	UNREFERENCED_PARAMETER(sceneData);
-	//Remove all nullptr
-	auto i = std::remove_if(m_pRenderables.begin(), m_pRenderables.end(),
-		[](const Renderable* r)
-	{
-		return r == nullptr;
-	});
-	m_pRenderables.erase(i, m_pRenderables.end());
-}
+
 void RenderManager::Render(const Vector2& scale) const
 {
 	if (m_pRenderer == nullptr) return;
@@ -83,9 +73,9 @@ void RenderManager::RemoveRenderable(const Renderable& renderable)
 void RenderManager::UpdatePriorities()
 {
 	//Sort by priority
-		std::sort(m_pRenderables.begin(), m_pRenderables.end(), [](const Renderable* a, const Renderable* b)
+	std::sort(m_pRenderables.begin(), m_pRenderables.end(), [](const Renderable* a, const Renderable* b)
 	{
-		return a->GetRenderPriority() < b->GetRenderPriority();
+		return (a && b && a->GetRenderPriority() < b->GetRenderPriority());
 	});
 }
 
@@ -150,13 +140,20 @@ void RenderManager::RenderTexture(const Texture2D& texture, const Vector2& cente
 	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dst, double(angle), &ar, SDL_RendererFlip(flip));
 }
 
-
-
-
-
-
-
-
+void RenderManager::RenderTexture(const Texture2D& texture, const Rect& dst, const Rect& src)
+{
+	SDL_Rect srcSDL{};
+	srcSDL.x = int(src.x);
+	srcSDL.y = int(src.y);
+	srcSDL.w = int(src.width);
+	srcSDL.h = int(src.height);
+	SDL_Rect dstSDL{};
+	dstSDL.x = int(dst.x);
+	dstSDL.y = int(dst.y);
+	dstSDL.w = int(dst.width);
+	dstSDL.h = int(dst.height);
+	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), &srcSDL, &dstSDL);
+}
 
 
 void RenderManager::RenderLine(const Vector2& a, const Vector2& b) const

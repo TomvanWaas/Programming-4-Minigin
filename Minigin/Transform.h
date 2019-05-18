@@ -1,5 +1,7 @@
 #pragma once
 #include "Vector2.h"
+class ObservedEvent;
+class ObservedData;
 class GameObject;
 class Transform final
 {
@@ -13,10 +15,11 @@ public:
 	Transform& operator=(Transform&& other) noexcept = delete;
 
 	const GameObject* GetGameObject() const;
+	void OnNotify(ObservedEvent event, const ObservedData& data);
 
 	void SetWorldPosition(float x, float y);
 	void SetWorldPosition(const Vector2& p);
-	Vector2 GetWorldPosition() const;
+	const Vector2& GetWorldPosition() const;
 	void SetLocalPosition(float x, float y);
 	void SetLocalPosition(const Vector2& p);
 	const Vector2& GetLocalPosition() const;
@@ -28,7 +31,7 @@ public:
 
 	void SetWorldScale(Vector2 s);
 	void SetWorldScale(float x, float y);
-	Vector2 GetWorldScale() const;
+	const Vector2& GetWorldScale() const;
 	void SetLocalScale(const Vector2& s);
 	void SetLocalScale(float x, float y);
 	const Vector2& GetLocalScale() const;
@@ -38,6 +41,10 @@ private:
 	Vector2 m_LocalPosition;
 	Vector2 m_LocalScale;
 	float m_LocalRotationDegrees;
+
+	Vector2 m_WorldPosition;
+	Vector2 m_WorldScale;
+	float m_WorldRotationDegrees;
 
 
 };

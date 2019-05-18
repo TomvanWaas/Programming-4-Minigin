@@ -4,38 +4,26 @@
 #include "Transform.h"
 #include "GameObject.h"
 
-SpriteCollisionComponent::SpriteCollisionComponent(const Rect& extents, bool isTrigger, const std::string& tag,
-	const std::shared_ptr<ColliderCommand>& enter, const std::shared_ptr<ColliderCommand>& exit)
-	: AABBCollisionComponent(extents, isTrigger, tag, enter, exit)
-	, m_pSpriteComponent(nullptr)
+SpriteCollisionComponent::SpriteCollisionComponent(const Rect& extents, bool isTrigger, const std::string& tag)
+	: AABBCollisionComponent(extents, isTrigger, tag)
 {
 }
 
-void SpriteCollisionComponent::InitializeOverride(const SceneData& sceneData)
-{
-	if (GetGameObject() != nullptr)
-	{
-		m_pSpriteComponent = GetGameObject()->GetComponent<SpriteComponent>();
-	}
-	AABBCollisionComponent::InitializeOverride(sceneData);
-}
 
-void SpriteCollisionComponent::SetOffset(float leftx, float rightx, float topy, float bottomy)
-{
-	m_Rectangle.x = leftx;
-	m_Rectangle.y = topy;
-	m_Rectangle.width = rightx;
-	m_Rectangle.height = bottomy;
-}
 
-void SpriteCollisionComponent::CalculateCollider()
+void SpriteCollisionComponent::UpdateSecondOverride(const SceneData& sceneData)
 {
+	UNREFERENCED_PARAMETER(sceneData);
 	Rect sprite{};
 
 	//Sprite
-	if (m_pSpriteComponent != nullptr)
+	if (GetGameObject() != nullptr)
 	{
-		sprite = m_pSpriteComponent->GetCurrentSource();
+		auto sp = GetGameObject()->GetComponent<SpriteComponent>();
+		if (sp)
+		{
+			sprite = sp->GetCurrentSource();
+		}
 	}
 
 	//
@@ -58,3 +46,13 @@ void SpriteCollisionComponent::CalculateCollider()
 	m_Collider.x -= m_Collider.width * 0.5f;
 	m_Collider.y -= m_Collider.height * 0.5f;
 }
+
+void SpriteCollisionComponent::SetOffset(float leftx, float rightx, float topy, float bottomy)
+{
+	m_Rectangle.x = leftx;
+	m_Rectangle.y = topy;
+	m_Rectangle.width = rightx;
+	m_Rectangle.height = bottomy;
+}
+
+

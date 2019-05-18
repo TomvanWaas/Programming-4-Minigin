@@ -15,7 +15,6 @@ public:
 	explicit RenderManager() = default;
 	~RenderManager() = default;
 
-	virtual void Update(const SceneData& sceneData) override;
 	void Render(const Vector2& scale = Vector2::One) const;
 
 	void AddRenderable(const Renderable& renderable);
@@ -34,7 +33,7 @@ public:
 	void RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, const Rect& source) const;
 	void RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, float angle, const Vector2& around, FlipMode flip) const;
 	void RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, const Rect& source, float angle, const Vector2& around, FlipMode flip) const;
-
+	void RenderTexture(const Texture2D& texture, const Rect& dst, const Rect& src);
 
 
 	void RenderLine(const Vector2& a, const Vector2& b) const;

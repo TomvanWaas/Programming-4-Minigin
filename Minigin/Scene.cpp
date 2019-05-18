@@ -7,33 +7,35 @@
 #include "RenderManager.h"
 #include "Deletor.h"
 
+
 Scene::Scene(const std::string& name)
 	: m_Name(name)
 	, m_pGameObjects()
-	, m_SceneData()
+	, m_SceneData(this)
 	, m_IsInitialized(false)
 	, m_SceneScale(1, 1)
 {
+	m_SceneData.Initialize();
 }
-//Scene::~Scene()
-//{
-//	for (std::shared_ptr<GameObject>* pObject : m_pGameObjects)
-//	{
-//		SAFE_DELETE(pObject);
-//	}
-//	m_pGameObjects.clear();
-//}
-
-
-
-const std::shared_ptr<GameObject>& Scene::CreateGameObject()
+Scene::~Scene()
 {
-	auto pObject = std::make_shared<GameObject>();
+	for (GameObject* pObject : m_pGameObjects)
+	{
+		SAFE_DELETE(pObject);
+	}
+	m_pGameObjects.clear();
+}
+
+
+
+GameObject* Scene::CreateGameObject()
+{
+	auto pObject = new GameObject();
 	AddGameObject(pObject);
 	if (m_IsInitialized) pObject->Initialize(m_SceneData);
 	return pObject;
 }
-bool Scene::DeleteGameObject(std::shared_ptr<GameObject>& pObject)
+bool Scene::DeleteGameObject(GameObject*& pObject)
 {
 	if (pObject == nullptr) return false;
 	pObject->SetParent(nullptr);
@@ -73,7 +75,9 @@ void Scene::Initialize()
 {
 	if (m_IsInitialized == false)
 	{
+		SceneInitialize();
 		m_SceneData.Initialize();
+
 		//InitializeOverride all
 		for (GameObject* pObject : m_pGameObjects)
 		{
@@ -82,6 +86,8 @@ void Scene::Initialize()
 				pObject->Initialize(m_SceneData);
 			}
 		}
+
+		m_SceneData.LateInitialize();
 		m_IsInitialized = true;
 	}
 }
@@ -89,7 +95,9 @@ void Scene::Update(float elapsed)
 {
 	//UpdateFirstOverride sceneData
 	m_SceneData.Update(elapsed);
-	
+
+	SceneUpdate();
+
 	//UpdateFirstOverride all
 	for (GameObject* pObject: m_pGameObjects)
 	{
@@ -125,18 +133,23 @@ const SceneData& Scene::GetSceneData() const
 {
 	return m_SceneData;
 }
-SceneData& Scene::GetSceneData()
-{
-	return m_SceneData;
-}
+
 
 const std::string& Scene::GetName() const
 {
 	return m_Name;
 }
 
+void Scene::SceneNotify(ObservedEvent event, const ObservedData& data)
+{
+	UNREFERENCED_PARAMETER(event); UNREFERENCED_PARAMETER(data);
+}
+
+
 void Scene::Notify(ObservedEvent event, const ObservedData& data)
 {
+	SceneNotify(event, data);
+	m_SceneData.Notify(event, data);
 	for (GameObject* pObject : m_pGameObjects)
 	{
 		if (pObject) pObject->Notify(event, data);

@@ -58,19 +58,35 @@ Rect SweepSource::GetSource(float& accuTime, float speed)
 	src.height = start.height * (1 - t) + end.height * t;
 	return src;
 }
-
-
 Rect FixedSource::GetSource(float& accuTime, float speed)
 {
 	UNREFERENCED_PARAMETER(speed);
 	accuTime = 0.0f;
 	return source;
 }
+Rect GrowSource::GetSource(float& accuTime, float speed)
+{
+	if (accuTime > sources.size() * speed)
+	{
+		if (looped) accuTime -= sources.size() * speed;
+		else accuTime = sources.size() * speed;
+	}
+	int id = int(accuTime / speed);
+	if (id >= 0 && id < sources.size())
+	{
+		return sources[id];
+	}
+	return Rect{};
+}
+
+
+
+
 
 SpriteComponent::SpriteComponent(const std::shared_ptr<Texture2D>& pTexture, float speed)
 	: m_pTexture(pTexture)
 	, m_SpriteSpeed(speed)
-	, m_pCurrentSource(nullptr)
+	, m_pCurrentSprite(nullptr)
 	, m_AccuTime(0)
 	, m_pSources()
 {
@@ -95,15 +111,16 @@ SpriteComponent::~SpriteComponent()
 
 void SpriteComponent::UpdateFirstOverride(const SceneData& sceneData)
 {
-	if (m_pCurrentSource != nullptr && GetGameObject() != nullptr)
+	if (m_pCurrentSprite != nullptr && GetGameObject() != nullptr)
 	{
 		RenderComponent* pRenderComp = GetGameObject()->GetComponent<RenderComponent>();
 		if (pRenderComp != nullptr)
 		{			
-			m_AccuTime += sceneData.pTime->GetDeltaTime();
+			if (!m_IsFreezed) m_AccuTime += sceneData.GetTime()->GetDeltaTime();
 
 			//Adopt RenderComponent
-			pRenderComp->SetSource(m_pCurrentSource->GetSource(m_AccuTime, m_SpriteSpeed));
+			m_CurrentSource = m_pCurrentSprite->GetSource(m_AccuTime, m_SpriteSpeed);
+			pRenderComp->SetSource(m_CurrentSource);
 			pRenderComp->SetTexture(m_pTexture);
 		}
 	}
@@ -128,9 +145,9 @@ void SpriteComponent::AddSprite(unsigned int id, SpriteSource* pSprite)
 	if (m_pSources.find(id) == m_pSources.end())
 	{
 		m_pSources.insert(std::pair<unsigned int, SpriteSource*>(id, pSprite));
-		if (m_pCurrentSource == nullptr)
+		if (m_pCurrentSprite == nullptr)
 		{
-			SetCurrentSource(id);
+			SetCurrentSprite(id);
 		}
 	}
 	else
@@ -147,14 +164,14 @@ void SpriteComponent::RemoveSprite(unsigned id)
 		m_pSources.erase(i);
 
 		//If invalid CurrentSource
-		if (m_pCurrentSource != nullptr && std::find_if(m_pSources.begin(), m_pSources.end(), [this](const std::pair<unsigned int, SpriteSource*>& p)
+		if (m_pCurrentSprite != nullptr && std::find_if(m_pSources.begin(), m_pSources.end(), [this](const std::pair<unsigned int, SpriteSource*>& p)
 		{
-			return (this->m_pCurrentSource) == (p.second);
+			return (this->m_pCurrentSprite) == (p.second);
 
 		}) != m_pSources.end())
 		{
 			Logger::GetInstance().LogWarning("SpriteComponent::RemoveSprite > Removed CurrentSource, Forced to nullptr");
-			m_pCurrentSource = nullptr;
+			m_pCurrentSprite = nullptr;
 		}
 	}
 	else
@@ -178,30 +195,31 @@ const SpriteSource* SpriteComponent::GetSprite(unsigned id) const
 }
 
 
-void SpriteComponent::SetCurrentSource(unsigned id)
+void SpriteComponent::SetCurrentSprite(unsigned id)
 {
 	if (m_pSources.find(id) != m_pSources.end())
 	{
-		m_pCurrentSource = m_pSources[id];
-		if (!m_pCurrentSource->looped)
+		m_pCurrentSprite = m_pSources[id];
+		if (!m_pCurrentSprite->looped)
 		{
 			m_AccuTime = 0.0f;
+		}
+		if (GetGameObject())
+		{
+			RenderComponent* pRenderComp = GetGameObject()->GetComponent<RenderComponent>();
+			if (pRenderComp)
+			{
+				m_CurrentSource = m_pCurrentSprite->GetSource(m_AccuTime, m_SpriteSpeed);
+				pRenderComp->SetSource(m_CurrentSource);
+			}
 		}
 	}
 	else
 	{
-		Logger::GetInstance().LogWarning("SpriteComponent::SetCurrentSource > Id doesn't exist");
+		Logger::GetInstance().LogWarning("SpriteComponent::SetCurrentSprite > Id doesn't exist");
 	}
 }
-Rect SpriteComponent::GetCurrentSource() const
-{
-	if (m_pCurrentSource != nullptr)
-	{
-		float time = m_AccuTime;
-		return m_pCurrentSource->GetSource(time, m_SpriteSpeed);
-	}
-	return Rect{};
-}
+
 
 
 void SpriteComponent::SetSpriteSpeed(float speed)

@@ -1,42 +1,54 @@
 #pragma once
-#include "SceneManager.h"
 #include "SceneData.h"
+#include "Vector2.h"
 
+class ObservedEvent;
+class ObservedData;
 class GameObject;
-class Renderer;
-class RenderComponent;
-class Scene final
+class SceneManager;
+class Scene abstract
 {
-	friend Scene* SceneManager::CreateScene(const std::string& name);
-	explicit Scene(const std::string& name);
-
-
 public:
-	~Scene();
+	explicit Scene(const std::string& name);
+	virtual ~Scene();
 	Scene(const Scene& other) = delete;
 	Scene(Scene&& other) = delete;
 	Scene& operator=(const Scene& other) = delete;
 	Scene& operator=(Scene&& other) = delete;
 
 	GameObject* CreateGameObject();
-	bool DeleteGameObject(GameObject* pObject);
+	bool DeleteGameObject(GameObject*& pObject);
 	bool RemoveGameObject(GameObject* pObject);
 	bool AddGameObject(GameObject* pObject);
 
-	void InitSceneData(const SceneData& sceneData);
+	void Notify(ObservedEvent event, const ObservedData& data);
+
 	void Initialize();
 	void Update(float elapsed);
 	void Render() const;
 
 	const SceneData& GetSceneData() const;
+	SceneData& GetSceneData() { return m_SceneData; }
 	const std::string& GetName() const;
 
-private: 
-	std::string m_Name;
-	std::vector<GameObject*> m_pGameObjects;
-	SceneData m_SceneData;
+	const Vector2& GetSceneScale() const { return m_SceneScale; }
+	void SetSceneScale(const Vector2& s) { m_SceneScale = s; }
 
-	std::vector<GameObject*> m_pMarkedForDelete;
+	virtual Scene* GetNew() const = 0;
+
+	void SetSceneManager(SceneManager* pManager) { m_pSceneManager = pManager; }
+	SceneManager* GetSceneManager() const { return m_pSceneManager; }
+
+protected:
+	virtual void SceneInitialize() {}
+	virtual void SceneUpdate() {}
+	virtual void SceneNotify(ObservedEvent event, const ObservedData& data);
+private:
+	std::vector<GameObject*> m_pGameObjects;
+	std::string m_Name;
+	SceneData m_SceneData;
+	Vector2 m_SceneScale;
+	SceneManager* m_pSceneManager;
 	bool m_IsInitialized = false;
 };
 

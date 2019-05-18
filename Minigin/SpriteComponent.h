@@ -69,6 +69,14 @@ struct FixedSource final : public SpriteSource
 	Rect source;
 };
 
+struct GrowSource final : public SpriteSource
+{
+	GrowSource(bool looped) : SpriteSource(looped){}
+	virtual ~GrowSource() = default;
+	virtual Rect GetSource(float& accuTime, float speed) override;
+	std::vector<Rect> sources;	
+};
+
 
 class SpriteComponent final : public BaseComponent
 {
@@ -92,21 +100,23 @@ public:
 	void RemoveSprite(unsigned int id);
 	const SpriteSource* GetSprite(unsigned int id) const;
 
-	void SetCurrentSource(unsigned int id);
-	Rect GetCurrentSource() const;
+	void SetCurrentSprite(unsigned int id);
+	const Rect& GetCurrentSource() const { return m_CurrentSource; };
 
 	void SetSpriteSpeed(float speed);
 	float GetSpriteSpeed() const;
 
-
+	bool IsFreezed() const { return m_IsFreezed; }
+	void SetFreezed(bool f) { m_IsFreezed = f; }
 private:
 	std::shared_ptr<Texture2D> m_pTexture;
 	std::map<unsigned int, SpriteSource*> m_pSources;
 
-	SpriteSource* m_pCurrentSource;
+	SpriteSource* m_pCurrentSprite;
+	Rect m_CurrentSource;
 	float m_SpriteSpeed;
 	float m_AccuTime;
-
+	bool m_IsFreezed = false;
 
 };
 

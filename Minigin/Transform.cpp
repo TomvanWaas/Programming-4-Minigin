@@ -3,13 +3,16 @@
 #include "GameObject.h"
 #include "Logger.h"
 #include "MiniginMath.h"
-
+#include "ObservedData.h"
 
 Transform::Transform(GameObject& gameObject)
 	: m_LocalPosition(0, 0)
 	, m_LocalRotationDegrees(0)
 	, m_LocalScale(1, 1)
 	, m_pGameObject(&gameObject)
+	, m_WorldPosition(0,0)
+	, m_WorldRotationDegrees(0)
+	, m_WorldScale(1,1)
 {
 }
 
@@ -18,6 +21,49 @@ const GameObject* Transform::GetGameObject() const
 	return m_pGameObject;
 }
 
+void Transform::OnNotify(ObservedEvent event, const ObservedData& data)
+{
+	UNREFERENCED_PARAMETER(data);
+	switch (event)
+	{
+	case ObservedEvent::ScaleChanged:
+		m_WorldScale = GetLocalScale();
+		if (m_pGameObject != nullptr)
+		{
+			const GameObject* pParent = GetGameObject()->GetParent();
+			while (pParent != nullptr)
+			{
+				m_WorldScale *= pParent->GetTransform().GetLocalScale();
+				pParent = pParent->GetParent();
+			}
+		}
+		break;
+	case ObservedEvent::RotationChanged:
+		m_WorldRotationDegrees = GetLocalRotation(true);
+		if (m_pGameObject != nullptr)
+		{
+			const GameObject* pParent = GetGameObject()->GetParent();
+			while (pParent != nullptr)
+			{
+				m_WorldRotationDegrees += pParent->GetTransform().GetLocalRotation(true);
+				pParent = pParent->GetParent();
+			}
+		}
+		break;
+	case ObservedEvent::PositionChanged:
+		m_WorldPosition = GetLocalPosition();
+		if (m_pGameObject != nullptr)
+		{
+			const GameObject* pParent = GetGameObject()->GetParent();
+			while (pParent != nullptr)
+			{
+				m_WorldPosition += pParent->GetTransform().GetLocalPosition();
+				pParent = pParent->GetParent();
+			}
+		}
+		break;
+	}
+}
 
 
 void Transform::SetWorldPosition(float x, float y)
@@ -26,22 +72,11 @@ void Transform::SetWorldPosition(float x, float y)
 }
 void Transform::SetWorldPosition(const Vector2& p)
 {
-	Vector2 wp = GetWorldPosition();
-	SetLocalPosition(GetLocalPosition() + (p - wp));
+	SetLocalPosition(GetLocalPosition() + (p - m_WorldPosition));
 }
-Vector2 Transform::GetWorldPosition() const
+const Vector2& Transform::GetWorldPosition() const
 {
-	Vector2 p = GetLocalPosition();
-	if (m_pGameObject != nullptr)
-	{
-		const GameObject* pParent = GetGameObject()->GetParent();
-		while (pParent != nullptr)
-		{
-			p += pParent->GetTransform().GetLocalPosition();
-			pParent = pParent->GetParent();
-		}
-	}
-	return p;
+	return m_WorldPosition;
 }
 
 void Transform::SetLocalPosition(float x, float y)
@@ -51,6 +86,12 @@ void Transform::SetLocalPosition(float x, float y)
 void Transform::SetLocalPosition(const Vector2& p)
 {
 	m_LocalPosition = p;
+	if (m_pGameObject)
+	{
+		ObservedData d{};
+		m_pGameObject->Notify(ObservedEvent::PositionChanged, d);
+		m_pGameObject->NotifyChildren(ObservedEvent::PositionChanged, d);
+	}
 }
 const Vector2& Transform::GetLocalPosition() const
 {
@@ -61,29 +102,25 @@ const Vector2& Transform::GetLocalPosition() const
 
 void Transform::SetWorldRotation(float rot, bool isdegrees)
 {
-	float wr = GetWorldRotation(true);
 	if (isdegrees)
 	{
-		SetLocalRotation(GetLocalRotation(true) + rot - wr, true);
+		SetLocalRotation(GetLocalRotation(true) + rot - m_WorldRotationDegrees, true);
 	}
 	else
 	{
-		SetLocalRotation(GetLocalRotation(true) + (rot*RADTODEG) - wr, true);
+		SetLocalRotation(GetLocalRotation(true) + (rot*RADTODEG) - m_WorldRotationDegrees, true);
 	}
 }
 float Transform::GetWorldRotation(bool isdegrees) const
 {
-	float r = GetLocalRotation(isdegrees);
-	if (m_pGameObject != nullptr)
+	if (isdegrees)
 	{
-		const GameObject* pParent = GetGameObject()->GetParent();
-		while (pParent != nullptr)
-		{
-			r += pParent->GetTransform().GetLocalRotation(isdegrees);
-			pParent = pParent->GetParent();
-		}
+		return m_WorldRotationDegrees;
 	}
-	return r;
+	else
+	{
+		return m_WorldRotationDegrees * DEGTORAD;
+	}
 }
 
 void Transform::SetLocalRotation(float rot, bool isdegrees)
@@ -92,6 +129,13 @@ void Transform::SetLocalRotation(float rot, bool isdegrees)
 	else
 	{
 		m_LocalRotationDegrees = rot * RADTODEG;
+	}
+
+	if (m_pGameObject)
+	{
+		ObservedData d{};
+		m_pGameObject->Notify(ObservedEvent::RotationChanged, d);
+		m_pGameObject->NotifyChildren(ObservedEvent::RotationChanged, d);
 	}
 }
 float Transform::GetLocalRotation(bool isdegrees) const
@@ -109,37 +153,26 @@ void Transform::SetWorldScale(Vector2 s)
 		if (s.x == 0.0f) s.x = FLT_EPSILON;
 		if (s.y == 0.0f) s.y = FLT_EPSILON;
 	}
-	Vector2 ws = GetWorldScale();
-	if (ws.x == 0.0f || ws.y == 0.0f)
-	{
-		Logger::GetInstance().LogWarning("Transform::SetWorldScale > WorldScale x or y was zero");
-		if (ws.x == 0.0f) ws.x = FLT_EPSILON;
-		if (ws.y == 0.0f) ws.y = FLT_EPSILON;
-	}
-	SetLocalScale(GetLocalScale() * (s / ws));
+	SetLocalScale(GetLocalScale() * (s / m_WorldScale));
 }
 void Transform::SetWorldScale(float x, float y)
 {
 	SetWorldScale(Vector2(x, y));
 }
-Vector2 Transform::GetWorldScale() const
+const Vector2& Transform::GetWorldScale() const
 {
-	Vector2 s = GetLocalScale();
-	if (m_pGameObject != nullptr)
-	{
-		const GameObject* pParent = GetGameObject()->GetParent();
-		while (pParent != nullptr)
-		{
-			s *= pParent->GetTransform().GetLocalScale();
-			pParent = pParent->GetParent();
-		}
-	}
-	return s;
+	return m_WorldScale;
 }
 
 void Transform::SetLocalScale(const Vector2& s)
 {
 	m_LocalScale = s;
+	if (m_pGameObject)
+	{
+		ObservedData d{};
+		m_pGameObject->Notify(ObservedEvent::ScaleChanged, d);
+		m_pGameObject->NotifyChildren(ObservedEvent::ScaleChanged, d);
+	}
 }
 void Transform::SetLocalScale(float x, float y)
 {

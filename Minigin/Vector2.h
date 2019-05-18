@@ -75,4 +75,5 @@ struct Vector2
 	static const Vector2 Zero;
 	static const Vector2 Up;
 	static const Vector2 Right;
+	static const Vector2 One;
 };

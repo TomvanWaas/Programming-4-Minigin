@@ -1,8 +1,9 @@
 #pragma once
+
 class Time final
 {
 public:
-	~Time();
+	~Time() = default;
 
 	float GetDeltaTime() const { return m_DeltaTime; }
 	float GetTotalTime() const { return m_TotalTime; }

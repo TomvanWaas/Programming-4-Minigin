@@ -1,67 +1,50 @@
 #include "MiniginPCH.h"
 #include "Subject.h"
-#include <algorithm>
 #include "Observer.h"
-#include "Logger.h"
 
-bool Subject::AddObserver(const std::string& name, const std::shared_ptr<Observer>& pObserver)
+Subject::~Subject()
 {
-	if (std::find_if(m_pObservers.begin(), m_pObservers.end(),
-		[&name](const std::pair<std::string, std::shared_ptr<Observer>>& pObserver)
+	DestroySubject();
+}
+
+void Subject::DestroySubject()
+{
+	for (Observer* pObserver : m_pObservers)
 	{
-		return (pObserver.first == name);
-	}) == m_pObservers.end())
+		if (pObserver) pObserver->RemoveSubject(this);
+	}
+	m_pObservers.clear();
+}
+
+bool Subject::AddObserver(Observer* pObserver)
+{
+	if (!pObserver) return false;
+	auto i = std::find(m_pObservers.begin(), m_pObservers.end(), pObserver);
+	if (i == m_pObservers.end())
 	{
-		m_pObservers[name] = pObserver;
+		m_pObservers.push_back(pObserver);
+		pObserver->AddSubject(this);
 		return true;
 	}
-
-	Logger::GetInstance().LogWarning("Subject::AddObserver > Failed to add observer " + name);
+	return false;
+}
+bool Subject::RemoveObserver(Observer* pObserver)
+{
+	if (!pObserver) return false;
+	auto i = std::find(m_pObservers.begin(), m_pObservers.end(), pObserver);
+	if (i != m_pObservers.end())
+	{
+		m_pObservers.erase(i);
+		pObserver->RemoveSubject(this);
+		return true;
+	}
 	return false;
 }
 
-std::shared_ptr<Observer> Subject::RemoveObserver(const std::string& name)
+void Subject::NotifyObservers(ObservedEvent event, const ObservedData& data)
 {
-	auto i = std::find_if(m_pObservers.begin(), m_pObservers.end(),
-		[&name](const std::pair<std::string, std::shared_ptr<Observer>>& pObserver)
+	for (Observer* pObserver : m_pObservers)
 	{
-		return pObserver.first == name;
-	});
-
-	if (i == m_pObservers.end())
-	{
-		Logger::GetInstance().LogWarning("Subject::RemoveObserver > No observer " + name + " found");
-		return nullptr;
+		if (pObserver) pObserver->Notify(event, data);
 	}
-
-	std::shared_ptr<Observer> pObserver = (*i).second;
-	m_pObservers.erase(i);
-	return pObserver;
-}
-
-void Subject::Notify(GameObject* pObject, const std::string& observername, ObservedEvent event)
-{
-	if (std::find_if(m_pObservers.begin(), m_pObservers.end(), 
-		[&observername]
-	(const std::pair<std::string, std::shared_ptr<Observer>>& p)
-	{
-		return p.first == observername;
-	}) != m_pObservers.end())
-	{
-		m_pObservers[observername]->Notify(pObject, event);
-	}
-	else
-	{
-		Logger::GetInstance().LogWarning("Subject::Notify > No observer " + observername + " found");
-	}
-}
-
-void Subject::Notify(GameObject* pObject, ObservedEvent event)
-{
-	std::for_each(m_pObservers.begin(), m_pObservers.end(), 
-		[pObject, event]
-	(const std::pair<std::string, std::shared_ptr<Observer>>& p)
-	{
-		p.second->Notify(pObject,event);
-	});
 }

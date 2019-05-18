@@ -1,18 +1,16 @@
 #pragma once
 class Scene;
-class Time;
-#include "SceneData.h"
 class SceneManager final
 {
 public:
 	SceneManager();
-	virtual ~SceneManager();
+	~SceneManager();
 	SceneManager(const SceneManager& other) = delete;
 	SceneManager(SceneManager&& other) = delete;
 	SceneManager& operator=(const SceneManager& other) = delete;
 	SceneManager& operator=(SceneManager&& other) = delete;
 
-	Scene* CreateScene(const std::string& name);
+	bool AddScene(Scene* pScene);
 
 	void Initialize();
 	void Update(float deltaTime);
@@ -20,17 +18,16 @@ public:
 
 	Scene* GetActiveScene() const;
 	void SetActiveScene(const std::string& name);
+
 	void NextScene();
 	void PreviousScene();
-
+	void ReloadScene();
 
 private:
 	std::vector<Scene*> m_pScenes;
 	size_t m_ActiveSceneId;
+	bool m_NeedsReload = false;
 
-
-	//SceneManager::SceneData variables that are used by all scenes
-	SceneData m_SceneData;
 
 
 };

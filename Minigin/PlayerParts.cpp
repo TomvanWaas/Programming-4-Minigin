@@ -9,6 +9,7 @@
 #include "DigDugGridComponent.h"
 #include "SceneData.h"
 #include "Time.h"
+#include "Scene.h"
 
 using namespace DigDug;
 
@@ -208,7 +209,7 @@ FSMState* DigDug::FSMStatePlayerMoving::UpdateSecond(const SceneData& sceneData,
 
 		if (m_pGrid)
 		{
-			m_pGrid->Mark(go->GetTransform().GetWorldPosition());
+			m_pGrid->Mark(go->GetTransform().GetWorldPosition(), 0.5f);
 		}
 	}
 	return this;
@@ -495,6 +496,8 @@ void FSMStatePlayerDead::Enter(const SceneData& sceneData, FSMData& data)
 	auto go = GetGameObject();
 	if (go)
 	{
+		m_Accu = 0;
+
 		//Disable Pump
 		auto children = go->GetAllChildren();
 		for (auto* child : children)
@@ -534,9 +537,31 @@ void FSMStatePlayerDead::Enter(const SceneData& sceneData, FSMData& data)
 }
 FSMState* FSMStatePlayerDead::UpdateFirst(const SceneData& sceneData, FSMData& data)
 {
+	m_Accu += sceneData.GetTime()->GetDeltaTime();
+	if (m_Accu >= m_Delay)
+	{
+		sceneData.GetScene()->Notify(GameEvent::PlayerDied, ObservedData{});
+		return nullptr;
+	}
+	UNREFERENCED_PARAMETER(data);
+	return this;
+}
+
+void FSMStatePlayerDead::Exit(const SceneData& sceneData, FSMData& data)
+{
 	UNREFERENCED_PARAMETER(sceneData);
 	UNREFERENCED_PARAMETER(data);
-	return nullptr;
+	auto go = GetGameObject();
+	if (go)
+	{
+		go->SetEnabled(true);
+
+		auto* pSprite = go->GetComponent<SpriteComponent>();
+		if (pSprite)
+		{
+			pSprite->SetFreezed(false);
+		}
+	}
 }
 
 
