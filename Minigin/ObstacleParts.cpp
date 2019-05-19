@@ -132,8 +132,10 @@ FSMState* FSMStateObstacleFall::OnNotify(ObservedEvent oevent, const ObservedDat
 		{
 			if (pCollider->GetTag() == "Player"  || pCollider->GetTag() == "Enemy")
 			{
-				pCollider->GetGameObject()->GetRoot().Notify(GameEvent::HitByObstacle, ObservedData{});
-				pCollider->GetGameObject()->GetRoot().NotifyChildren(GameEvent::HitByObstacle, ObservedData{});
+				ObservedData d{};
+				pCollider->GetGameObject()->GetRoot().Notify(GameEvent::HitByObstacle, d);
+				pCollider->GetGameObject()->GetRoot().NotifyChildren(GameEvent::HitByObstacle, d);
+				GetGameObject()->Notify(GameEvent::ObstacleHit, d);
 			}
 		}
 	}

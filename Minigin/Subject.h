@@ -19,6 +19,7 @@ public:
 	bool RemoveObserver(Observer* pObserver);
 protected:
 	void NotifyObservers(ObservedEvent event, const ObservedData& data);
+	void FilterObservers();
 private:
 	std::vector<Observer*> m_pObservers;
 

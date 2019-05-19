@@ -99,8 +99,9 @@ void Scene::Update(float elapsed)
 	SceneUpdate();
 
 	//UpdateFirstOverride all
-	for (GameObject* pObject: m_pGameObjects)
+	for (int i = 0; i < m_pGameObjects.size(); ++i)
 	{
+		auto* pObject = m_pGameObjects[i];
 		if (pObject != nullptr)
 		{
 			pObject->UpdateFirst(m_SceneData);
@@ -108,8 +109,9 @@ void Scene::Update(float elapsed)
 	}
 
 	//UpdateSecondOverride all
-	for (GameObject* pObject : m_pGameObjects)
+	for (int i = 0; i < m_pGameObjects.size(); ++i)
 	{
+		auto* pObject = m_pGameObjects[i];
 		if (pObject != nullptr)
 		{
 			pObject->UpdateSecond(m_SceneData);

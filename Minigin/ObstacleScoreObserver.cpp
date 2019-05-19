@@ -1,45 +1,37 @@
 #include "MiniginPCH.h"
 #include "ObstacleScoreObserver.h"
-#include "AABBCollisionComponent.h"
 #include "ObservedData.h"
 #include "GameEvents.h"
+#include "GameObject.h"
+
 
 void ObstacleScoreObserver::Notify(ObservedEvent event, const ObservedData& data)
 {
 	switch (event)
 	{
-	case ObservedEvent::ColliderEntered:
+	case GameEvent::ObstacleHit:
 	{
-		AABBCollisionComponent* pCollider = nullptr;
-		if (data.GetData<AABBCollisionComponent*>("Collider", pCollider) && pCollider != nullptr)
-		{
-			if (pCollider->GetTag() == "Enemy" && pCollider->GetGameObject() != nullptr)
-			{
-				if (m_Scores.find(pCollider->GetGameObject()) != m_Scores.end())
-				{
-					++m_Scores[pCollider->GetGameObject()];
-				}
-				else
-				{
-					m_Scores[pCollider->GetGameObject()] = 1;
-				}
-			}
-		}
+		++m_HitAmount;
 	}
 	break;
 	case ObservedEvent::Destroyed:
 	{
-		GameObject* pObject = nullptr;
-		if (data.GetData<GameObject*>("GameObject", pObject) && pObject != nullptr && m_Scores.find(pObject) != m_Scores.end())
+		GameObject* pSelf = nullptr;
+		if (data.GetData<GameObject*>("GameObject", pSelf) && pSelf)
 		{
+			//Calc Score
+			int score = CalcScore(m_HitAmount);
+
+			//Notify
 			ObservedData d{};
-			d.AddData<int>("Score", CalcScore(m_Scores[pObject]));
+			d.AddData<int>("Score", score);
+			d.AddData<GameObject*>("GameObject", pSelf);
 			NotifyObservers(GameEvent::GainedScore, d);
-			if (m_Scores.find(pObject) != m_Scores.end()) m_Scores.erase(m_Scores.find(pObject));
+
+
 		}
 	}
 	break;
-
 	}
 }
 

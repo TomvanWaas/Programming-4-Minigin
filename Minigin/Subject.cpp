@@ -1,6 +1,7 @@
 #include "MiniginPCH.h"
 #include "Subject.h"
 #include "Observer.h"
+#include <algorithm>
 
 Subject::~Subject()
 {
@@ -34,7 +35,7 @@ bool Subject::RemoveObserver(Observer* pObserver)
 	auto i = std::find(m_pObservers.begin(), m_pObservers.end(), pObserver);
 	if (i != m_pObservers.end())
 	{
-		m_pObservers.erase(i);
+		(*i) = nullptr;
 		pObserver->RemoveSubject(this);
 		return true;
 	}
@@ -43,8 +44,18 @@ bool Subject::RemoveObserver(Observer* pObserver)
 
 void Subject::NotifyObservers(ObservedEvent event, const ObservedData& data)
 {
-	for (Observer* pObserver : m_pObservers)
+	FilterObservers();
+	for (size_t i = 0; i < m_pObservers.size(); ++i)
 	{
+		auto* pObserver = m_pObservers[i];
 		if (pObserver) pObserver->Notify(event, data);
 	}
+}
+
+void Subject::FilterObservers()
+{
+	m_pObservers.erase(std::remove_if(m_pObservers.begin(), m_pObservers.end(), [](Observer* pObserver)
+	{
+		return pObserver == nullptr;
+	}), m_pObservers.end());
 }

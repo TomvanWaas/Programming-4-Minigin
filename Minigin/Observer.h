@@ -20,6 +20,7 @@ public:
 		UNREFERENCED_PARAMETER(event);
 		UNREFERENCED_PARAMETER(data);
 	}
+	void FilterSubjects();
 private:
 	//Used to unregister from subjects if self gets destroyed
 	std::vector<Subject*> m_pSubjects;
