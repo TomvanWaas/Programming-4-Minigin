@@ -6,7 +6,7 @@
 
 void BaseComponent::Notify(ObservedEvent event, const ObservedData& data)
 {
-	if (IsConstructed() && IsEnabled())
+	if (IsConstructed() && IsEnabled() && !IsDestroyed())
 	{
 		OnNotify(event, data);
 	}
@@ -21,14 +21,14 @@ void BaseComponent::Initialize(const SceneData& sceneData)
 }
 void BaseComponent::UpdateFirst(const SceneData& sceneData)
 {
-	if (IsConstructed() && IsEnabled())
+	if (IsConstructed() && IsEnabled() && !IsDestroyed())
 	{
 		UpdateFirstOverride(sceneData);
 	}
 }
 void BaseComponent::UpdateSecond(const SceneData& sceneData)
 {
-	if (IsConstructed() && IsEnabled())
+	if (IsConstructed() && IsEnabled() && !IsDestroyed())
 	{
 		UpdateSecondOverride(sceneData);
 	}

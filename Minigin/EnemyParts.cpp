@@ -41,8 +41,7 @@ void FSMStatePookaMoving::Enter(const SceneData& sceneData, FSMData& data)
 		Direction d = Direction::None;
 		if (!data.GetData<Direction>("Move", d))
 		{
-			data.AddData("Move", Direction::Right);
-			d = Direction::Right;
+			data.AddData("Move", Direction::None);
 		}
 		m_CurrentDirection = d;
 		if (!(data.GetData<Direction>("Look", d)))
@@ -76,7 +75,7 @@ FSMState* FSMStatePookaMoving::UpdateFirst(const SceneData& sceneData, FSMData& 
 {
 	UNREFERENCED_PARAMETER(data);
 	m_AccuTime += sceneData.GetTime()->GetDeltaTime();
-	if (m_AccuTime >= m_GhostTime)
+	if (m_AccuTime >= m_GhostTime || (m_pObject && m_pGrid && !m_pGrid->IsMarked(m_pGrid->ClosestPoint(m_pObject->GetTransform().GetWorldPosition()))))
 	{
 		return m_pGhostState;
 	}
@@ -106,6 +105,20 @@ FSMState* FSMStatePookaMoving::UpdateFirst(const SceneData& sceneData, FSMData& 
 			{
 				SetDirection(GetRandomDirection(marked), data);
 			}
+			else if (m_CurrentDirection == Direction::None)
+			{
+				m_pObject->GetTransform().SetWorldPosition(m_pGrid->ClosestWalkableLine(m_pObject->GetTransform().GetWorldPosition()));
+				for (int i = 0; i < 4; ++i)
+				{
+					if (marked[i])
+					{
+						m_CurrentDirection = Direction(i);
+						break;
+					}
+				}
+			}
+			
+
 			//Else if on normal, reverse possible
 			if (!marked[int(m_CurrentDirection)] && m_pGrid->IsOnPoint(world))
 			{
@@ -181,7 +194,7 @@ FSMState* FSMStatePookaMoving::OnNotify(ObservedEvent oevent, const ObservedData
 void FSMStatePookaMoving::Exit(const SceneData& sceneData, FSMData& data)
 {
 	UNREFERENCED_PARAMETER(sceneData);
-	data.SetData<Direction>("Move", m_CurrentDirection);
+	data.SetData<Direction>("Move", Direction::None);
 }
 
 void FSMStatePookaMoving::SetDirection(Direction d, FSMData& data)
@@ -468,8 +481,6 @@ FSMStateEnemyGhost::FSMStateEnemyGhost(GameObject* pObj, float speed, float dura
 void FSMStateEnemyGhost::Enter(const SceneData& sceneData, FSMData& data)
 {
 	UNREFERENCED_PARAMETER(data);
-
-	m_Accu = 0;
 	
 	auto* pm = sceneData.GetManager<PlayerManager>();
 	if (pm && m_pObject)
@@ -494,18 +505,18 @@ FSMState* FSMStateEnemyGhost::UpdateFirst(const SceneData& sceneData, FSMData& d
 	{
 		auto& t = m_pObject->GetTransform();
 
+		//Timer Ran out?
 		m_Accu += sceneData.GetTime()->GetDeltaTime();
 		if (m_Accu >= m_MinDuration)
 		{
-
-
-			//Close to marked point & duration ran out => Move to closest point
 			Vector2 closest = m_pGrid->ClosestWalkablePoint(t.GetWorldPosition());
 			if (m_pGrid->IsMarked(closest))
 			{
+				//If closest is marked => Go to closest and return to move state
 				if (t.GetWorldPosition().Equals(closest, m_Speed*sceneData.GetTime()->GetDeltaTime()*0.5f))
 				{
 					t.SetWorldPosition(closest);
+					m_Accu = 0;
 					return m_pMoveState;
 				}
 				else
@@ -514,10 +525,20 @@ FSMState* FSMStateEnemyGhost::UpdateFirst(const SceneData& sceneData, FSMData& d
 				}
 				return this;
 			}
+			else
+			{
+				//If closest is not marked
+				//=> Move towards m_ReturnTarget (Last position of player before timer ran out)
+				Vector2 dir = m_ReturnTarget - t.GetWorldPosition();
+				dir.Normalize();
+				t.SetLocalPosition(t.GetLocalPosition() + dir * m_Speed * sceneData.GetTime()->GetDeltaTime());
+				return this;
+			}
 		}
 
-
-		Vector2 dir = m_pClosestPlayer->GetTransform().GetWorldPosition();
+		//Still valid ghost time => Move towards closest player
+		m_ReturnTarget = m_pClosestPlayer->GetTransform().GetWorldPosition();
+		Vector2 dir = m_ReturnTarget;
 		dir -= t.GetWorldPosition();
 		dir.Normalize();
 		t.SetLocalPosition(t.GetLocalPosition() + dir * m_Speed * sceneData.GetTime()->GetDeltaTime());
@@ -593,12 +614,12 @@ void FSMStateFygarMoving::Enter(const SceneData& sceneData, FSMData& data)
 	auto obj = GetGameObject();
 	if (obj)
 	{
-		//If Directio not yet in BData
+		//If Direction not yet in BData
 		Direction d = Direction::None;
 		if (!data.GetData<Direction>("Move", d))
 		{
-			data.AddData("Move", Direction::Right);
-			d = Direction::Right;
+			data.AddData("Move", Direction::None);
+			d = Direction::None;
 		}
 		m_CurrentDirection = d;
 		if (!(data.GetData<Direction>("Look", d)))
@@ -662,6 +683,18 @@ FSMState* FSMStateFygarMoving::UpdateFirst(const SceneData& sceneData, FSMData& 
 			if (m_pGrid->IsOnWalkablePoint(world) && (rand() % 3 == 0 || m_CurrentDirection == Direction::None))
 			{
 				SetDirection(GetRandomDirection(marked), data);
+			}
+			else if (m_CurrentDirection == Direction::None)
+			{
+				obj->GetTransform().SetWorldPosition(m_pGrid->ClosestWalkableLine(world));
+				for (int i = 0; i < 4; ++i)
+				{
+					if (marked[i])
+					{
+						m_CurrentDirection = Direction(i);
+						break;
+					}
+				}
 			}
 			//Else if on normal, reverse possible
 			if (!marked[int(m_CurrentDirection)] && m_pGrid->IsOnPoint(world))
@@ -737,7 +770,7 @@ FSMState* FSMStateFygarMoving::OnNotify(ObservedEvent oevent, const ObservedData
 void FSMStateFygarMoving::Exit(const SceneData& sceneData, FSMData& data)
 {
 	UNREFERENCED_PARAMETER(sceneData);
-	data.SetData<Direction>("Move", m_CurrentDirection);
+	data.SetData<Direction>("Move", Direction::None);
 }
 void FSMStateFygarMoving::SetDirection(Direction d, FSMData& data)
 {

@@ -92,15 +92,16 @@ namespace DigDug
 		void SetCrushState(FSMState* pCrush) { m_pCrushedState = pCrush; }
 		void SetPumpState(FSMState* pPump) { m_pPumpedState = pPump; }
 	private:
+		Vector2 m_ReturnTarget;
+		float m_Speed;
+		float m_MinDuration;
+		float m_Accu;
 		GameObject* m_pObject;
 		GameObject* m_pClosestPlayer;
-		float m_Speed;
 		DigDugGridComponent* m_pGrid;
 		FSMState* m_pMoveState;
 		FSMState* m_pCrushedState;
 		FSMState* m_pPumpedState;
-		float m_MinDuration;
-		float m_Accu;
 
 	};
 

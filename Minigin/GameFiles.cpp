@@ -20,6 +20,10 @@
 #include "DigDugPlayerComponent.h"
 #include "PlayerParts.h"
 #include "ScreenRenderComponent.h"
+#include "AutokillComponent.h"
+#include "EnemyScoreObserver.h"
+#include "ObstacleScoreObserver.h"
+#include "ObserverManager.h"
 
 using namespace DigDug;
 
@@ -99,7 +103,13 @@ GameObject* DigDug::MakeBackground(Scene& scene, const DigDugSettings& settings)
 GameObject* DigDug::CreateObstacle(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver)
 {
 	GameObject* pObject = scene.CreateGameObject();
-	pObject->AddObserver(pScoreObserver);
+
+	auto pObserver = new ObstacleScoreObserver();
+	pObject->AddObserver(pObserver);
+	pObserver->AddObserver(pScoreObserver);
+
+	auto om = scene.GetSceneData().GetManager<ObserverManager>();
+	if (om) om->AddUnownedObserver(pObserver);
 
 	//Components
 	pObject->AddComponent(new RenderComponent());
@@ -143,7 +153,13 @@ GameObject* DigDug::CreatePooka(Scene& scene, const DigDugSettings& settings, Ob
 {
 
 	GameObject* pObject = scene.CreateGameObject();
-	pObject->AddObserver(pScoreObserver);
+
+	auto* pObserver = new EnemyScoreObserver(EnemyScoreObserver::Type::Pooka);
+	pObject->AddObserver(pObserver);
+	pObserver->AddObserver(pScoreObserver);
+
+	auto om = scene.GetSceneData().GetManager<ObserverManager>();
+	if (om) om->AddUnownedObserver(pObserver);
 
 	//Components
 	AABBCollisionComponent* pCollider = new AABBCollisionComponent();
@@ -470,7 +486,13 @@ void DigDug::HelpPlayerSprites(SpriteComponent& comp, const DigDugSettings& sett
 GameObject* DigDug::CreateFygar(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver)
 {
 	auto pObject = scene.CreateGameObject();
-	pObject->AddObserver(pScoreObserver);
+
+	auto* pObserver = new EnemyScoreObserver(EnemyScoreObserver::Type::Fygar);
+	pObject->AddObserver(pObserver);
+	pObserver->AddObserver(pScoreObserver);
+
+	auto om = scene.GetSceneData().GetManager<ObserverManager>();
+	if (om) om->AddUnownedObserver(pObserver);
 
 	//Components
 	auto pSprite = new SpriteComponent();
@@ -610,6 +632,28 @@ GameObject* DigDug::CreateFire(GameObject& parent, const DigDugSettings& setting
 		pFsm->SetState(pNoneState);
 	}
 
+	return pObject;
+}
+
+GameObject* DigDug::CreateScore(Scene& scene, const std::shared_ptr<Font>& pFont, const SDL_Color& color, int score)
+{
+	auto* pObject = new GameObject();
+
+	//Comps
+	auto* pRenderComponent = new RenderComponent();
+	pRenderComponent->SetRenderPriority(10, scene.GetSceneData());
+	pObject->AddComponent(pRenderComponent);
+	auto* pTextComponent = new TextComponent();
+	pObject->AddComponent(pTextComponent);
+	pObject->AddComponent(new AutokillComponent(2.0f));
+
+	//Make
+	pTextComponent->SetFont(pFont);
+	pTextComponent->SetColor(color);
+	pTextComponent->SetText(std::to_string(score));
+
+	//Result
+	scene.AddGameObject(pObject);
 	return pObject;
 }
 

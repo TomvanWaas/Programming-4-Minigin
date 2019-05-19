@@ -2,7 +2,6 @@
 #include "CollisionManager.h"
 #include "Rect.h"
 #include "AABBCollisionComponent.h"
-#include "Logger.h"
 #include <algorithm>
 #include "GameObject.h"
 #include "SceneData.h"
@@ -64,107 +63,121 @@ bool CollisionManager::Collides(const Rect& a, const Rect& b) const
 void CollisionManager::Update(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
-
-	//////////////////////
-	//Calculate Collisions
-	//////////////////////
+	//////////////////////////////////////
+	//Calc Collisions : Fill buffer 1
+	//////////////////////////////////////
 	m_pPairsBuffer1->clear();
-	for (unsigned int i = 0; i < m_pColliders.size(); ++i)
+	//Filter nullptr
+	m_pColliders.erase(std::remove_if(m_pColliders.begin(), m_pColliders.end(), [](AABBCollisionComponent* pCol)
 	{
-		auto* pCollI = m_pColliders[i];
-		if (pCollI == nullptr || pCollI->GetGameObject() == nullptr) continue;
-		for (unsigned int j = 0; j < m_pColliders.size(); ++j)
-		{
-			auto* pCollJ = m_pColliders[j];
-			if (pCollJ == nullptr || pCollJ->GetGameObject() == nullptr || pCollJ->IsEnabled() == false || pCollI->IsEnabled() == false ||
-				&pCollJ->GetGameObject()->GetRoot() == &pCollI->GetGameObject()->GetRoot()) continue;
+		return pCol == nullptr;
+	}), m_pColliders.end());
 
-			if (Collides(pCollI->GetCollider(), pCollJ->GetCollider()))
+
+	for (size_t i = 0, j = m_pColliders.size(); i < j; ++i)
+	{
+		auto* pColliderA = m_pColliders[i];
+
+		//Valid Collider?
+		if (!pColliderA || !pColliderA->IsEnabled() || !pColliderA->GetGameObject()) continue;
+
+		for (size_t k = 0; k < j; ++k)
+		{
+			auto* pColliderB = m_pColliders[k];
+
+			//Valid Collider?
+			if (!pColliderB || !pColliderB->IsEnabled() || !pColliderB->GetGameObject()
+				|| &pColliderB->GetGameObject()->GetRoot() == &pColliderA->GetGameObject()->GetRoot()) continue;
+
+			//Else if collides
+			if (Collides(pColliderA->GetCollider(), pColliderB->GetCollider()))
 			{
-				CollPair p{};
-				p.pFirst = pCollI;
-				p.pSecond = pCollJ;
-				m_pPairsBuffer1->push_back(p);
+				CollPair pair{};
+				pair.pFirst = pColliderA;
+				pair.pSecond = pColliderB;
+				m_pPairsBuffer1->push_back(pair);
 			}
 		}
 	}
 
-	///////////////////////////////////
-	//Check buffers for exits or enters
-	///////////////////////////////////
+	////////////////////////////////////////////
+	// Compare buffer 1 & 2 for enters &| exits
+	////////////////////////////////////////////
+
 	//Enters
-	for (auto& pI: *m_pPairsBuffer1)
+	for (size_t i = 0, j = m_pPairsBuffer1->size(); i < j; ++i)
 	{
-		bool f = false;
-		for (auto& pJ: *m_pPairsBuffer2)
+		auto& pair = (*m_pPairsBuffer1)[i];
+		if (!pair.pSecond || !pair.pSecond) continue;
+
+		auto it = std::find_if(m_pPairsBuffer2->begin(), m_pPairsBuffer2->end(), [&pair](const CollPair& other)
 		{
-			if (pI == pJ)
+			return pair == other;
+		});
+		if (it == m_pPairsBuffer2->end())
+		{
+			auto* pObjFirst = pair.pFirst->GetGameObject();
+			auto* pObjSecond = pair.pSecond->GetGameObject();
+
+			if (pObjFirst)
 			{
-				f = true;
-				break;
+				ObservedData d{};
+				d.AddData<AABBCollisionComponent*>("Collider", pair.pSecond);
+				pObjFirst->Notify(ObservedEvent::ColliderEntered, d);
 			}
-		}
-
-		if (f) continue;
-
-		//Else Entered
-		if (pI.pFirst && pI.pFirst->GetGameObject())
-		{
-			auto* obj = pI.pFirst->GetGameObject();
-			ObservedData data{};
-			data.AddData<AABBCollisionComponent*>("Collider", pI.pSecond);
-			obj->Notify(ObservedEvent::ColliderEntered, data);
-		}
-		if (pI.pSecond && pI.pSecond->GetGameObject())
-		{
-			auto* obj = pI.pSecond->GetGameObject();
-			ObservedData data{};
-			data.AddData<AABBCollisionComponent*>("Collider", pI.pFirst);
-			obj->Notify(ObservedEvent::ColliderEntered, data);
+			if (pObjSecond)
+			{
+				ObservedData d{};
+				d.AddData<AABBCollisionComponent*>("Collider", pair.pFirst);
+				pObjSecond->Notify(ObservedEvent::ColliderEntered, d);
+			}
 		}
 	}
 
 	//Exits
-	for (auto& pI : *m_pPairsBuffer2)
+	for (size_t i = 0, j = m_pPairsBuffer2->size(); i < j; ++i)
 	{
-		bool f = false;
-		for (auto& pJ : *m_pPairsBuffer1)
-		{
-			if (pI == pJ)
-			{
-				f = true;
-				break;
-			}
-		}
+		auto& pair = (*m_pPairsBuffer2)[i];
 
-		if (f) continue;
-		
-		//Else Entered
-		if (pI.pFirst && pI.pFirst->GetGameObject())
+		if (!pair.pSecond || !pair.pSecond) continue;
+
+		auto it = std::find_if(m_pPairsBuffer1->begin(), m_pPairsBuffer1->end(), [&pair](const CollPair& other)
 		{
-			auto& root = pI.pFirst->GetGameObject()->GetRoot();
-			ObservedData data{};
-			data.AddData<AABBCollisionComponent*>("Collider", pI.pSecond);
-			root.Notify(ObservedEvent::ColliderExited, data);
-			root.NotifyChildren(ObservedEvent::ColliderExited, data);
-		}
-		if (pI.pSecond && pI.pSecond->GetGameObject())
+			return pair == other;
+		});
+		if (it == m_pPairsBuffer1->end())
 		{
-			auto& root = pI.pSecond->GetGameObject()->GetRoot();
-			ObservedData data{};
-			data.AddData<AABBCollisionComponent*>("Collider", pI.pFirst);
-			root.Notify(ObservedEvent::ColliderExited, data);
-			root.NotifyChildren(ObservedEvent::ColliderExited, data);
+			auto* pObjFirst = pair.pFirst->GetGameObject();
+			auto* pObjSecond = pair.pSecond->GetGameObject();
+
+			if (pObjFirst)
+			{
+				ObservedData d{};
+				d.AddData<AABBCollisionComponent*>("Collider", pair.pSecond);
+				pObjFirst->Notify(ObservedEvent::ColliderExited, d);
+			}
+			if (pObjSecond)
+			{
+				ObservedData d{};
+				d.AddData<AABBCollisionComponent*>("Collider", pair.pFirst);
+				pObjSecond->Notify(ObservedEvent::ColliderExited, d);
+			}
 		}
 	}
 
-	///////////////
-	//Swap buffers
-	///////////////
+
+	/////////////////
+	////Swap buffers
+	/////////////////
 	auto pBuffer = m_pPairsBuffer2;
 	m_pPairsBuffer2 = m_pPairsBuffer1;
 	m_pPairsBuffer1 = pBuffer;
+
 }
+
+
+
+
 
 #ifdef Debug
 #include "RenderManager.h"
@@ -193,19 +206,32 @@ void CollisionManager::RegisterCollision(AABBCollisionComponent& col)
 
 void CollisionManager::UnRegisterCollision(AABBCollisionComponent& col)
 {
-	//Find in Vector
-	m_pColliders.erase(std::remove(m_pColliders.begin(), m_pColliders.end(), &col), m_pColliders.end());
-
-	//Find in Buffers
-	(*m_pPairsBuffer1).erase(std::remove_if(m_pPairsBuffer1->begin(), m_pPairsBuffer1->end(), [&col](CollPair& pair)
+	//In Vector
+	auto i = std::find(m_pColliders.begin(), m_pColliders.end(), &col);
+	if (i != m_pColliders.end())
 	{
-		return (pair.pFirst == &col || pair.pSecond == &col);
-	}), m_pPairsBuffer1->end());
+		(*i) = nullptr;
+	}
 
-	(*m_pPairsBuffer2).erase(std::remove_if(m_pPairsBuffer2->begin(), m_pPairsBuffer2->end(), [&col](CollPair& pair)
+	//In Buffers
+	for (size_t j = 0, k = m_pPairsBuffer1->size(); j < k; ++j)
 	{
-		return (pair.pFirst == &col || pair.pSecond == &col);
-	}), m_pPairsBuffer2->end());
+		auto pair = (*m_pPairsBuffer1)[j];
+		if (pair.pFirst == &col || pair.pSecond == &col)
+		{
+			pair.pFirst = nullptr;
+			pair.pSecond = nullptr;
+		}
+	}
+	for (size_t j = 0, k = m_pPairsBuffer2->size(); j < k; ++j)
+	{
+		auto pair = (*m_pPairsBuffer2)[j];
+		if (pair.pFirst == &col || pair.pSecond == &col)
+		{
+			pair.pFirst = nullptr;
+			pair.pSecond = nullptr;
+		}
+	}
 
 }
 

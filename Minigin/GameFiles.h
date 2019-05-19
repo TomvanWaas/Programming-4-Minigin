@@ -8,7 +8,9 @@ class Scene;
 class DigDugGridComponent;
 class SpriteComponent;
 class Texture2D;
+class Font;
 #include "Vector2.h"
+struct SDL_Color;
 
 namespace DigDug
 {
@@ -30,14 +32,14 @@ namespace DigDug
 		float spriteHeight = 16.0f;
 		float spriteSpeed = 0.25f;
 
-		//Textures
+		//Resources
 		std::shared_ptr<Texture2D> pDigDugTexture = nullptr;
 		std::shared_ptr<Texture2D> pPookaTexture = nullptr;
 		std::shared_ptr<Texture2D> pFygarTexture = nullptr;
 		std::shared_ptr<Texture2D> pBackgroundTexture = nullptr;
 		std::shared_ptr<Texture2D> pPumpTexture = nullptr;
 		std::shared_ptr<Texture2D> pOtherTexture = nullptr;
-
+		std::shared_ptr<Font> pScoreFont = nullptr;
 
 
 	};
@@ -66,4 +68,5 @@ namespace DigDug
 	GameObject* CreateFygar(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver);
 	GameObject* CreateFire(GameObject& parent, const DigDugSettings& settings);
 
+	GameObject* CreateScore(Scene& scene, const std::shared_ptr<Font>& pFont, const SDL_Color& color, int score);
 }

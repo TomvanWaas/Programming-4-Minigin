@@ -17,6 +17,5 @@ private:
 	int m_LevelNumber;
 
 
-	void ReloadScene();
 };
 

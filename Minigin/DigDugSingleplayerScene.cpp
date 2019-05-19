@@ -17,8 +17,6 @@
 #include "SceneManager.h"
 #include "RenderComponent.h"
 #include "ObserverManager.h"
-#include "EnemyScoreObserver.h"
-#include "ObstacleScoreObserver.h"
 #include "ScoreObserver.h"
 
 DigDugSingleplayerScene::DigDugSingleplayerScene(const std::string& name, const std::string& levelFile, int numLives, int levelNumber)
@@ -48,6 +46,7 @@ void DigDugSingleplayerScene::SceneInitialize()
 	settings.pOtherTexture = ResourceManager::GetInstance().LoadTexture("Sprites_Other.png");
 	settings.pPookaTexture = ResourceManager::GetInstance().LoadTexture("Sprites_Pooka.png");
 	settings.pPumpTexture = ResourceManager::GetInstance().LoadTexture("Sprites_Pump.png");
+	settings.pScoreFont = ResourceManager::GetInstance().LoadFont("Lingua.otf", 20);
 
 	settings.gridHeight = m_pLevelData->size.second;
 	settings.gridWidth = m_pLevelData->size.first;
@@ -60,18 +59,8 @@ void DigDugSingleplayerScene::SceneInitialize()
 	GetSceneData().AddManager(pObserverManager);
 
 	//Observers
-	auto pScoreObserver = new ScoreObserver();
+	auto pScoreObserver = new ScoreObserver(settings.pScoreFont, Color4(), this);
 
-	auto pPookaObserver = new EnemyScoreObserver(EnemyScoreObserver::Type::Pooka);
-	auto pFygarObserver = new EnemyScoreObserver(EnemyScoreObserver::Type::Fygar);
-	auto pObstacleObserver = new ObstacleScoreObserver();
-	pPookaObserver->AddObserver(pScoreObserver);
-	pFygarObserver->AddObserver(pScoreObserver);
-	pObstacleObserver->AddObserver(pScoreObserver);
-
-	pObserverManager->AddUnownedObserver(pPookaObserver);
-	pObserverManager->AddUnownedObserver(pFygarObserver);
-	pObserverManager->AddUnownedObserver(pObstacleObserver);
 	pObserverManager->AddUnownedObserver(pScoreObserver);
 
 
@@ -95,21 +84,21 @@ void DigDugSingleplayerScene::SceneInitialize()
 		//Obstacles
 		for (const auto& p : m_pLevelData->obstacle)
 		{
-			auto* pObstacle = CreateObstacle(*this, settings, pObstacleObserver);
+			auto* pObstacle = CreateObstacle(*this, settings, pScoreObserver);
 			pObstacle->GetTransform().SetWorldPosition(settings.pGrid->GetPosition(p.first, p.second));
 			pObstacle->GetTransform().SetWorldScale(scale);
 		}
 		//Pookas
 		for (const auto& p : m_pLevelData->pooka)
 		{
-			auto* pPooka = CreatePooka(*this, settings, pPookaObserver);
+			auto* pPooka = CreatePooka(*this, settings, pScoreObserver);
 			pPooka->GetTransform().SetWorldPosition(settings.pGrid->GetPosition(p.first, p.second));
 			pPooka->GetTransform().SetWorldScale(scale);
 		}
 		//Fygars
 		for (const auto& p : m_pLevelData->fygar)
 		{
-			auto* pFygar = CreateFygar(*this, settings, pFygarObserver);
+			auto* pFygar = CreateFygar(*this, settings, pScoreObserver);
 			pFygar->GetTransform().SetWorldPosition(settings.pGrid->GetPosition(p.first, p.second));
 			pFygar->GetTransform().SetWorldScale(scale);
 		}
@@ -178,57 +167,3 @@ Scene* DigDugSingleplayerScene::GetNew() const
 	return new DigDugSingleplayerScene(GetName(), m_LevelFile, m_NumberOfLives, m_LevelNumber);
 }
 
-void DigDugSingleplayerScene::ReloadScene()
-{
-
-
-	auto* pPm = GetSceneData().GetManager<PlayerManager>();
-	auto* pEm = GetSceneData().GetManager<EnemyManager>();
-
-	if (pEm)
-	{
-		const auto& vEnemies = pEm->GetEnemies();
-		const auto& vInEnemies = pEm->GetInitPositions();
-		for (size_t i = 0; i < vEnemies.size(); ++i)
-		{
-			auto* pE = vEnemies[i];
-			if (pE && i < vInEnemies.size())
-			{
-				pE->GetTransform().SetWorldPosition(vInEnemies[i]);
-			}
-			if (pE)
-			{
-				auto* pFsm = pE->GetComponent<FiniteStateMachineComponent>();
-				if (pFsm)
-				{
-					pFsm->SetState("MoveState");
-				}
-			}
-		}
-	}
-	if (pPm)
-	{
-		const auto& vPlayers = pPm->GetPlayers();
-		const auto& vInPlayers = pPm->GetInitPositions();
-		for (size_t i = 0; i < vPlayers.size(); ++i)
-		{
-			auto* pP = vPlayers[i];
-			if (pP && i < vInPlayers.size())
-			{
-				pP->GetTransform().SetWorldPosition(vInPlayers[i]);
-			}
-			if (pP)
-			{
-				auto* pFsm = pP->GetComponent<FiniteStateMachineComponent>();
-				if (pFsm)
-				{
-					pFsm->SetState("IdleState");
-				}
-			}
-		}
-	}
-
-
-
-
-}

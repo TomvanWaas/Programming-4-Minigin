@@ -5,6 +5,14 @@
 #include "ObservedData.h"
 #include "GameEvents.h"
 #include "Minigin.h"
+#include "GameFiles.h"
+#include "SDL.h"
+
+EnemyScoreObserver::EnemyScoreObserver(Type type)
+	: m_Type(type)
+{
+	
+}
 
 void EnemyScoreObserver::Notify(ObservedEvent event, const ObservedData& data)
 {
@@ -16,7 +24,9 @@ void EnemyScoreObserver::Notify(ObservedEvent event, const ObservedData& data)
 			if (data.GetData("GameObject", pObject) && pObject != nullptr)
 			{
 				ObservedData d{};
-				d.AddData<int>("Score", GetScore(pObject->GetTransform().GetWorldPosition()));
+				int score = GetScore(pObject->GetTransform().GetWorldPosition());
+				d.AddData<int>("Score", score);
+				d.AddData<GameObject*>("GameObject", pObject);
 				NotifyObservers(GameEvent::GainedScore, d);
 			}
 		}

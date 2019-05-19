@@ -54,8 +54,6 @@ void GameObject::DeleteObject(GameObject*& pObject)
 	//Remove in Scene
 	if (pObject->m_pScene)
 	{
-		//Destroy
-		pObject->Destroy(pObject->m_pScene->GetSceneData());
 		pObject->m_pScene->RemoveGameObject(pObject);
 	}	
 	pObject->m_pScene = nullptr;

@@ -277,8 +277,6 @@
     <ClInclude Include="PlayerParts.h">
       <Filter>GameFiles\DigDugFSMStates</Filter>
     </ClInclude>
-    <ClInclude Include="DigDugEnemyComponent.h" />
-    <ClInclude Include="DigDugPlayerComponent.h" />
     <ClInclude Include="PlayerManager.h">
       <Filter>GameFiles\Managers</Filter>
     </ClInclude>
@@ -312,7 +310,21 @@
     <ClInclude Include="EnemyScoreObserver.h">
       <Filter>GameFiles\Observers</Filter>
     </ClInclude>
-    <ClInclude Include="ObserverManager.h" />
+    <ClInclude Include="Color.h">
+      <Filter>FrameworkFiles\Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="ObserverManager.h">
+      <Filter>GameFiles\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="AutokillComponent.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugEnemyComponent.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugPlayerComponent.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseComponent.cpp">
@@ -447,8 +459,6 @@
     <ClCompile Include="PlayerParts.cpp">
       <Filter>GameFiles\DigDugFSMStates</Filter>
     </ClCompile>
-    <ClCompile Include="DigDugEnemyComponent.cpp" />
-    <ClCompile Include="DigDugPlayerComponent.cpp" />
     <ClCompile Include="PlayerManager.cpp">
       <Filter>GameFiles\Managers</Filter>
     </ClCompile>
@@ -485,6 +495,20 @@
     <ClCompile Include="EnemyScoreObserver.cpp">
       <Filter>GameFiles\Observers</Filter>
     </ClCompile>
-    <ClCompile Include="ObserverManager.cpp" />
+    <ClCompile Include="Color.cpp">
+      <Filter>FrameworkFiles\Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="ObserverManager.cpp">
+      <Filter>GameFiles\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="AutokillComponent.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugEnemyComponent.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugPlayerComponent.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

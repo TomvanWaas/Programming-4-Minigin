@@ -192,10 +192,12 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationSelector.h" />
+    <ClInclude Include="AutokillComponent.h" />
     <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="AABBCollisionComponent.h" />
     <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="DataComponent.h" />
     <ClInclude Include="Deletor.h" />
@@ -280,9 +282,11 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationSelector.cpp" />
+    <ClCompile Include="AutokillComponent.cpp" />
     <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="AABBCollisionComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="Color.cpp" />
     <ClCompile Include="DigDugApplication.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="DigDugEnemy.cpp" />
