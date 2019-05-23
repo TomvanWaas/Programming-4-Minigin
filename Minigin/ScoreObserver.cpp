@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "GameFiles.h"
 #include "SDL.h"
+#include "TextComponent.h"
 
 ScoreObserver::ScoreObserver(const std::shared_ptr<Font>& pFont, const Color4& color, Scene* pScene)
 	: m_pScene(pScene)
@@ -35,6 +36,16 @@ void ScoreObserver::Notify(ObservedEvent event, const ObservedData& data)
 
 			//Add Score
 			m_Score += score;
+
+			//Set Score in TextComponent
+			if (GetGameObject())
+			{
+				TextComponent* pTextComponent = GetGameObject()->GetComponent<TextComponent>();
+				if (pTextComponent)
+				{
+					pTextComponent->SetText(std::to_string(m_Score));
+				}
+			}
 
 			//Log
 			std::stringstream ss{};

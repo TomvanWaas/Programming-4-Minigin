@@ -12,12 +12,16 @@ RenderComponent::RenderComponent(const std::string& texturePath)
 	: m_pTexture(ResourceManager::GetInstance().LoadTexture(texturePath))
 	, m_HasSource(false)
 	, m_Source()
+	, m_Pivot(Vector2(0,0))
+	, m_FlipMode(FlipMode::None)
 {
 }
 RenderComponent::RenderComponent(const std::shared_ptr<Texture2D>& texture)
 	: m_pTexture(texture)
 	, m_HasSource(false)
 	, m_Source()
+	, m_Pivot(Vector2(0, 0))
+	, m_FlipMode(FlipMode::None)
 {}
 
 void RenderComponent::InitializeOverride(const SceneData& sceneData)
@@ -33,12 +37,16 @@ void RenderComponent::Render(const RenderManager& renderer) const
 {
 	if ( GetGameObject() != nullptr && m_pTexture != nullptr && IsEnabled())
 	{
+		//Get transform
 		const auto& transform = GetGameObject()->GetTransform();
-		const auto position = transform.GetWorldPosition();
+		auto center = transform.GetWorldPosition();
 		const auto scale = transform.GetWorldScale();
 		const auto rot = transform.GetWorldRotation(true);
 
-		
+		//Apply pivot
+		center.x -= m_Pivot.x * ((m_HasSource) ? m_Source.width : m_pTexture->GetWidth()) * scale.x * 0.5f;
+		center.y -= m_Pivot.y * ((m_HasSource) ? m_Source.height : m_pTexture->GetHeight()) * scale.y * 0.5f;
+
 		
 		
 		
@@ -48,18 +56,18 @@ void RenderComponent::Render(const RenderManager& renderer) const
 			//Has source
 			if (m_HasSource)
 			{
-				renderer.RenderTexture(*m_pTexture, position, scale, m_Source);
+				renderer.RenderTexture(*m_pTexture, center, scale, m_Source);
 			}
 			//No source
 			else
 			{
-				renderer.RenderTexture(*m_pTexture, position, scale);
+				renderer.RenderTexture(*m_pTexture, center, scale);
 			}
 		}
 		//With angle and\or flipmode
 		else
 		{
-			renderer.RenderTexture(*m_pTexture, position, scale, m_Source, rot, position, m_FlipMode);
+			renderer.RenderTexture(*m_pTexture, center, scale, m_Source, rot, center, m_FlipMode);
 		}
 	}
 }
@@ -131,4 +139,5 @@ FlipMode RenderComponent::GetFlipMode() const
 {
 	return m_FlipMode;
 }
+
 

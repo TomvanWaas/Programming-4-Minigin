@@ -210,10 +210,14 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="Application.h" />
     <ClInclude Include="DigDugMenuScene.h" />
     <ClInclude Include="DigDugMovementComponent.h" />
+    <ClInclude Include="DigDugMultiplayerScene.h" />
+    <ClInclude Include="DigDugPauseScene.h" />
     <ClInclude Include="DigDugPlayer.h" />
     <ClInclude Include="DigDugPlayerComponent.h" />
     <ClInclude Include="DigDugPlayerHealth.h" />
+    <ClInclude Include="DigDugSettings.h" />
     <ClInclude Include="DigDugSingleplayerScene.h" />
+    <ClInclude Include="DigDugVersusScene.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="EnemyParts.h" />
     <ClInclude Include="EnemyScoreObserver.h" />
@@ -294,9 +298,12 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClCompile Include="DigDugGridComponent.cpp" />
     <ClCompile Include="DigDugMenuScene.cpp" />
     <ClCompile Include="DigDugMovementComponent.cpp" />
+    <ClCompile Include="DigDugMultiplayerScene.cpp" />
+    <ClCompile Include="DigDugPauseScene.cpp" />
     <ClCompile Include="DigDugPlayer.cpp" />
     <ClCompile Include="DigDugPlayerComponent.cpp" />
     <ClCompile Include="DigDugSingleplayerScene.cpp" />
+    <ClCompile Include="DigDugVersusScene.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="EnemyParts.cpp" />
     <ClCompile Include="EnemyScoreObserver.cpp" />

@@ -34,6 +34,14 @@ void GameObject::DeleteObject(GameObject*& pObject)
 {
 	if (!pObject) return;
 
+	////Delete Children
+	auto children = pObject->GetAllChildren();
+	for (GameObject*& pChild : children)
+	{
+		DeleteObject(pChild);
+	}
+
+	////Delete Self
 	//Destroy
 	if (pObject->m_pScene)
 	{
@@ -60,8 +68,6 @@ void GameObject::DeleteObject(GameObject*& pObject)
 
 	//Set State
 	pObject->SetState(false, State::Enabled);
-
-
 
 	Deletor::GetInstance().StoreDelete(pObject);
 }
@@ -177,7 +183,7 @@ void GameObject::Destroy(const SceneData& sceneData)
 		ObservedData d{};
 		d.AddData<GameObject*>("GameObject", this);
 		NotifyObservers(ObservedEvent::Destroyed, d);
-
+		if (GetScene()) GetScene()->Notify(ObservedEvent::Destroyed, d);
 
 
 		SetState(true, State::Destroyed);

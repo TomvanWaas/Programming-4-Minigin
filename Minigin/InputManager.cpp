@@ -87,7 +87,7 @@ void InputManager::StaticDestroy()
 	}
 }
 
-void InputManager::Quit()
+void InputManager::StaticQuit()
 {
 	m_Continue = false;
 }
@@ -143,21 +143,18 @@ bool InputManager::IsTriggered(const InputAction& action) const
 	case InputTriggerState::Down:
 		//Keyboard
 		if (action.ValidKeyboardCode() &&
-			KeyboardKeyDown(action.keyboardCode, true) &&
 			KeyboardKeyDown(action.keyboardCode, false))
 		{
 			return true;
 		}
 		//Mouse
 		if (action.ValidMousebuttonCode() &&
-			MouseButtonDown(action.mousebuttonCode, true) &&
 			MouseButtonDown(action.mousebuttonCode, false))
 		{
 			return true;
 		}
 		//Gamepad
 		if (action.ValidGamepadCode() && action.ValidPlayerID() &&
-			GamepadButtonDown(action.gamepadCode, action.playerID, true) &&
 			GamepadButtonDown(action.gamepadCode, action.playerID, false))
 		{
 			return true;
@@ -214,21 +211,18 @@ bool InputManager::IsTriggered(const InputAction& action) const
 	case InputTriggerState::Up:
 		//Keyboard
 		if (action.ValidKeyboardCode() &&
-			!KeyboardKeyDown(action.keyboardCode, true) &&
 			!KeyboardKeyDown(action.keyboardCode, false))
 		{
 			return true;
 		}
 		//Mouse
 		if (action.ValidMousebuttonCode() &&
-			!MouseButtonDown(action.mousebuttonCode, true) &&
 			!MouseButtonDown(action.mousebuttonCode, false))
 		{
 			return true;
 		}
 		//Gamepad
 		if (action.ValidGamepadCode() && action.ValidPlayerID() &&
-			!GamepadButtonDown(action.gamepadCode, action.playerID, true) &&
 			!GamepadButtonDown(action.gamepadCode, action.playerID, false))
 		{
 			return true;
@@ -266,7 +260,7 @@ bool InputManager::MouseButtonDown(int button, bool prev) const
 bool InputManager::GamepadButtonDown(int button, int playerId, bool prev) const
 {
 	if (button > 0x0000 && button <= 0x8000 &&
-		playerId < XUSER_MAX_COUNT && 
+		playerId < XUSER_MAX_COUNT && playerId >= 0 &&
 		m_IsControllerConnected[playerId])
 	{
 		if (prev)
@@ -274,6 +268,75 @@ bool InputManager::GamepadButtonDown(int button, int playerId, bool prev) const
 			return ((m_PreviousControllerStates[playerId].Gamepad.wButtons&button) != 0);
 		}
 		return ((m_CurrentControllerStates[playerId].Gamepad.wButtons&button) != 0);
+	}
+	else if (playerId < XUSER_MAX_COUNT && playerId >= 0 &&
+		m_IsControllerConnected[playerId])
+	{
+		float epsilon = 32767 * 0.5f;
+		//Joysticks
+		switch (button)
+		{
+		case (int(GamepadCode::GAMEPAD_LEFTSTICK_LEFT)):
+		{
+			if (prev) return m_PreviousControllerStates[playerId].Gamepad.sThumbLX < -epsilon;
+			return m_CurrentControllerStates[playerId].Gamepad.sThumbLX < -epsilon;
+		}
+		break;
+		case (int(GamepadCode::GAMEPAD_LEFTSTICK_RIGHT)):
+		{
+			if (prev) return m_PreviousControllerStates[playerId].Gamepad.sThumbLX > epsilon;
+			return m_CurrentControllerStates[playerId].Gamepad.sThumbLX > epsilon;
+		}
+		break;
+		case (int(GamepadCode::GAMEPAD_LEFTSTICK_UP)):
+		{
+			if (prev) return m_PreviousControllerStates[playerId].Gamepad.sThumbLY > epsilon;
+			return m_CurrentControllerStates[playerId].Gamepad.sThumbLY > epsilon;
+		}
+		break;
+		case (int(GamepadCode::GAMEPAD_LEFTSTICK_DOWN)):
+		{
+			if (prev) return m_PreviousControllerStates[playerId].Gamepad.sThumbLY < -epsilon;
+			return m_CurrentControllerStates[playerId].Gamepad.sThumbLY < -epsilon;
+		}
+		break;
+		case (int(GamepadCode::GAMEPAD_RIGHTSTICK_LEFT)):
+		{
+			if (prev) return m_PreviousControllerStates[playerId].Gamepad.sThumbRX < -epsilon;
+			return m_CurrentControllerStates[playerId].Gamepad.sThumbRX < -epsilon;
+		}
+		break;
+		case (int(GamepadCode::GAMEPAD_RIGHTSTICK_RIGHT)):
+		{
+			if (prev) return m_PreviousControllerStates[playerId].Gamepad.sThumbRX > epsilon;
+			return m_CurrentControllerStates[playerId].Gamepad.sThumbRX > epsilon;
+		}
+		break;
+		case (int(GamepadCode::GAMEPAD_RIGHTSTICK_UP)):
+		{
+			if (prev) return m_PreviousControllerStates[playerId].Gamepad.sThumbRY > epsilon;
+			return m_CurrentControllerStates[playerId].Gamepad.sThumbRY > epsilon;
+		}
+		break;
+		case (int(GamepadCode::GAMEPAD_RIGHTSTICK_DOWN)):
+		{
+			if (prev) return m_PreviousControllerStates[playerId].Gamepad.sThumbRY < -epsilon;
+			return m_CurrentControllerStates[playerId].Gamepad.sThumbRY < -epsilon;
+		}
+		break;
+		case (int(GamepadCode::GAMEPAD_LEFTTRIGGER)):
+		{
+			if (prev) return int(m_PreviousControllerStates[playerId].Gamepad.bLeftTrigger) > 0;
+			return int(m_CurrentControllerStates[playerId].Gamepad.bLeftTrigger) > 0;
+		}
+		break;
+		case (int(GamepadCode::GAMEPAD_RIGHTTRIGGER)):
+		{
+			if (prev) return int(m_PreviousControllerStates[playerId].Gamepad.bRightTrigger) > 0;
+			return int(m_CurrentControllerStates[playerId].Gamepad.bRightTrigger) > 0;
+		}
+		break;
+		}
 	}
 	return false;
 }

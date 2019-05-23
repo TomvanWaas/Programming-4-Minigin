@@ -21,6 +21,7 @@ public:
 	bool RemoveGameObject(GameObject* pObject);
 	bool AddGameObject(GameObject* pObject);
 
+	void NotifyAll(ObservedEvent event, const ObservedData& data);
 	void Notify(ObservedEvent event, const ObservedData& data);
 
 	void Initialize();
@@ -34,11 +35,14 @@ public:
 	const Vector2& GetSceneScale() const { return m_SceneScale; }
 	void SetSceneScale(const Vector2& s) { m_SceneScale = s; }
 
-	virtual Scene* GetNew() const = 0;
+	virtual Scene* OnReload() const = 0;
 
 	void SetSceneManager(SceneManager* pManager) { m_pSceneManager = pManager; }
 	SceneManager* GetSceneManager() const { return m_pSceneManager; }
 
+
+	virtual void Enter(Scene* pPreviousScene) { UNREFERENCED_PARAMETER(pPreviousScene); };
+	virtual void Exit(Scene* pNextScene) { UNREFERENCED_PARAMETER(pNextScene); };
 protected:
 	virtual void SceneInitialize() {}
 	virtual void SceneUpdate() {}

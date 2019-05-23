@@ -36,6 +36,9 @@ public:
 	void SetLocalScale(float x, float y);
 	const Vector2& GetLocalScale() const;
 
+	void SetWorldTransform(const Vector2& pos, const Vector2& scale, float rot = 0, bool isdegrees = true);
+	void SetLocalTransform(const Vector2& pos, const Vector2& scale, float rot = 0, bool isdegrees = true);
+
 private:
 	GameObject* m_pGameObject;
 	Vector2 m_LocalPosition;

@@ -4,10 +4,11 @@
 #include <algorithm>
 #include "Logger.h"
 #include "Deletor.h"
+#include "RenderManager.h"
 
 SceneManager::SceneManager()
 	: m_pScenes()
-	, m_ActiveSceneId(0)
+	, m_pActiveScene(nullptr)
 {
 }
 SceneManager::~SceneManager()
@@ -17,85 +18,151 @@ SceneManager::~SceneManager()
 		SAFE_DELETE(pScene);
 	}
 	m_pScenes.clear();
+	m_pActiveScene = nullptr;
 }
 
 void SceneManager::Initialize()
 {
-	if (m_pScenes.size() <= m_ActiveSceneId) return;
 	for (auto pScene : m_pScenes)
 	{
-		pScene->Initialize();
+		if (pScene) pScene->Initialize();
 	}
 }
 void SceneManager::Update(float deltaTime)
 {
-
 	//Reload?
 	if (m_NeedsReload)
 	{
 		m_NeedsReload = false;
-		if (m_pScenes.size() > m_ActiveSceneId && m_pScenes[m_ActiveSceneId])
+
+		if (m_pActiveScene)
 		{
-			auto* pScene = m_pScenes[m_ActiveSceneId];
-			auto* pNew = pScene->GetNew();
-			Deletor::GetInstance().StoreDelete<Scene>(pScene);
-			m_pScenes[m_ActiveSceneId] = pNew;
-			if (pNew)
+			//Get Scenes
+			Scene* pOldScene = m_pActiveScene;
+			Scene* pNewScene = m_pActiveScene->OnReload();
+
+			if (pOldScene != pNewScene)
 			{
-				pNew->SetSceneManager(this);
-				pNew->Initialize();
+				if (pNewScene) pNewScene->SetSceneManager(this);
+
+				//Set In Vector
+				for (Scene*& pScene : m_pScenes)
+				{
+					if (pScene == pOldScene) pScene = pNewScene;
+				}
+
+				//Init New
+				if (pNewScene) pNewScene->Initialize();
+
+				//Enter/Exit
+				if (pOldScene) pOldScene->Exit(pNewScene);
+				if (pNewScene) pNewScene->Enter(pOldScene);
+
+				//Delete Old
+				Deletor::GetInstance().StoreDelete<Scene>(pOldScene);
+
+				m_pActiveScene = pNewScene;
 			}
-		}
+		}		
 	}
 
-	//Valid Scene?
-	if (m_pScenes.size() <= m_ActiveSceneId) return;
 	//Update scene
-	if (m_pScenes[m_ActiveSceneId] != nullptr)
-	{
-		m_pScenes[m_ActiveSceneId]->Update(deltaTime);
-	}
+	if (m_pActiveScene) m_pActiveScene->Update(deltaTime);
 }
 void SceneManager::Render() const
 {
-	if (m_pScenes.size() <= m_ActiveSceneId) return;
-
-	if (m_pScenes[m_ActiveSceneId] != nullptr)
-	{
-		m_pScenes[m_ActiveSceneId]->Render();
-	}
+	if (m_pActiveScene) m_pActiveScene->Render();
+	else RenderManager::ClearScreen();
 }
 
 Scene* SceneManager::GetActiveScene() const
 {
-	if (m_pScenes.size() > m_ActiveSceneId)
+	return m_pActiveScene;
+}
+
+Scene* SceneManager::GetPreviousScene() const
+{
+	for (size_t i = 0, j = m_pScenes.size(); i < j; ++i)
 	{
-		return m_pScenes[m_ActiveSceneId];
+		if (m_pScenes[i] == m_pActiveScene)
+		{
+			int idx = (int(i) - 1);
+			if (idx < 0) idx = int(j - 1);
+			return m_pScenes[idx];
+		}
 	}
 	return nullptr;
 }
 
+Scene* SceneManager::GetNextScene() const
+{
+	for (size_t i = 0, j = m_pScenes.size(); i < j; ++i)
+	{
+		if (m_pScenes[i] == m_pActiveScene)
+		{
+			return m_pScenes[(i + 1) % j];
+		}
+	}
+	return nullptr;
+}
 
 void SceneManager::SetActiveScene(const std::string& name)
 {
-	for (size_t i{0}; i < m_pScenes.size(); ++i)
+	for (size_t i = 0, j = m_pScenes.size(); i < j; ++i)
 	{
-		if (m_pScenes[i] != nullptr && m_pScenes[i]->GetName() == name)
+		if (m_pScenes[i] && m_pScenes[i]->GetName() == name)
 		{
-			m_ActiveSceneId = i;
+			SetActiveScene(m_pScenes[i]);
 			return;
 		}
 	}
+	SetActiveScene(nullptr);
 }
+void SceneManager::SetActiveScene(Scene* pScene)
+{
+	if (!pScene)
+	{
+		Logger::GetInstance().LogInfo("SceneManager::SetActiveScene > Scene set to nullptr");
+		if (m_pActiveScene) m_pActiveScene->Exit(pScene);
+		m_pActiveScene = pScene;
+		return;
+	}
+
+	//Find In Vector (add if necessary)
+	auto i = std::find(m_pScenes.begin(), m_pScenes.end(), pScene);
+	if (i == m_pScenes.end() && AddScene(pScene))
+	{
+		Logger::GetInstance().LogWarning("SceneManager::SetActiveScene > Added scene as it was not in vector");
+		if (m_pActiveScene) m_pActiveScene->Exit(pScene);
+		if (pScene) (pScene)->Enter(m_pActiveScene);
+		m_pActiveScene = pScene;
+	}
+	else if (i != m_pScenes.end())
+	{
+		if (m_pActiveScene) m_pActiveScene->Exit(pScene);
+		if (pScene) (pScene)->Enter(m_pActiveScene);
+		m_pActiveScene = pScene;
+	}
+}
+void SceneManager::SetActiveScene(size_t idx)
+{
+	if (m_pScenes.size() > idx)
+	{
+		SetActiveScene(m_pScenes[idx]);
+		return;
+	}
+	Logger::GetInstance().LogWarning("SceneManager::SetActiveScene > Index out of bounds resulted in Active Scene = nullptr");
+	SetActiveScene(nullptr);
+}
+
+
 void SceneManager::NextScene()
 {
-	++m_ActiveSceneId;
-	if (m_ActiveSceneId >= m_pScenes.size()) m_ActiveSceneId = 0;
+	SetActiveScene(GetNextScene());
 }
 void SceneManager::PreviousScene()
 {
-	--m_ActiveSceneId;
-	if (m_ActiveSceneId >= m_pScenes.size()) m_ActiveSceneId = m_pScenes.size() - 1;
+	SetActiveScene(GetPreviousScene());
 }
 
 void SceneManager::ReloadScene()
@@ -119,6 +186,19 @@ bool SceneManager::AddScene(Scene* pScene)
 	m_pScenes.push_back(pScene);
 	pScene->SetSceneManager(this);
 	return true;
+}
+
+Scene* SceneManager::GetScene(const std::string& name) const
+{
+	auto i = std::find_if(m_pScenes.begin(), m_pScenes.end(), [&name](const Scene* pScene)
+	{
+		return (pScene && pScene->GetName() == name);
+	});
+	if (i != m_pScenes.end())
+	{
+		return (*i);
+	}
+	return nullptr;
 }
 
 

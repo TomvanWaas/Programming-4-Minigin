@@ -13,6 +13,7 @@ public:
 	SpriteCollisionComponent& operator=(SpriteCollisionComponent&& other) noexcept = delete;
 
 	virtual void UpdateSecondOverride(const SceneData& sceneData) override;
+	virtual void DestroyOverride(const SceneData& sceneData) override;
 
 	void SetOffset(float leftx, float rightx, float topy, float bottomy);
 

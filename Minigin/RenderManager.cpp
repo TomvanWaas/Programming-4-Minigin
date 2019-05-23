@@ -23,6 +23,14 @@ void RenderManager::DestroyRenderer()
 	}
 	Logger::GetInstance().LogInfo("RenderManager::DestroyRenderer > Succeeded");
 }
+
+void RenderManager::ClearScreen()
+{
+	if (m_pRenderer == nullptr) return;
+	SDL_RenderClear(m_pRenderer);
+	SDL_RenderPresent(m_pRenderer);
+}
+
 void RenderManager::InitializeRenderer(SDL_Window* pWindow)
 {
 	m_pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);

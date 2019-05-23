@@ -325,6 +325,18 @@
     <ClInclude Include="DigDugPlayerComponent.h">
       <Filter>GameFiles\Components</Filter>
     </ClInclude>
+    <ClInclude Include="DigDugMultiplayerScene.h">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugVersusScene.h">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugPauseScene.h">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugSettings.h">
+      <Filter>GameFiles\Parts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseComponent.cpp">
@@ -509,6 +521,15 @@
     </ClCompile>
     <ClCompile Include="DigDugPlayerComponent.cpp">
       <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugMultiplayerScene.cpp">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugVersusScene.cpp">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugPauseScene.cpp">
+      <Filter>GameFiles\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

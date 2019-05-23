@@ -148,7 +148,7 @@ void Scene::SceneNotify(ObservedEvent event, const ObservedData& data)
 }
 
 
-void Scene::Notify(ObservedEvent event, const ObservedData& data)
+void Scene::NotifyAll(ObservedEvent event, const ObservedData& data)
 {
 	SceneNotify(event, data);
 	m_SceneData.Notify(event, data);
@@ -156,6 +156,12 @@ void Scene::Notify(ObservedEvent event, const ObservedData& data)
 	{
 		if (pObject) pObject->Notify(event, data);
 	}
+}
+
+void Scene::Notify(ObservedEvent event, const ObservedData& data)
+{
+	SceneNotify(event, data);
+	m_SceneData.Notify(event, data);
 }
 
 

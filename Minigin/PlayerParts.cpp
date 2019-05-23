@@ -540,29 +540,14 @@ FSMState* FSMStatePlayerDead::UpdateFirst(const SceneData& sceneData, FSMData& d
 	m_Accu += sceneData.GetTime()->GetDeltaTime();
 	if (m_Accu >= m_Delay)
 	{
-		sceneData.GetScene()->Notify(GameEvent::PlayerDied, ObservedData{});
+		auto* pObject = GetGameObject();
+		GameObject::DeleteObject(pObject);
 		return nullptr;
 	}
 	UNREFERENCED_PARAMETER(data);
 	return this;
 }
 
-void FSMStatePlayerDead::Exit(const SceneData& sceneData, FSMData& data)
-{
-	UNREFERENCED_PARAMETER(sceneData);
-	UNREFERENCED_PARAMETER(data);
-	auto go = GetGameObject();
-	if (go)
-	{
-		go->SetEnabled(true);
-
-		auto* pSprite = go->GetComponent<SpriteComponent>();
-		if (pSprite)
-		{
-			pSprite->SetFreezed(false);
-		}
-	}
-}
 
 
 

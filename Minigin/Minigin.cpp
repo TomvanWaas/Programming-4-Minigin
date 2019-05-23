@@ -53,7 +53,7 @@ void dae::Minigin::CleanupEngine()
 	SDL_DestroyWindow(m_pWindow);
 	m_pWindow = nullptr;
 
-	//Quit SDL
+	//StaticQuit SDL
 	SDL_Quit();
 
 	//Destroy Input
@@ -128,8 +128,9 @@ void dae::Minigin::Run()
 		}
 		catch (std::exception e)
 		{
-			std::cout << "Exception!";
-			std::cout << e.what();
+			std::stringstream msg{};
+			msg << "Exception > " << e.what();
+			Logger::GetInstance().LogError(msg.str());
 		}
 
 

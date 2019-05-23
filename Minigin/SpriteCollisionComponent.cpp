@@ -3,6 +3,8 @@
 #include "SpriteComponent.h"
 #include "Transform.h"
 #include "GameObject.h"
+#include "SceneData.h"
+#include "CollisionManager.h"
 
 SpriteCollisionComponent::SpriteCollisionComponent(const Rect& extents, bool isTrigger, const std::string& tag)
 	: AABBCollisionComponent(extents, isTrigger, tag)
@@ -45,6 +47,11 @@ void SpriteCollisionComponent::UpdateSecondOverride(const SceneData& sceneData)
 	}
 	m_Collider.x -= m_Collider.width * 0.5f;
 	m_Collider.y -= m_Collider.height * 0.5f;
+}
+
+void SpriteCollisionComponent::DestroyOverride(const SceneData& sceneData)
+{
+	sceneData.GetCollision()->UnRegisterCollision(*this);
 }
 
 void SpriteCollisionComponent::SetOffset(float leftx, float rightx, float topy, float bottomy)

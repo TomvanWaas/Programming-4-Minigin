@@ -1,10 +1,12 @@
 #pragma once
 #include "FSMState.h"
 class GameObject;
-class DigDugGridComponent;
+	class DigDugGridComponent;
 
 namespace DigDug
 {
+
+
 	class FSMStateObstacleIdle final : public FSMState
 	{
 	public:

@@ -25,6 +25,7 @@ public:
 	static void InitializeRenderer(SDL_Window* pWindow);
 	static SDL_Renderer* GetSDLRenderer();
 	static void DestroyRenderer();
+	static void ClearScreen();
 
 	//Render shapes, etc
 	void RenderTexture(const Texture2D& texture, const Vector2& center) const;

@@ -183,3 +183,17 @@ const Vector2& Transform::GetLocalScale() const
 	return m_LocalScale;
 }
 
+void Transform::SetLocalTransform(const Vector2& pos, const Vector2& scale, float rot, bool isdegrees)
+{
+	SetLocalPosition(pos);
+	SetLocalScale(scale);
+	SetLocalRotation(rot, isdegrees);
+}
+
+void Transform::SetWorldTransform(const Vector2& pos, const Vector2& scale, float rot, bool isdegrees)
+{
+	SetWorldPosition(pos);
+	SetWorldScale(scale);
+	SetWorldRotation(rot, isdegrees);
+}
+

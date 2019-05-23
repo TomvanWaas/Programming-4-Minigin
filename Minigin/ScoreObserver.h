@@ -1,9 +1,9 @@
 #pragma once
-#include "Observer.h"
 #include "Color.h"
+#include "BaseComponent.h"
 class Font;
 class Scene;
-class ScoreObserver final : public Observer
+class ScoreObserver final : public BaseComponent
 {
 public:
 	explicit ScoreObserver(const std::shared_ptr<Font>& pFont, const Color4& color, Scene* pScene);

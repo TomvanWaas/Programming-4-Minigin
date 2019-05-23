@@ -3,6 +3,7 @@
 #include "Rect.h"
 #include "Renderable.h"
 #include "FlipMode.h"
+#include "Vector2.h"
 class Texture2D;
 
 class RenderComponent final : public BaseComponent, public Renderable
@@ -34,12 +35,17 @@ public:
 	void SetFlipMode(FlipMode flip);
 	FlipMode GetFlipMode() const;
 
+	void SetPivot(const Vector2& pivot) { m_Pivot = pivot; }
+	const Vector2& GetPivot() const { return m_Pivot; }
 
 private:
-	std::shared_ptr<Texture2D> m_pTexture;
 	Rect m_Source;
-	bool m_HasSource;
+	std::shared_ptr<Texture2D> m_pTexture;
+	Vector2 m_Pivot;
 	FlipMode m_FlipMode;
+	bool m_HasSource;
 
+
+	
 };
 
