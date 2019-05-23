@@ -4,6 +4,9 @@
 #include "Grid.h"
 struct Rect;
 class MultiRenderComponent;
+
+
+
 #ifdef Debug
 #include "Renderable.h"
 class DigDugGridComponent final : public BaseComponent, public Renderable
@@ -14,7 +17,7 @@ class DigDugGridComponent final : public BaseComponent
 public:
 	DigDugGridComponent(unsigned int w = 1, unsigned int h = 1);
 	virtual ~DigDugGridComponent() = default;
-	
+
 	DigDugGridComponent(const DigDugGridComponent& other) = delete;
 	DigDugGridComponent(DigDugGridComponent&& other) noexcept = delete;
 	DigDugGridComponent& operator=(const DigDugGridComponent& other) = delete;
@@ -23,7 +26,6 @@ public:
 #ifdef Debug
 	virtual void Render(const RenderManager& renderer) const override;
 #endif
-	virtual void InitializeOverride(const SceneData& sceneData) override;
 
 
 
@@ -57,8 +59,9 @@ public:
 	unsigned int GetHeight() const;
 
 
+protected:
+	virtual void InitializeOverride(const SceneData& sceneData) override;
 
-	
 private:
 	Grid<bool> m_GridMarks;
 	Vector2 m_Offset;

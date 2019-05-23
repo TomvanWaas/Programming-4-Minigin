@@ -20,7 +20,7 @@ void DigDugEnemyComponent::DestroyOverride(const SceneData& sceneData)
 {
 	if (GetGameObject() && GetGameObject()->GetScene())
 	{
-		GetGameObject()->GetScene()->Notify(GameEvent::EnemyDied, ObservedData{});
+		GetGameObject()->GetScene()->NotifyAll(GameEvent::EnemyDied, ObservedData{});
 	}
 	auto pm = sceneData.GetManager<EnemyManager>();
 	if (pm)

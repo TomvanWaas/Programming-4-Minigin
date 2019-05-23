@@ -5,25 +5,42 @@
 #include "Button.h"
 #include "ObservedData.h"
 #include "GameEvents.h"
+#include "SceneManager.h"
+#include "SceneData.h"
+#include "PlayerManager.h"
+#include "Scene.h"
 
 using namespace DigDug;
 
-PlayerInput::PlayerInput(DigDug::Direction d, DigDug::DigDugMovementComponent* pMove)
-	: m_pMovement(pMove)
+PlayerInput::PlayerInput(DigDug::Direction d, int playerId, Scene* pScene)
+	: m_pScene(pScene)
 	, m_Direction(d)
+	, m_PlayerId(playerId)
 {
 }
 
 void PlayerInput::Execute()
 {
-	if (m_pMovement != nullptr)
+	if (m_pScene)
 	{
-		m_pMovement->Move(m_Direction);
-		if (m_pMovement->GetGameObject() && m_Direction != Direction::None)
+		auto pm = m_pScene->GetSceneData().GetManager<PlayerManager>();
+		if (pm)
 		{
-			ObservedData d{};
-			m_pMovement->GetGameObject()->GetRoot().Notify(GameEvent::InputMovePressed, d);
-			m_pMovement->GetGameObject()->GetRoot().NotifyChildren(GameEvent::InputMovePressed, d);
+			auto pl = pm->GetPlayer(m_PlayerId);
+			if (pl)
+			{
+				auto pMove = pl->GetComponent<DigDugMovementComponent>();
+				if (pMove)
+				{
+					pMove->Move(m_Direction);
+					if (pMove->GetGameObject() && m_Direction != Direction::None)
+					{
+						ObservedData d{};
+						pMove->GetGameObject()->GetRoot().Notify(GameEvent::InputMovePressed, d);
+						pMove->GetGameObject()->GetRoot().NotifyChildren(GameEvent::InputMovePressed, d);
+					}
+				}
+			}
 		}
 	}
 }
@@ -53,6 +70,24 @@ void InputButtonSet::Execute()
 	}
 }
 
+void PlayerNotifier::Execute()
+{
+	if (m_pScene)
+	{
+		auto pm = m_pScene->GetSceneData().GetManager<PlayerManager>();
+		if (pm)
+		{
+			auto pO = pm->GetPlayer(m_PlayerId);
+			if (pO)
+			{
+				ObservedData d{};
+				pO->Notify(m_Event, d);
+				pO->NotifyChildren(m_Event, d);
+			}
+		}
+	}
+}
+
 void InputNotifier::Execute()
 {
 	if (m_pObject)
@@ -60,6 +95,14 @@ void InputNotifier::Execute()
 		ObservedData d{};
 		m_pObject->Notify(m_Event, d);
 		m_pObject->NotifyChildren(m_Event, d);
+	}
+}
+
+void SceneSetInput::Execute()
+{
+	if (m_pSceneManager)
+	{
+		m_pSceneManager->SetActiveScene(m_SceneName);
 	}
 }
 

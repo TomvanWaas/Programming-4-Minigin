@@ -1,8 +1,8 @@
 #pragma once
 #include "FSMState.h"
 #include "Vector2.h"
-class DigDugGridComponent;
 class GameObject;
+	class DigDugGridComponent;
 
 namespace DigDug
 {

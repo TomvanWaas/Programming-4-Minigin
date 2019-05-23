@@ -7,7 +7,7 @@ public:
 	virtual ~DigDugMenuScene() = default;
 
 	virtual void SceneInitialize() override;
-	virtual Scene* GetNew() const override;
+	virtual Scene* OnReload() const override;
 private:
 
 

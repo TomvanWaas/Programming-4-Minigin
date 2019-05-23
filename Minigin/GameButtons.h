@@ -8,13 +8,16 @@ namespace DigDug
 	class SceneSwapButton final : public ButtonAction
 	{
 	public:
-		explicit SceneSwapButton(SceneManager& sceneManager, const std::string& name);
-		explicit SceneSwapButton(SceneManager& sceneManager, Scene& scene);
+		explicit SceneSwapButton(SceneManager& sceneManager, const std::string& name, bool reload = false);
+		explicit SceneSwapButton(SceneManager& sceneManager, Scene& scene, bool reload = false);
 		virtual ~SceneSwapButton() = default;
 		virtual void Execute() override;
+		void SetSceneName(const std::string& name) { m_SceneName = name; }
+		const std::string& GetName() const { return m_SceneName; }
 	private:
 		std::string m_SceneName;
 		SceneManager* m_pSceneManager;
+		bool m_Reload;
 	};
 
 

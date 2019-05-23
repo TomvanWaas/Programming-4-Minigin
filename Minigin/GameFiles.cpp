@@ -301,17 +301,14 @@ GameObject* DigDug::CreatePump(GameObject& parent, const DigDugSettings& setting
 	return pPump;
 }
 
-GameObject* DigDug::CreatePlayer(Scene& scene, const DigDugSettings& settings, char up, char down, char left, char right, char pump)
-{
-	UNREFERENCED_PARAMETER(pump);
-	UNREFERENCED_PARAMETER(up);
-	UNREFERENCED_PARAMETER(down);
-	UNREFERENCED_PARAMETER(left);
-	UNREFERENCED_PARAMETER(right);
 
+
+GameObject* DigDug::CreatePlayer(Scene& scene, const DigDugSettings& settings, InputAction up, InputAction down,
+	InputAction left, InputAction right, InputAction pump, int id)
+{
 	GameObject* pObject = scene.CreateGameObject();
 
-	pObject->AddComponent(new DigDugPlayerComponent());
+	pObject->AddComponent(new DigDugPlayerComponent(id));
 	auto* pFSM = new FiniteStateMachineComponent();
 	pObject->AddComponent(pFSM);
 	auto* pCollider = new AABBCollisionComponent();
@@ -336,37 +333,54 @@ GameObject* DigDug::CreatePlayer(Scene& scene, const DigDugSettings& settings, c
 
 	//Input
 	auto pInput = scene.GetSceneData().GetInput();
-	auto pLeftDown = std::make_shared<PlayerInput>(Direction::Left, pMovement);
-	auto pRightDown = std::make_shared<PlayerInput>(Direction::Right, pMovement);
-	auto pUpDown = std::make_shared<PlayerInput>(Direction::Up, pMovement);
-	auto pDownDown = std::make_shared<PlayerInput>(Direction::Down, pMovement);
-	auto pNone = std::make_shared<PlayerInput>(Direction::None, pMovement);
+	auto pLeftDown = std::make_shared<PlayerInput>(Direction::Left, id, &scene);
+	auto pRightDown = std::make_shared<PlayerInput>(Direction::Right, id, &scene);
+	auto pUpDown = std::make_shared<PlayerInput>(Direction::Up, id, &scene);
+	auto pDownDown = std::make_shared<PlayerInput>(Direction::Down, id, &scene);
+	auto pNone = std::make_shared<PlayerInput>(Direction::None, id, &scene);
 
-	auto pPmpPressed = std::make_shared<InputNotifier>(pObject, GameEvent::InputPumpPressed);
-	auto pPmpReleased = std::make_shared<InputNotifier>(pObject, GameEvent::InputPumpReleased);
+	auto pPmpPressed = std::make_shared<PlayerNotifier>(id, GameEvent::InputPumpPressed, &scene);
+	auto pPmpReleased = std::make_shared<PlayerNotifier>(id, GameEvent::InputPumpReleased, &scene);
 
-	InputAction leftA{ InputTriggerState::Down, pLeftDown, -1, left, -1 };
-	InputAction rightA{ InputTriggerState::Down, pRightDown, -1, right, -1 };
-	InputAction upA{ InputTriggerState::Down, pUpDown, -1, up, -1 };
-	InputAction downA{ InputTriggerState::Down, pDownDown, -1, down, -1 };
-	InputAction pumpPressedA{ InputTriggerState::Pressed, pPmpPressed, -1, pump, -1 };
-	InputAction pumpReleasedA{ InputTriggerState::Released, pPmpReleased, -1, pump, -1 };
+	left.triggerState = InputTriggerState::Down;
+	left.pCommand = pLeftDown;
+	right.triggerState = InputTriggerState::Down;
+	right.pCommand = pRightDown;
+	up.triggerState = InputTriggerState::Down;
+	up.pCommand = pUpDown;
+	down.triggerState = InputTriggerState::Down;
+	down.pCommand = pDownDown;
 
-	InputAction leftB{ InputTriggerState::Up, pNone, -1, left, -1 };
-	InputAction rightB{ InputTriggerState::Up, pNone, -1, left, -1 };
-	InputAction upB{ InputTriggerState::Up, pNone, -1, left, -1 };
-	InputAction downB{ InputTriggerState::Up, pNone, -1, left, -1 };
+	InputAction leftUp{ left };
+	InputAction rightUp{ right };
+	InputAction upUp{ up };
+	InputAction downUp{ down };
+	leftUp.triggerState = InputTriggerState::Up;
+	rightUp.triggerState = InputTriggerState::Up;
+	upUp.triggerState = InputTriggerState::Up;
+	downUp.triggerState = InputTriggerState::Up;
+	leftUp.pCommand = pNone;
+	rightUp.pCommand = pNone;
+	upUp.pCommand = pNone;
+	downUp.pCommand = pNone;
 
-	pInput->AddInputAction(leftA);
-	pInput->AddInputAction(rightA);
-	pInput->AddInputAction(upA);
-	pInput->AddInputAction(downA);
-	pInput->AddInputAction(pumpPressedA);
-	pInput->AddInputAction(pumpReleasedA);
-	pInput->AddInputAction(leftB);
-	pInput->AddInputAction(rightB);
-	pInput->AddInputAction(upB);
-	pInput->AddInputAction(downB);
+	pump.triggerState = InputTriggerState::Pressed;
+	pump.pCommand = pPmpPressed;
+	InputAction pumpUp = pump;
+	pumpUp.triggerState = InputTriggerState::Released;
+	pumpUp.pCommand = pPmpReleased;
+
+
+	pInput->AddInputAction(left);
+	pInput->AddInputAction(right);
+	pInput->AddInputAction(up);
+	pInput->AddInputAction(down);
+	pInput->AddInputAction(pump);
+	pInput->AddInputAction(pumpUp);
+	pInput->AddInputAction(leftUp);
+	pInput->AddInputAction(rightUp);
+	pInput->AddInputAction(upUp);
+	pInput->AddInputAction(downUp);
 
 
 	//FSM
@@ -387,11 +401,11 @@ GameObject* DigDug::CreatePlayer(Scene& scene, const DigDugSettings& settings, c
 
 	pFSM->SetState(pIdleState);
 
-
-
 	CreatePump(*pObject, settings);
 	return pObject;
 }
+
+
 
 void DigDug::HelpPlayerSprites(SpriteComponent& comp, const DigDugSettings& settings)
 {
@@ -654,6 +668,28 @@ GameObject* DigDug::CreateScore(Scene& scene, const std::shared_ptr<Font>& pFont
 
 	//Result
 	scene.AddGameObject(pObject);
+	return pObject;
+}
+
+GameObject* DigDug::CreateScoreManager(Scene& scene, const std::shared_ptr<Font>& pFont, const Color4& color,
+	BaseComponent* pScoreObserver)
+{
+	auto pObject = scene.CreateGameObject();
+
+	//Comp
+	auto pRender = new RenderComponent();
+	auto pText = new TextComponent();
+	pObject->AddComponent(pScoreObserver);
+	pObject->AddComponent(pRender);
+	pObject->AddComponent(pText);
+
+	pRender->SetPivot(Vector2(1, 1));
+	pRender->SetRenderPriority(10, scene.GetSceneData());
+
+	pText->SetColor(color.SDLColor());
+	pText->SetFont(pFont);
+	pText->SetText("0");
+
 	return pObject;
 }
 

@@ -10,6 +10,8 @@
 #include "ObservedData.h"
 #include "GameEvents.h"
 
+
+
 DigDugGridComponent::DigDugGridComponent(unsigned w, unsigned h)
 #ifdef Debug
 	: Renderable(DebugPriority)
@@ -218,7 +220,7 @@ void DigDugGridComponent::Mark(const Vector2& p, float epsilon)
 			//Notify Scene
 			if (GetGameObject() && GetGameObject()->GetScene())
 			{
-				GetGameObject()->GetScene()->Notify(GameEvent::GridMarked, ObservedData{});
+				GetGameObject()->GetScene()->NotifyAll(GameEvent::GridMarked, ObservedData{});
 			}
 		}
 

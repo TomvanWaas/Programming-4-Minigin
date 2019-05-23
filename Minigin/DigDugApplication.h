@@ -10,9 +10,6 @@ public:
 
 	virtual void Initialize(SceneManager& sceneManager, const WindowSettings& windowSettings) override;
 
-private:
-	Scene* CreateMenuScene(SceneManager& sceneManager, const WindowSettings& windowSettings);
-	Scene* CreateGameScene(SceneManager& sceneManager, const WindowSettings& windowSettings);
 
 };
 

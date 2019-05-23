@@ -3,7 +3,7 @@
 #include "ObservedEvent.h"
 #include "GameObject.h"
 
-
+class SceneManager;
 namespace DigDug
 {
 	enum class Direction;
@@ -13,9 +13,10 @@ namespace DigDug
 	class PlayerInput final : public InputCommand
 	{
 		DigDug::Direction m_Direction;
-		DigDug::DigDugMovementComponent* m_pMovement;
+		int m_PlayerId;
+		Scene* m_pScene;
 	public:
-		explicit PlayerInput(DigDug::Direction d, DigDug::DigDugMovementComponent* pMove);
+		explicit PlayerInput(DigDug::Direction d, int playerId, Scene* pScene);
 		virtual void Execute() override;
 	};
 
@@ -55,7 +56,19 @@ namespace DigDug
 	};
 
 
-
+	class PlayerNotifier final : public InputCommand
+	{
+	public:
+		explicit PlayerNotifier(int playerId, ObservedEvent event, Scene* pScene)
+			: m_PlayerId(playerId), m_Event(event), m_pScene(pScene)
+		{}
+		virtual ~PlayerNotifier() = default;
+		virtual void Execute() override;
+	private:
+		ObservedEvent m_Event;
+		int m_PlayerId;
+		Scene* m_pScene;
+	};
 	class InputNotifier final : public InputCommand
 	{
 	public:
@@ -69,6 +82,19 @@ namespace DigDug
 		GameObject* m_pObject;
 	};
 
+	class  SceneSetInput final : public InputCommand
+	{
+	public:
+		explicit SceneSetInput(const std::string& name, SceneManager* pManager)
+			: m_SceneName(name)
+			, m_pSceneManager(pManager)
+		{}
+		virtual ~SceneSetInput() = default;
+		virtual void Execute() override;
+	private:
+		std::string m_SceneName;
+		SceneManager* m_pSceneManager;
+	};
 
 }
 

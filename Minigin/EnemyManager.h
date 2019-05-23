@@ -13,12 +13,10 @@ public:
 
 	bool RegisterEnemy(GameObject* pEnemy);
 	bool UnregisterEnemy(GameObject* pEnemy);
-	const std::vector<GameObject*>& GetEnemies() const;
-	const std::vector<Vector2>& GetInitPositions() const { return m_InitialPositions; }
+	const std::vector<std::pair<Vector2, GameObject*>>& GetEnemies() const { return m_Enemies; }
 
 	GameObject* GetClosestEnemy(const Vector2& t) const;
 private:
-	std::vector<GameObject*> m_pEnemies;
-	std::vector<Vector2> m_InitialPositions;
+	std::vector<std::pair<Vector2, GameObject*>> m_Enemies;
 };
 

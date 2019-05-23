@@ -216,7 +216,7 @@ void CollisionManager::UnRegisterCollision(AABBCollisionComponent& col)
 	//In Buffers
 	for (size_t j = 0, k = m_pPairsBuffer1->size(); j < k; ++j)
 	{
-		auto pair = (*m_pPairsBuffer1)[j];
+		auto& pair = (*m_pPairsBuffer1)[j];
 		if (pair.pFirst == &col || pair.pSecond == &col)
 		{
 			pair.pFirst = nullptr;
@@ -225,7 +225,7 @@ void CollisionManager::UnRegisterCollision(AABBCollisionComponent& col)
 	}
 	for (size_t j = 0, k = m_pPairsBuffer2->size(); j < k; ++j)
 	{
-		auto pair = (*m_pPairsBuffer2)[j];
+		auto& pair = (*m_pPairsBuffer2)[j];
 		if (pair.pFirst == &col || pair.pSecond == &col)
 		{
 			pair.pFirst = nullptr;

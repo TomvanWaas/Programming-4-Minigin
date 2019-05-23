@@ -1,50 +1,20 @@
 #pragma once
 
 
+struct Color4;
+class BaseComponent;
 class Observer;
 struct InputAction;
 class GameObject;
 class Scene;
-class DigDugGridComponent;
 class SpriteComponent;
-class Texture2D;
-class Font;
-#include "Vector2.h"
 struct SDL_Color;
+#include "DigDugSettings.h"
 
+	class DigDugGridComponent;
 namespace DigDug
 {
-	enum class PlayerState;
-	enum class PlayerHealth;
-	enum class PumpStatus;
 	enum class Direction;
-
-	struct DigDugSettings
-	{
-		//Grid
-		DigDugGridComponent* pGrid = nullptr;
-		Vector2 gridOffset = Vector2(48, 48);
-		unsigned int gridWidth = 15;
-		unsigned int gridHeight = 12;
-
-		//Sprites
-		float spriteWidth = 16.0f;
-		float spriteHeight = 16.0f;
-		float spriteSpeed = 0.25f;
-
-		//Resources
-		std::shared_ptr<Texture2D> pDigDugTexture = nullptr;
-		std::shared_ptr<Texture2D> pPookaTexture = nullptr;
-		std::shared_ptr<Texture2D> pFygarTexture = nullptr;
-		std::shared_ptr<Texture2D> pBackgroundTexture = nullptr;
-		std::shared_ptr<Texture2D> pPumpTexture = nullptr;
-		std::shared_ptr<Texture2D> pOtherTexture = nullptr;
-		std::shared_ptr<Font> pScoreFont = nullptr;
-
-
-	};
-
-
 
 
 	   	 
@@ -62,11 +32,12 @@ namespace DigDug
 	GameObject* CreateObstacle(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver);
 	GameObject* CreatePooka(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver);
 	GameObject* CreatePump(GameObject &parent, const DigDugSettings& settings);
-	GameObject* CreatePlayer(Scene& scene, const DigDugSettings& settings, char up, char down, char left, char right, char pump);
+	GameObject* CreatePlayer(Scene& scene, const DigDugSettings& settings, InputAction up, InputAction down, InputAction left, InputAction right, InputAction pump, int id = 0);
 	void HelpPlayerSprites(SpriteComponent& comp, const DigDugSettings& settings);
 
 	GameObject* CreateFygar(Scene& scene, const DigDugSettings& settings, Observer* pScoreObserver);
 	GameObject* CreateFire(GameObject& parent, const DigDugSettings& settings);
 
 	GameObject* CreateScore(Scene& scene, const std::shared_ptr<Font>& pFont, const SDL_Color& color, int score);
+	GameObject* CreateScoreManager(Scene& scene, const std::shared_ptr<Font>& pFont, const Color4& color, BaseComponent* pScoreObserver);
 }

@@ -7,6 +7,8 @@
 #include "SceneData.h"
 #include "Time.h"
 
+using namespace DigDug;
+
 DigDug::DigDugMovementComponent::DigDugMovementComponent(DigDugGridComponent& grid, float speed)
 	: m_pGrid(&grid)
 	, m_pMovement(nullptr)
