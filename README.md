@@ -1,7 +1,7 @@
 # Engine
 An engine supporting 2D made for Programming 4, a course at Digital Arts and Entertainment (DAE) Howest. The engine started from the Minigin engine. This engine contains some software design patterns like the Component design pattern, Game Loop, etc.
 
-To be able to show something, this repository also contains a game DigDug (an arcade game developed by Namco (1982) ).
+To be able to show something, this repository also contains a game DigDug (an arcade game developed by Namco (1982)).
 
 # 3rd Party Libs
 - glm
