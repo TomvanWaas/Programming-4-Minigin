@@ -13,12 +13,15 @@ To be able to show something, this repository also contains a game DigDug (an ar
 # Sources
 ### Book: Design patterns
 Link: [Game Programming Patterns](http://www.gameprogrammingpatterns.com/contents.html)
+
 This book contains good explanation about multiple design patterns, some are used in the engine.
 
 ### Classes:
 Link: [DAE Howest](http://www.digitalartsandentertainment.be/)
+
 The course Programming 4 at DAE Howest.
 
 ### Arcade Spot
 Link: [Arcade Spot: DigDug](http://www.arcadespot.com/game/dig-dug/)
+
 This site was used to play and study the game DigDug.
