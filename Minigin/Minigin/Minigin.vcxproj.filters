@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="GameFiles">
+      <UniqueIdentifier>{4a70b552-08cc-480d-b2d8-c5c60b41a969}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFiles\Application">
+      <UniqueIdentifier>{5c4917cf-8a9c-4299-9430-741af364519b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFiles\Functions">
+      <UniqueIdentifier>{93a36bd2-30d4-445b-882d-b5f966d52af4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFiles\Components">
+      <UniqueIdentifier>{0d5dc8d3-791f-489c-accb-6921f79de12a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFiles\Managers">
+      <UniqueIdentifier>{94a1f5c8-9bd4-4138-852a-d6a4409e8a7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFiles\Scenes">
+      <UniqueIdentifier>{e91a2fec-c49a-4d26-be9b-a1239c767bfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFiles\Observers">
+      <UniqueIdentifier>{1cca59c0-25ef-4324-b952-22a9ceac8b55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFiles\Actions">
+      <UniqueIdentifier>{a28662c0-6be7-4b54-8d75-22c09ba59ca0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFiles\Helpers">
+      <UniqueIdentifier>{1e0a8b5d-7558-41a3-8ea2-bd79be7350b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFiles\States">
+      <UniqueIdentifier>{dc1acba9-0470-4c3f-82a6-07d75269b08b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DigDugApplication.h">
+      <Filter>GameFiles\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugGridComponent.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GameFiles.h">
+      <Filter>GameFiles\Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugMovementComponent.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ObstacleParts.h">
+      <Filter>GameFiles\States</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyParts.h">
+      <Filter>GameFiles\States</Filter>
+    </ClInclude>
+    <ClInclude Include="PumpParts.h">
+      <Filter>GameFiles\States</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerParts.h">
+      <Filter>GameFiles\States</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerManager.h">
+      <Filter>GameFiles\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyManager.h">
+      <Filter>GameFiles\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelLoader.h">
+      <Filter>GameFiles\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugSingleplayerScene.h">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugMenuScene.h">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreObserver.h">
+      <Filter>GameFiles\Observers</Filter>
+    </ClInclude>
+    <ClInclude Include="ObstacleScoreObserver.h">
+      <Filter>GameFiles\Observers</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyScoreObserver.h">
+      <Filter>GameFiles\Observers</Filter>
+    </ClInclude>
+    <ClInclude Include="ObserverManager.h">
+      <Filter>GameFiles\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="AutokillComponent.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugEnemyComponent.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugPlayerComponent.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugMultiplayerScene.h">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugVersusScene.h">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugPauseScene.h">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="GameFSMStates.h">
+      <Filter>GameFiles\States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameButtons.h">
+      <Filter>GameFiles\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyController.h">
+      <Filter>GameFiles\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelData.h">
+      <Filter>GameFiles\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEvents.h">
+      <Filter>GameFiles\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="DigDugSettings.h">
+      <Filter>GameFiles\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Enumerations.h">
+      <Filter>GameFiles\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameInputCommands.h">
+      <Filter>GameFiles\Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="MiniginPCH.h">
+      <Filter>GameFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>GameFiles</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DigDugApplication.cpp">
+      <Filter>GameFiles\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugGridComponent.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GameFiles.cpp">
+      <Filter>GameFiles\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugMovementComponent.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ObstacleParts.cpp">
+      <Filter>GameFiles\States</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyParts.cpp">
+      <Filter>GameFiles\States</Filter>
+    </ClCompile>
+    <ClCompile Include="PumpParts.cpp">
+      <Filter>GameFiles\States</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerParts.cpp">
+      <Filter>GameFiles\States</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerManager.cpp">
+      <Filter>GameFiles\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyManager.cpp">
+      <Filter>GameFiles\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelLoader.cpp">
+      <Filter>GameFiles\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugSingleplayerScene.cpp">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugMenuScene.cpp">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreObserver.cpp">
+      <Filter>GameFiles\Observers</Filter>
+    </ClCompile>
+    <ClCompile Include="ObstacleScoreObserver.cpp">
+      <Filter>GameFiles\Observers</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyScoreObserver.cpp">
+      <Filter>GameFiles\Observers</Filter>
+    </ClCompile>
+    <ClCompile Include="ObserverManager.cpp">
+      <Filter>GameFiles\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="AutokillComponent.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugEnemyComponent.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugPlayerComponent.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugMultiplayerScene.cpp">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugVersusScene.cpp">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="DigDugPauseScene.cpp">
+      <Filter>GameFiles\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="GameFSMStates.cpp">
+      <Filter>GameFiles\States</Filter>
+    </ClCompile>
+    <ClCompile Include="GameButtons.cpp">
+      <Filter>GameFiles\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyController.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>GameFiles\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GameInputCommands.cpp">
+      <Filter>GameFiles\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="MiniginPCH.cpp">
+      <Filter>GameFiles</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
