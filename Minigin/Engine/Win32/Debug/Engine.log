@@ -1,0 +1,38 @@
+﻿  stdafx.cpp
+  AABBCollisionComponent.cpp
+  BaseComponent.cpp
+  CollisionManager.cpp
+  Color.cpp
+  Engine.cpp
+  FiniteStateMachineComponent.cpp
+  Font.cpp
+  FPSComponent.cpp
+  FSMConditions.cpp
+  FSMEvents.cpp
+  FSMState.cpp
+  GameObject.cpp
+  InputManager.cpp
+  Logger.cpp
+  MovementComponent.cpp
+  MultiRenderComponent.cpp
+  Observer.cpp
+  Renderable.cpp
+  RenderComponent.cpp
+  RenderManager.cpp
+  Generating Code...
+  Compiling...
+  ResourceManager.cpp
+  Scene.cpp
+  SceneData.cpp
+  SceneManager.cpp
+  ScreenRenderComponent.cpp
+  SpriteCollisionComponent.cpp
+  SpriteComponent.cpp
+  Subject.cpp
+  TextComponent.cpp
+  Texture2D.cpp
+  Time.cpp
+  Transform.cpp
+  Vector2.cpp
+  Generating Code...
+  Engine.vcxproj -> C:\Users\Tom\Desktop\Programming 4\Programming-4-Minigin\Minigin\Win32\Debug\Engine.lib
