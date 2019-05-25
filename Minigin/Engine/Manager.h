@@ -19,6 +19,7 @@ namespace Minigin
 
 		virtual void Initialize(const SceneData& sceneData) { UNREFERENCED_PARAMETER(sceneData); }
 		virtual void Update(const SceneData& sceneData) { UNREFERENCED_PARAMETER(sceneData); }
+		virtual void UpdateFixed(const SceneData& sceneData) { UNREFERENCED_PARAMETER(sceneData); }
 		virtual void LateInitialize(const SceneData& sceneData) { UNREFERENCED_PARAMETER(sceneData); }
 	};
 }

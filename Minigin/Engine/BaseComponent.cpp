@@ -35,6 +35,15 @@ void BaseComponent::UpdateSecond(const SceneData& sceneData)
 		UpdateSecondOverride(sceneData);
 	}
 }
+
+void BaseComponent::UpdateFixed(const SceneData& sceneData)
+{
+	if (IsConstructed() && IsEnabled() && !IsDestroyed())
+	{
+		UpdateFixedOverride(sceneData);
+	}
+}
+
 void BaseComponent::Destroy(const SceneData& sceneData)
 {
 	if (IsDestroyed() == false)
@@ -63,6 +72,12 @@ void BaseComponent::UpdateSecondOverride(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
 }
+
+void BaseComponent::UpdateFixedOverride(const SceneData& sceneData)
+{
+	UNREFERENCED_PARAMETER(sceneData);
+}
+
 void BaseComponent::DestroyOverride(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);

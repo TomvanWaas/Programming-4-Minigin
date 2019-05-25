@@ -9,19 +9,16 @@
 #include "GameObject.h"
 #include "RenderManager.h"
 #include "Application.h"
-#include "WindowSettings.h"
 #include "Deletor.h"
-#include "WindowSettings.h"
 
 using namespace Minigin;
 
-WindowSettings Minigin::Engine::m_WindowSettings = { 224*2.5f, 288*2.5f, "Programming 4 Assignment: DigDug" };
+WindowSettings* Minigin::Engine::m_pWindowSettings = nullptr;
 bool Minigin::Engine::m_Continue = true;
 bool Minigin::Engine::m_Run = true;
 
 
-
-void Minigin::Engine::InitializeEngine()
+void Minigin::Engine::InitializeEngine(SDL_Window* pWindow)
 {
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -30,15 +27,15 @@ void Minigin::Engine::InitializeEngine()
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
 	}
 	//Initialize Window
-	m_pWindow = SDL_CreateWindow(m_WindowSettings.name.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, int(m_WindowSettings.width), int(m_WindowSettings.height), SDL_WINDOW_OPENGL);
-	if (m_pWindow == nullptr)
+	pWindow = SDL_CreateWindow(GetWindowSettings().name.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, int(GetWindowSettings().width), int(GetWindowSettings().height), SDL_WINDOW_OPENGL);
+	if (pWindow == nullptr)
 	{
 		Logger::GetInstance().LogError("Engine::Initialize > Failed to Initialize Window");
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
 
 	//Initialize RenderManager
-	RenderManager::InitializeRenderer(m_pWindow);
+	RenderManager::InitializeRenderer(pWindow);
 
 	//Initialize ResourceManager
 	ResourceManager::GetInstance().Initialize("../Resources/");
@@ -46,14 +43,14 @@ void Minigin::Engine::InitializeEngine()
 	//Initialize Input
 	InputManager::StaticInitialize();
 }
-void Minigin::Engine::CleanupEngine()
+void Minigin::Engine::CleanupEngine(SDL_Window*& pWindow)
 {
 	//Destroy Renderer
 	RenderManager::DestroyRenderer();
 
 	//Destroy Window
-	SDL_DestroyWindow(m_pWindow);
-	m_pWindow = nullptr;
+	if (pWindow) SDL_DestroyWindow(pWindow);
+	pWindow = nullptr;
 
 	//StaticQuit SDL
 	SDL_Quit();
@@ -67,7 +64,7 @@ void Minigin::Engine::CleanupEngine()
 void Minigin::Engine::Initialize(SceneManager& sceneManager, Application* pApplication)
 {
 	//Initialize Application
-	if (pApplication != nullptr)pApplication->Initialize(sceneManager, m_WindowSettings);
+	if (pApplication != nullptr)pApplication->Initialize(sceneManager, GetWindowSettings());
 	else Logger::GetInstance().LogError("Engine::Initialize > No Application Selected");
 	
 	//Initialize SceneManager
@@ -83,9 +80,14 @@ void Minigin::Engine::Cleanup(Application* pApplication)
 }
 
 
-void Minigin::Engine::Run(Application* pApplication)
+void Minigin::Engine::Run(Application* pApplication, const WindowSettings& wsettings, int msPerFrame)
 {
-	InitializeEngine();
+	SDL_Window* pWindow = nullptr;
+	WindowSettings settings = wsettings;
+	m_pWindowSettings = &settings;
+
+
+	InitializeEngine(pWindow);
 
 	//Loop to enable Reloading
 	while (m_Run)
@@ -107,22 +109,25 @@ void Minigin::Engine::Run(Application* pApplication)
 			auto lastTime = std::chrono::high_resolution_clock::now();
 
 			float lag = 0.0f;
-			const float msPerUpdate = 0.001f * m_MsPerFrame;
+			const float msPerUpdate = 0.001f * msPerFrame;
 
 			while (m_Continue)
 			{
 				const auto currentTime = std::chrono::high_resolution_clock::now();
 				float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
 				lastTime = currentTime;
-				lag += deltaTime;
 
 				m_Continue &= InputManager::StaticProcessInput();
+				sceneManager.Update(deltaTime);
+
+				lag += deltaTime;
 				while (lag >= msPerUpdate)
 				{
-					sceneManager.Update(msPerUpdate);
-					Deletor::GetInstance().DeleteStore();
+					//Fixed Update
 					lag -= msPerUpdate;
+					sceneManager.FixedUpdate(msPerUpdate);
 				}
+				Deletor::GetInstance().DeleteStore();
 				sceneManager.Render();
 			}
 		}
@@ -137,8 +142,9 @@ void Minigin::Engine::Run(Application* pApplication)
 		//Cleanup
 		Cleanup(pApplication);
 	}
+	CleanupEngine(pWindow);
 
-	CleanupEngine();
+	m_pWindowSettings = nullptr;
 }
 
 
@@ -153,6 +159,12 @@ void Minigin::Engine::Reload()
 {
 	m_Run = true;
 	m_Continue = false;
+}
+
+const WindowSettings& Engine::GetWindowSettings()
+{
+	if (m_pWindowSettings) return *m_pWindowSettings;
+	throw std::exception("Engine::GetWindowSettings > Is Called while no Engine is running");	
 }
 
 

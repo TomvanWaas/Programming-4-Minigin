@@ -29,7 +29,9 @@ namespace Minigin
 
 		void Initialize();
 		void Update(float elapsed);
+		void FixedUpdate(float fixedElapsed);
 		void Render() const;
+
 
 		const SceneData& GetSceneData() const;
 		SceneData& GetSceneData() { return m_SceneData; }
@@ -49,6 +51,7 @@ namespace Minigin
 	protected:
 		virtual void SceneInitialize() {}
 		virtual void SceneUpdate() {}
+		virtual void SceneUpdateFixed() {}
 		virtual void SceneNotify(ObservedEvent event, const ObservedData& data);
 	private:
 		std::vector<GameObject*> m_pGameObjects;

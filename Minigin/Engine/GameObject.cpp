@@ -177,6 +177,31 @@ void GameObject::UpdateSecond(const SceneData& sceneData)
 		}), m_pChildren.end());
 	}
 }
+
+void GameObject::UpdateFixed(const SceneData& sceneData)
+{
+	if (IsState(State::Enabled) && IsState(State::Initialized) && !IsState(State::Destroyed))
+	{
+		//UpdateFixed Components
+		for (BaseComponent* pComponent : m_pComponents)
+		{
+			if (pComponent != nullptr)
+			{
+				pComponent->UpdateFixed(sceneData);
+			}
+		}
+
+		//UpdateFixed Children
+		for (GameObject* pChild : m_pChildren)
+		{
+			if (pChild != nullptr)
+			{
+				pChild->UpdateFixed(sceneData);
+			}
+		}
+	}
+}
+
 void GameObject::Destroy(const SceneData& sceneData)
 {
 	if (!IsState(State::Destroyed))

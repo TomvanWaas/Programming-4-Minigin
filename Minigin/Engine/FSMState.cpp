@@ -68,6 +68,12 @@ FSMState* FSMStateDefault::UpdateSecond(const SceneData& sceneData, FSMData& dat
 	return this;
 }
 
+FSMState* FSMStateDefault::UpdateFixed(const SceneData& sceneData, FSMData& data)
+{
+	if (m_pUpdateFixedEvent) m_pUpdateFixedEvent->Execute(sceneData, data);
+	return this;
+}
+
 FSMState* FSMStateDefault::OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data)
 {
 	if (m_pNotifiedEvent) m_pNotifiedEvent->Execute(oevent, odata, data);

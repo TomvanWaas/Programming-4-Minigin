@@ -25,7 +25,7 @@ void MovementComponent::InitializeOverride(const SceneData& sceneData)
 	m_pColliders.push_back(comp);
 }
 
-void MovementComponent::UpdateSecondOverride(const SceneData& sceneData)
+void MovementComponent::UpdateFixedOverride(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
 

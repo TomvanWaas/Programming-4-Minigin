@@ -56,6 +56,19 @@ void SceneData::Update(float elapsed)
 	}
 }
 
+void SceneData::UpdateFixed(float elapsed)
+{
+	m_pTimeManager->UpdateFixed(elapsed);
+	m_pCollisionManager->UpdateFixed(*this);
+	m_pInputManager->UpdateFixed(*this);
+	m_pRenderManager->UpdateFixed(*this);
+
+	for (Manager* pManager : m_pManagers)
+	{
+		if (pManager) pManager->UpdateFixed(*this);
+	}
+}
+
 void SceneData::Notify(ObservedEvent event, const ObservedData& data)
 {
 	m_pCollisionManager->Notify(event, data);

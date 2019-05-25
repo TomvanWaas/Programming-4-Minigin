@@ -29,6 +29,7 @@ namespace Minigin
 		virtual void Initialize(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData); UNREFERENCED_PARAMETER(data); }
 		virtual FSMState* UpdateFirst(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData);  UNREFERENCED_PARAMETER(data); return this; }
 		virtual FSMState* UpdateSecond(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData); UNREFERENCED_PARAMETER(data); return this; }
+		virtual FSMState* UpdateFixed(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData); UNREFERENCED_PARAMETER(data); return this; }
 		virtual void Enter(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData);  UNREFERENCED_PARAMETER(data); }
 		virtual void Exit(const SceneData& sceneData, FSMData& data) { UNREFERENCED_PARAMETER(sceneData); UNREFERENCED_PARAMETER(data); }
 		virtual FSMState* OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data) { UNREFERENCED_PARAMETER(oevent); UNREFERENCED_PARAMETER(odata); UNREFERENCED_PARAMETER(data); return this; };
@@ -72,6 +73,7 @@ namespace Minigin
 		virtual void Initialize(const SceneData& sceneData, FSMData& data) override;
 		virtual FSMState* UpdateFirst(const SceneData& sceneData, FSMData& data) override;
 		virtual FSMState* UpdateSecond(const SceneData& sceneData, FSMData& data) override;
+		virtual FSMState* UpdateFixed(const SceneData& sceneData, FSMData& data) override;
 		virtual FSMState* OnNotify(ObservedEvent oevent, const ObservedData& odata, FSMData& data) override;
 
 		void AddTransition(const std::shared_ptr<FSMTransition>& pTransition);
@@ -80,6 +82,7 @@ namespace Minigin
 		void SetEnterEvent(const std::shared_ptr<FSMEvent>& pEvent);
 		void SetExitEvent(const std::shared_ptr<FSMEvent>& pEvent);
 		void SetNotifiedEvent(const std::shared_ptr<FSMNotifiedEvent>& pEvent);
+		void SetUpdateFixedEvent(const std::shared_ptr<FSMEvent>& pEvent) { m_pUpdateFixedEvent = pEvent; }
 
 		virtual void Enter(const SceneData& sceneData, FSMData& data) override;
 		virtual void Exit(const SceneData& sceneData, FSMData& data) override;
@@ -89,6 +92,7 @@ namespace Minigin
 		std::shared_ptr<FSMEvent> m_pOnExitEvent;
 		std::shared_ptr<FSMEvent> m_pUpdateFirstEvent;
 		std::shared_ptr<FSMEvent> m_pUpdateSecondEvent;
+		std::shared_ptr<FSMEvent> m_pUpdateFixedEvent;
 		std::shared_ptr<FSMNotifiedEvent> m_pNotifiedEvent;
 
 

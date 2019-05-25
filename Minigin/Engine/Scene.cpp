@@ -94,12 +94,12 @@ void Scene::Initialize()
 }
 void Scene::Update(float elapsed)
 {
-	//UpdateFirstOverride sceneData
+	//UpdateFirst sceneData
 	m_SceneData.Update(elapsed);
 
 	SceneUpdate();
 
-	//UpdateFirstOverride all
+	//UpdateFirst all
 	for (size_t i = 0; i < m_pGameObjects.size(); ++i)
 	{
 		auto* pObject = m_pGameObjects[i];
@@ -109,7 +109,7 @@ void Scene::Update(float elapsed)
 		}
 	}
 
-	//UpdateSecondOverride all
+	//UpdateSecond all
 	for (size_t i = 0; i < m_pGameObjects.size(); ++i)
 	{
 		auto* pObject = m_pGameObjects[i];
@@ -125,6 +125,24 @@ void Scene::Update(float elapsed)
 		return pObject == nullptr;
 	}), m_pGameObjects.end());
 }
+
+void Scene::FixedUpdate(float fixedElapsed)
+{
+	m_SceneData.UpdateFixed(fixedElapsed);
+	SceneUpdateFixed();
+
+	//Fixed Update all
+	for (size_t i = 0; i < m_pGameObjects.size(); ++i)
+	{
+		auto* pObject = m_pGameObjects[i];
+		if (pObject != nullptr)
+		{
+			pObject->UpdateFixed(m_SceneData);
+		}
+	}
+
+}
+
 void Scene::Render() const
 {
 	m_SceneData.GetRender()->Render(m_SceneScale);

@@ -26,6 +26,7 @@ namespace Minigin
 		void Initialize(const SceneData& sceneData);
 		void UpdateFirst(const SceneData& sceneData);
 		void UpdateSecond(const SceneData& sceneData);
+		void UpdateFixed(const SceneData& sceneData);
 		void Destroy(const SceneData& sceneData);
 
 		const std::vector<BaseComponent*>& GetAllComponents() const;

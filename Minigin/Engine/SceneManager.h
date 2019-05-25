@@ -18,6 +18,7 @@ namespace Minigin
 
 		void Initialize();
 		void Update(float deltaTime);
+		void FixedUpdate(float fixedDeltaTime);
 		void Render() const;
 
 		Scene* GetActiveScene() const;

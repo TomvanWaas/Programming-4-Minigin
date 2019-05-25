@@ -71,6 +71,12 @@ void SceneManager::Update(float deltaTime)
 	//Update scene
 	if (m_pActiveScene) m_pActiveScene->Update(deltaTime);
 }
+
+void SceneManager::FixedUpdate(float fixedDeltaTime)
+{
+	if (m_pActiveScene) m_pActiveScene->FixedUpdate(fixedDeltaTime);
+}
+
 void SceneManager::Render() const
 {
 	if (m_pActiveScene) m_pActiveScene->Render();

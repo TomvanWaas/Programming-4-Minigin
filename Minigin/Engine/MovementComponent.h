@@ -12,7 +12,7 @@ namespace Minigin
 		virtual ~MovementComponent() = default;
 
 		virtual void InitializeOverride(const SceneData& sceneData) override;
-		virtual void UpdateSecondOverride(const SceneData& sceneData) override;
+		virtual void UpdateFixedOverride(const SceneData& sceneData) override;
 
 		void QueueMovement(const Vector2& movement);
 

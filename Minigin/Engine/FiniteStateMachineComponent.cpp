@@ -33,6 +33,15 @@ void FiniteStateMachineComponent::UpdateSecondOverride(const SceneData& sceneDat
 		SetState(m_pCurrentState->UpdateSecond(sceneData, m_Data));
 	}
 }
+
+void FiniteStateMachineComponent::UpdateFixedOverride(const SceneData& sceneData)
+{
+	if (m_pCurrentState != nullptr && !m_StateChanged)
+	{
+		SetState(m_pCurrentState->UpdateFixed(sceneData, m_Data));
+	}
+}
+
 void FiniteStateMachineComponent::OnNotify(ObservedEvent event, const ObservedData& data)
 {
 	if (m_pCurrentState)

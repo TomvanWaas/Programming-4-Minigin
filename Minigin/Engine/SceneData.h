@@ -31,6 +31,7 @@ namespace Minigin
 
 		void Initialize();
 		void Update(float elapsed);
+		void UpdateFixed(float elapsed);
 		void Notify(ObservedEvent event, const ObservedData& data);
 		void LateInitialize();
 

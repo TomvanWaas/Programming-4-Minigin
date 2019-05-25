@@ -5,7 +5,7 @@ namespace Minigin
 	class ObservedData;
 	class GameObject;
 	class SceneData;
-	class BaseComponent abstract : public Observer
+	class BaseComponent abstract : public Observer, public Subject
 	{
 	public:
 		explicit BaseComponent()
@@ -25,6 +25,7 @@ namespace Minigin
 		void Initialize(const SceneData& sceneData);
 		void UpdateFirst(const SceneData& sceneData);
 		void UpdateSecond(const SceneData& sceneData);
+		void UpdateFixed(const SceneData& sceneData);
 		void Destroy(const SceneData& sceneData);
 
 		const GameObject* GetGameObject() const;
@@ -39,6 +40,7 @@ namespace Minigin
 		virtual void InitializeOverride(const SceneData& sceneData);
 		virtual void UpdateFirstOverride(const SceneData& sceneData);
 		virtual void UpdateSecondOverride(const SceneData& sceneData);
+		virtual void UpdateFixedOverride(const SceneData& sceneData);
 		virtual void DestroyOverride(const SceneData& sceneData);
 	private:
 		enum class State

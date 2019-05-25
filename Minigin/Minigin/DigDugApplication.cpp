@@ -42,7 +42,7 @@ void DigDugApplication::Initialize(SceneManager& sceneManager, const WindowSetti
 		level << "Level" << i << ".txt";
 		std::stringstream name{};
 		name << "SingleplayerScene" << i;
-		auto* pScene = new DigDugSingleplayerScene(name.str(), level.str(), 3, i);
+		auto* pScene = new DigDugSingleplayerScene(name.str(), level.str(), 3, i+1);
 		sceneManager.AddScene(pScene);
 	}
 	
@@ -57,7 +57,7 @@ void DigDugApplication::Initialize(SceneManager& sceneManager, const WindowSetti
 		level << "Level" << i << ".txt";
 		std::stringstream name{};
 		name << "CoopScene" << i;
-		auto* pScene = new DigDugMultiplayerScene(name.str(), level.str(), 3, 3, i);
+		auto* pScene = new DigDugMultiplayerScene(name.str(), level.str(), 3, 3, i+1);
 		sceneManager.AddScene(pScene);
 	}
 	
@@ -72,7 +72,7 @@ void DigDugApplication::Initialize(SceneManager& sceneManager, const WindowSetti
 		level << "Level" << i << ".txt";
 		std::stringstream name{};
 		name << "VersusScene" << i;
-		auto* pScene = new DigDugVersusScene(name.str(), level.str(), 3, i);
+		auto* pScene = new DigDugVersusScene(name.str(), level.str(), 3, i+1);
 		sceneManager.AddScene(pScene);
 	}
 
