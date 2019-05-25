@@ -1,2 +1,0 @@
-[Info] > RenderManager::InitializeRenderer > Succeeded
-[Info] > RenderManager::DestroyRenderer > Succeeded
