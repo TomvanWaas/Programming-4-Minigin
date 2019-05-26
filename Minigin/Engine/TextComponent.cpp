@@ -14,7 +14,7 @@ using namespace Minigin;
 void TextComponent::UpdateFirstOverride(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
-	//Make texture
+	//SetPath texture
 	if (m_bNeedsUpdate && m_Text != "" && m_pFont != nullptr)
 	{
 		const auto surf = TTF_RenderText_Blended(m_pFont->GetFont(), m_Text.c_str(), m_Color);

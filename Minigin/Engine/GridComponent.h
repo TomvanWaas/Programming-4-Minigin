@@ -23,7 +23,7 @@ namespace Minigin
 		virtual void InitializeOverride(const SceneData& sceneData) override
 		{
 			UNREFERENCED_PARAMETER(sceneData);
-			this->Make();
+			this->SetPath();
 		}
 
 	private:

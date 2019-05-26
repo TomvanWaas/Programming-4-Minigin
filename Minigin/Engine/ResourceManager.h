@@ -39,7 +39,7 @@ namespace Minigin
 		class ResourceLoader<Texture2D> final : public Loader
 		{
 		public:
-			ResourceLoader() = default;
+			ResourceLoader();
 			~ResourceLoader() = default;
 			ResourceLoader(const ResourceLoader& other) = delete;
 			ResourceLoader(ResourceLoader&& other) noexcept = delete;
@@ -55,7 +55,7 @@ namespace Minigin
 		class ResourceLoader<Font> final : public Loader
 		{
 		public:
-			ResourceLoader() = default;
+			ResourceLoader();
 			~ResourceLoader() = default;
 			ResourceLoader(const ResourceLoader& other) = delete;
 			ResourceLoader(ResourceLoader&& other) noexcept = delete;
@@ -96,7 +96,7 @@ namespace Minigin
 			return pNewLoader;
 		}
 
-		void Initialize(std::string&& basepath);
+		void SetPath(const std::string& path);
 		const std::string& GetBasePath() const { return m_BasePath; }
 
 		std::shared_ptr<Texture2D> LoadTexture(const std::string& file);

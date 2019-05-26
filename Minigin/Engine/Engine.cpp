@@ -37,9 +37,6 @@ void Minigin::Engine::InitializeEngine(SDL_Window* pWindow)
 	//Initialize RenderManager
 	RenderManager::InitializeRenderer(pWindow);
 
-	//Initialize ResourceManager
-	ResourceManager::GetInstance().Initialize("../Resources/");
-
 	//Initialize Input
 	InputManager::StaticInitialize();
 }

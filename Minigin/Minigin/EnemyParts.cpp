@@ -147,7 +147,7 @@ FSMState* DigDug::FSMStateEnemyMove::UpdateSecond(const SceneData& sceneData, FS
 	if (pObject)
 	{
 		//If worldpos is not marked (is stuck in wall?) => Ghost to get out of it
-		if (m_pGrid && !m_pGrid->IsMarked(m_pGrid->ClosestPoint(pObject->GetTransform().GetWorldPosition())))
+		if (m_pGrid && (!m_pGrid->IsMarked(m_pGrid->ClosestPoint(pObject->GetTransform().GetWorldPosition()))|| !m_pGrid->IsOnWalkableLine(pObject->GetTransform().GetWorldPosition()) ))
 		{
 			return GetState(m_GhostState);
 		}
@@ -369,8 +369,11 @@ FSMState* DigDug::FSMStateEnemyGhost::OnNotify(ObservedEvent oevent, const Obser
 				break;
 			}
 		}
-		m_RequestedMoveState = true;
-		m_Direction = Vector2::Zero;
+		if (m_Accu > FLT_EPSILON)
+		{
+			m_RequestedMoveState = true;
+			m_Direction = Vector2::Zero;
+		}
 	}
 	break;
 	//Collider (Pump | player)

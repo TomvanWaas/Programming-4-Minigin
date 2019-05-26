@@ -126,14 +126,14 @@ void DigDugSingleplayerScene::SceneInitialize()
 	}
 
 
-	//Make Player
+	//SetPath Player
 	auto* pPlayer = MakePlayer();
 	m_PlayerData.pPlayer = pPlayer;
 	m_PlayerData.startPosition = m_GameSettings.pGrid->GetPosition(0, 0);
 	pPlayer->GetTransform().SetWorldPosition(m_PlayerData.startPosition);
 	pPlayer->GetTransform().SetWorldScale(scale);
 
-	//Make Lives
+	//SetPath Lives
 	for (size_t i = 0; i < m_PlayerData.pLifeObjects.size(); ++i)
 	{
 		auto* pObj = CreateGameObject();
@@ -146,7 +146,7 @@ void DigDugSingleplayerScene::SceneInitialize()
 		t.SetWorldPosition( ((i+0.5f)*m_GameSettings.spriteWidth)*scale.x, (wsettings.height - 0.5f*m_GameSettings.spriteHeight*scale.y));
 		m_PlayerData.pLifeObjects[i] = pObj;
 	}
-	//Make Flowers (LevelNumber)
+	//SetPath Flowers (LevelNumber)
 	for (int i = 0; i < m_LevelNumber; ++i)
 	{
 		auto* pObj = CreateGameObject();
@@ -160,7 +160,7 @@ void DigDugSingleplayerScene::SceneInitialize()
 	}
 
 
-	//Make MenuInput
+	//SetPath MenuInput
 	InputAction menu{ InputTriggerState::Pressed, std::make_shared<DigDug::SceneSetInput>("Pause", GetSceneManager()), -1, VK_ESCAPE, int(GamepadCode::GAMEPAD_START), 0 };
 	GetSceneData().GetInput()->AddInputAction(menu);
 
@@ -290,7 +290,7 @@ Scene* DigDugSingleplayerScene::OnReload() const
 
 GameObject* DigDugSingleplayerScene::MakePlayer()
 {
-	//Make Player
+	//SetPath Player
 	InputAction up{ InputTriggerState::Pressed, nullptr, -1, 'W', int(GamepadCode::GAMEPAD_RIGHTSTICK_UP), 0 };
 	InputAction down{ InputTriggerState::Pressed, nullptr, -1, 'S', int(GamepadCode::GAMEPAD_RIGHTSTICK_DOWN), 0 };
 	InputAction left{ InputTriggerState::Pressed, nullptr, -1, 'A', int(GamepadCode::GAMEPAD_RIGHTSTICK_LEFT), 0 };

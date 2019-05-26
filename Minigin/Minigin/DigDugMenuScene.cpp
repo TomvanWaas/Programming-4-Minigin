@@ -31,7 +31,7 @@ void DigDugMenuScene::SceneInitialize()
 	SDL_Color colorNone = { 150,150,150,255 };
 	SDL_Color colorHover = { 255,255,255,255 };
 
-	//Make Buttons
+	//SetPath Buttons
 	//
 	auto* pPlayAloneButton = CreateGameObject();
 	{
@@ -94,7 +94,7 @@ void DigDugMenuScene::SceneInitialize()
 	pQuitButton->GetTransform().SetWorldPosition(windowSettings.width*0.5f, windowSettings.height*0.65f);
 
 
-	//Make Input
+	//SetPath Input
 	auto* input = GetSceneData().GetInput();
 
 	InputAction next{};

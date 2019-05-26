@@ -65,7 +65,7 @@ void DigDugGridComponent::Render(const RenderManager& renderer) const
 void DigDugGridComponent::InitializeOverride(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
-	//m_GridPositions.Make();
+	//m_GridPositions.SetPath();
 	m_GridMarks.Make();
 
 	//Initialize values

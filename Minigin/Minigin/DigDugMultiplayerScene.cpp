@@ -128,7 +128,7 @@ void DigDugMultiplayerScene::SceneInitialize()
 		}
 	}
 
-	//Make Lives
+	//SetPath Lives
 	for (size_t i = 0; i < m_PlayerData[0].pLifeObjects.size(); ++i)
 	{
 		auto* pObj = CreateGameObject();
@@ -153,7 +153,7 @@ void DigDugMultiplayerScene::SceneInitialize()
 		t.SetWorldPosition(wsettings.width - ((i + 0.5f)*m_GameSettings.spriteWidth)*scale.x, (wsettings.height - 0.5f*m_GameSettings.spriteHeight*scale.y));
 		m_PlayerData[1].pLifeObjects[i] = pObj;
 	}
-	//Make Flowers (LevelNumber)
+	//SetPath Flowers (LevelNumber)
 	for (int i = 0; i < m_LevelNumber; ++i)
 	{
 		auto* pObj = CreateGameObject();
@@ -167,7 +167,7 @@ void DigDugMultiplayerScene::SceneInitialize()
 	}
 
 
-	//Make MenuInput
+	//SetPath MenuInput
 	auto pAction = std::make_shared<DigDug::SceneSetInput>("Pause", GetSceneManager());
 	InputAction menu1{ InputTriggerState::Pressed, pAction, -1, VK_ESCAPE, int(GamepadCode::GAMEPAD_START), 0 };
 	InputAction menu2{ InputTriggerState::Pressed, pAction, -1, -1, int(GamepadCode::GAMEPAD_START), 1 };
@@ -337,7 +337,7 @@ Scene* DigDugMultiplayerScene::OnReload() const
 
 GameObject* DigDugMultiplayerScene::MakePlayer1(const DigDug::DigDugSettings& settings)
 {
-	//Make Player
+	//SetPath Player
 	InputAction up{ InputTriggerState::Pressed, nullptr, -1, 'W', int(GamepadCode::GAMEPAD_RIGHTSTICK_UP), 0 };
 	InputAction down{ InputTriggerState::Pressed, nullptr, -1, 'S', int(GamepadCode::GAMEPAD_RIGHTSTICK_DOWN), 0 };
 	InputAction left{ InputTriggerState::Pressed, nullptr, -1, 'A', int(GamepadCode::GAMEPAD_RIGHTSTICK_LEFT), 0 };
@@ -351,7 +351,7 @@ GameObject* DigDugMultiplayerScene::MakePlayer1(const DigDug::DigDugSettings& se
 
 GameObject* DigDugMultiplayerScene::MakePlayer2(const DigDug::DigDugSettings& settings)
 {
-	//Make Player
+	//SetPath Player
 	InputAction up{ InputTriggerState::Pressed, nullptr, -1, VK_UP , int(GamepadCode::GAMEPAD_RIGHTSTICK_UP), 1 };
 	InputAction down{ InputTriggerState::Pressed, nullptr, -1, VK_DOWN, int(GamepadCode::GAMEPAD_RIGHTSTICK_DOWN), 1 };
 	InputAction left{ InputTriggerState::Pressed, nullptr, -1, VK_LEFT , int(GamepadCode::GAMEPAD_RIGHTSTICK_LEFT), 1 };

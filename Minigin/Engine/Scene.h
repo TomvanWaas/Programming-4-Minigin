@@ -9,7 +9,7 @@ namespace Minigin
 	class ObservedData;
 	class GameObject;
 	class SceneManager;
-	class Scene abstract
+	class Scene
 	{
 	public:
 		explicit Scene(const std::string& name);

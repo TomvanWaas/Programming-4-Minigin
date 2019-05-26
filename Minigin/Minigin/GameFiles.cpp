@@ -340,7 +340,7 @@ GameObject* DigDug::CreatePump(GameObject& parent, const DigDugSettings& setting
 	auto* pRender = new RenderComponent();
 	pPump->AddComponent(pRender);
 
-	//Make
+	//SetPath
 	{
 		pRender->SetRenderPriority(200, parent.GetScene()->GetSceneData());
 	}
@@ -393,7 +393,7 @@ GameObject* DigDug::CreateScore(Scene& scene, const std::shared_ptr<Font>& pFont
 	pObject->AddComponent(pTextComponent);
 	pObject->AddComponent(new AutokillComponent(2.0f));
 
-	//Make
+	//SetPath
 	pTextComponent->SetFont(pFont);
 	pTextComponent->SetColor(color);
 	pTextComponent->SetText(std::to_string(score));
