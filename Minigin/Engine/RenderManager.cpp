@@ -8,15 +8,15 @@
 #include "Vector2.h"
 #include "Logger.h"
 
-using namespace Minigin;
+using namespace Engine;
 
-SDL_Renderer* Minigin::RenderManager::m_pRenderer = nullptr;
+SDL_Renderer* Engine::RenderManager::m_pRenderer = nullptr;
 
-SDL_Renderer* Minigin::RenderManager::GetSDLRenderer()
+SDL_Renderer* Engine::RenderManager::GetSDLRenderer()
 {
 	return m_pRenderer;
 }
-void Minigin::RenderManager::DestroyRenderer()
+void Engine::RenderManager::DestroyRenderer()
 {
 	if (m_pRenderer)
 	{
@@ -26,14 +26,14 @@ void Minigin::RenderManager::DestroyRenderer()
 	Logger::GetInstance().LogInfo("RenderManager::DestroyRenderer > Succeeded");
 }
 
-void Minigin::RenderManager::ClearScreen()
+void Engine::RenderManager::ClearScreen()
 {
 	if (m_pRenderer == nullptr) return;
 	SDL_RenderClear(m_pRenderer);
 	SDL_RenderPresent(m_pRenderer);
 }
 
-void Minigin::RenderManager::InitializeRenderer(SDL_Window* pWindow)
+void Engine::RenderManager::InitializeRenderer(SDL_Window* pWindow)
 {
 	m_pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (m_pRenderer == nullptr)
@@ -45,7 +45,7 @@ void Minigin::RenderManager::InitializeRenderer(SDL_Window* pWindow)
 
 
 
-void Minigin::RenderManager::Render(const Vector2& scale) const
+void Engine::RenderManager::Render(const Vector2& scale) const
 {
 	if (m_pRenderer == nullptr) return;
 	SDL_RenderClear(m_pRenderer);
@@ -63,7 +63,7 @@ void Minigin::RenderManager::Render(const Vector2& scale) const
 
 
 
-void Minigin::RenderManager::AddRenderable(const Renderable& renderable)
+void Engine::RenderManager::AddRenderable(const Renderable& renderable)
 {
 	if (std::find(m_pRenderables.begin(), m_pRenderables.end(), &renderable) == m_pRenderables.end())
 	{
@@ -71,7 +71,7 @@ void Minigin::RenderManager::AddRenderable(const Renderable& renderable)
 	}
 	UpdatePriorities();
 }
-void Minigin::RenderManager::RemoveRenderable(const Renderable& renderable)
+void Engine::RenderManager::RemoveRenderable(const Renderable& renderable)
 {
 	auto i = std::find(m_pRenderables.begin(), m_pRenderables.end(), &renderable);
 
@@ -80,7 +80,7 @@ void Minigin::RenderManager::RemoveRenderable(const Renderable& renderable)
 		m_pRenderables.erase(i);
 	}
 }
-void Minigin::RenderManager::UpdatePriorities()
+void Engine::RenderManager::UpdatePriorities()
 {
 	//Sort by priority
 	std::sort(m_pRenderables.begin(), m_pRenderables.end(), [](const Renderable* a, const Renderable* b)
@@ -90,7 +90,7 @@ void Minigin::RenderManager::UpdatePriorities()
 }
 
 
-void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center) const
+void Engine::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center) const
 {
 	SDL_Rect dst{};
 	dst.w = texture.GetWidth();
@@ -99,7 +99,7 @@ void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vecto
 	dst.y = int(center.y - dst.h * 0.5f);
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
-void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale) const
+void Engine::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale) const
 {
 	SDL_Rect dst{};
 	dst.w = int(texture.GetWidth() * scale.x);
@@ -108,7 +108,7 @@ void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vecto
 	dst.y = int(center.y - dst.h * 0.5f);
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
-void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center, const Rect& source) const
+void Engine::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center, const Rect& source) const
 {
 	SDL_Rect src{ int(source.x), int(source.y), int(source.width), int(source.height) };
 	SDL_Rect dst{};
@@ -118,7 +118,7 @@ void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vecto
 	dst.y = int(center.y - dst.h * 0.5f);
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dst);
 }
-void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, const Rect& source) const
+void Engine::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, const Rect& source) const
 {
 	SDL_Rect src{ int(source.x), int(source.y), int(source.width), int(source.height) };
 	SDL_Rect dst{};
@@ -128,7 +128,7 @@ void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vecto
 	dst.y = int(center.y - dst.h * 0.5f);
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dst);
 }
-void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, float angle, const Vector2& around, FlipMode flip) const
+void Engine::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, float angle, const Vector2& around, FlipMode flip) const
 {
 	SDL_Rect dst{};
 	dst.w = int(texture.GetWidth() * scale.x);
@@ -138,7 +138,7 @@ void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vecto
 	SDL_Point ar{ int(around.x), int(around.y) };
 	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, double(angle), &ar, SDL_RendererFlip(flip));
 }
-void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, const Rect& source, float angle, const Vector2& around, FlipMode flip) const
+void Engine::RenderManager::RenderTexture(const Texture2D& texture, const Vector2& center, const Vector2& scale, const Rect& source, float angle, const Vector2& around, FlipMode flip) const
 {
 	SDL_Rect src{ int(source.x), int(source.y), int(source.width), int(source.height) };
 	SDL_Rect dst{};
@@ -150,7 +150,7 @@ void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Vecto
 	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dst, double(angle), &ar, SDL_RendererFlip(flip));
 }
 
-void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Rect& dst, const Rect& src)
+void Engine::RenderManager::RenderTexture(const Texture2D& texture, const Rect& dst, const Rect& src)
 {
 	SDL_Rect srcSDL{};
 	srcSDL.x = int(src.x);
@@ -166,20 +166,20 @@ void Minigin::RenderManager::RenderTexture(const Texture2D& texture, const Rect&
 }
 
 
-void Minigin::RenderManager::RenderLine(const Vector2& a, const Vector2& b) const
+void Engine::RenderManager::RenderLine(const Vector2& a, const Vector2& b) const
 {
 	SDL_RenderDrawLine(m_pRenderer, int(a.x), int(a.y), int(b.x), int(b.y));
 }
-void Minigin::RenderManager::RenderRect(const Rect& r) const
+void Engine::RenderManager::RenderRect(const Rect& r) const
 {
 	SDL_Rect sdlRect{ int(r.x), int(r.y), int(r.width), int(r.height) };
 	SDL_RenderDrawRect(m_pRenderer, &sdlRect);
 }
-void Minigin::RenderManager::RenderPoint(const Vector2& p) const
+void Engine::RenderManager::RenderPoint(const Vector2& p) const
 {
 	SDL_RenderDrawPoint(m_pRenderer, int(p.x), int(p.y));
 }
-void Minigin::RenderManager::RenderPoint(const Vector2& p, float r) const
+void Engine::RenderManager::RenderPoint(const Vector2& p, float r) const
 {
 	Rect rect(p.x - r, p.y - r, r * 2, r * 2);
 	RenderRect(rect);
@@ -188,11 +188,11 @@ void Minigin::RenderManager::RenderPoint(const Vector2& p, float r) const
 
 
 
-void Minigin::RenderManager::SetRenderColor(UINT8 r, UINT8 g, UINT8 b, UINT8 a) const
+void Engine::RenderManager::SetRenderColor(UINT8 r, UINT8 g, UINT8 b, UINT8 a) const
 {
 	SDL_SetRenderDrawColor(m_pRenderer, r, g, b, a);
 }
-void Minigin::RenderManager::ClearRenderColor() const
+void Engine::RenderManager::ClearRenderColor() const
 {
 	SetRenderColor(0, 0, 0, 255);
 }

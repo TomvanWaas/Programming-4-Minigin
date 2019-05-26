@@ -1,7 +1,7 @@
 #pragma once
 #include "BaseComponent.h"
 
-namespace Minigin
+namespace Engine
 {
 	class TextComponent;
 	class FPSComponent final : public BaseComponent

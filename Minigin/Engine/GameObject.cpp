@@ -7,7 +7,7 @@
 #include "Deletor.h"
 #include "ObservedData.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 GameObject::GameObject()
 	: m_Transform(*this)

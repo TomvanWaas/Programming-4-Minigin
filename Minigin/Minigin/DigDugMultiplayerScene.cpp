@@ -8,7 +8,7 @@
 #include "InputManager.h"
 #include "DigDugGridComponent.h"
 #include "GameObject.h"
-#include "Engine.h"
+#include "EngineObject.h"
 #include "ScoreObserver.h"
 #include "ObserverManager.h"
 #include "PlayerManager.h"
@@ -25,7 +25,7 @@
 
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 DigDugMultiplayerScene::DigDugMultiplayerScene(const std::string& name, const std::string& levelFile, int numLivesP1,
 	int numLivesP2, int levelNumber)
@@ -43,7 +43,7 @@ void DigDugMultiplayerScene::SceneInitialize()
 {
 #pragma region Settings
 	Vector2 scale{ 2.0f, 2.0f };
-	const WindowSettings& wsettings = Minigin::Engine::GetWindowSettings();
+	const WindowSettings& wsettings = Engine::EngineObject::GetWindowSettings();
 
 	//Settings
 	m_GameSettings.spriteHeight = 16;
@@ -87,7 +87,7 @@ void DigDugMultiplayerScene::SceneInitialize()
 		Logger::GetInstance().LogError("DigDugMultiplayerScene::SceneInitialize > Failed to make grid");
 		return;
 	}
-	pBackgroundObject->GetTransform().SetLocalPosition(Minigin::Engine::GetWindowSettings().width*0.5f, Minigin::Engine::GetWindowSettings().height*0.5f);
+	pBackgroundObject->GetTransform().SetLocalPosition(Engine::EngineObject::GetWindowSettings().width*0.5f, Engine::EngineObject::GetWindowSettings().height*0.5f);
 
 
 	//LevelData

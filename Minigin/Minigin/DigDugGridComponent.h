@@ -3,7 +3,7 @@
 #include "Vector2.h"
 #include "Grid.h"
 
-namespace Minigin
+namespace Engine
 {
 	struct Rect;
 	class MultiRenderComponent;
@@ -16,7 +16,7 @@ namespace DigDug
 #include "Renderable.h"
 	class DigDugGridComponent final : public Minigin::BaseComponent, public Minigin::Renderable
 #else
-	class DigDugGridComponent final : public Minigin::BaseComponent
+	class DigDugGridComponent final : public Engine::BaseComponent
 #endif
 	{
 	public:
@@ -34,43 +34,43 @@ namespace DigDug
 
 
 
-		bool IsOnPoint(const Minigin::Vector2& p, float epsilon = 0.5f) const;
-		bool IsOnLine(const Minigin::Vector2& p, float epsilon = 0.5f) const;
-		bool IsOnGrid(const Minigin::Vector2& p, float epsilon = 0.5f) const;
-		bool IsOnWalkablePoint(const Minigin::Vector2& p, float epsilon = 0.5f) const;
-		bool IsOnWalkableLine(const Minigin::Vector2& p, float epsilon = 0.5f) const;
-		bool IsOnWalkableGrid(const Minigin::Vector2& p, float epsilon = 0.5f) const;
-		Minigin::Vector2 ClosestPoint(const Minigin::Vector2& p) const;
-		Minigin::Vector2 ClosestLine(const Minigin::Vector2& p) const;
-		Minigin::Vector2 ClosestGrid(const Minigin::Vector2& p) const;
-		Minigin::Vector2 ClosestWalkablePoint(const Minigin::Vector2& p) const;
-		Minigin::Vector2 ClosestWalkableLine(const Minigin::Vector2& p) const;
-		Minigin::Vector2 ClosestWalkableGrid(const Minigin::Vector2& p) const;
+		bool IsOnPoint(const Engine::Vector2& p, float epsilon = 0.5f) const;
+		bool IsOnLine(const Engine::Vector2& p, float epsilon = 0.5f) const;
+		bool IsOnGrid(const Engine::Vector2& p, float epsilon = 0.5f) const;
+		bool IsOnWalkablePoint(const Engine::Vector2& p, float epsilon = 0.5f) const;
+		bool IsOnWalkableLine(const Engine::Vector2& p, float epsilon = 0.5f) const;
+		bool IsOnWalkableGrid(const Engine::Vector2& p, float epsilon = 0.5f) const;
+		Engine::Vector2 ClosestPoint(const Engine::Vector2& p) const;
+		Engine::Vector2 ClosestLine(const Engine::Vector2& p) const;
+		Engine::Vector2 ClosestGrid(const Engine::Vector2& p) const;
+		Engine::Vector2 ClosestWalkablePoint(const Engine::Vector2& p) const;
+		Engine::Vector2 ClosestWalkableLine(const Engine::Vector2& p) const;
+		Engine::Vector2 ClosestWalkableGrid(const Engine::Vector2& p) const;
 
 
-		bool IsMarked(const Minigin::Vector2& p, float epsilon = 0.001f) const;
-		void Mark(const Minigin::Vector2& p, float epsilon = 0.001f);
-		Minigin::Vector2 GetPosition(unsigned int w, unsigned int h) const;
-		Minigin::Vector2 GetWalkablePosition(unsigned int w, unsigned int h)const;
-		unsigned int GetIndex(const Minigin::Vector2& v) const;
+		bool IsMarked(const Engine::Vector2& p, float epsilon = 0.001f) const;
+		void Mark(const Engine::Vector2& p, float epsilon = 0.001f);
+		Engine::Vector2 GetPosition(unsigned int w, unsigned int h) const;
+		Engine::Vector2 GetWalkablePosition(unsigned int w, unsigned int h)const;
+		unsigned int GetIndex(const Engine::Vector2& v) const;
 
 
-		void SetOffset(const Minigin::Vector2& o);
+		void SetOffset(const Engine::Vector2& o);
 		void SetWidth(unsigned int w);
 		void SetHeight(unsigned int h);
-		Minigin::Vector2 GetWalkableOffset() const;
-		const Minigin::Vector2& GetOffset() const { return m_Offset; }
+		Engine::Vector2 GetWalkableOffset() const;
+		const Engine::Vector2& GetOffset() const { return m_Offset; }
 		unsigned int GetWidth() const;
 		unsigned int GetHeight() const;
 
 
 	protected:
-		virtual void InitializeOverride(const Minigin::SceneData& sceneData) override;
+		virtual void InitializeOverride(const Engine::SceneData& sceneData) override;
 
 	private:
-		Minigin::Grid<bool> m_GridMarks;
-		Minigin::Vector2 m_Offset;
-		Minigin::MultiRenderComponent* m_pMultiRenderer;
+		Engine::Grid<bool> m_GridMarks;
+		Engine::Vector2 m_Offset;
+		Engine::MultiRenderComponent* m_pMultiRenderer;
 
 
 
@@ -79,13 +79,13 @@ namespace DigDug
 		void UpdateSurroundings(unsigned int w, unsigned int h);
 		void UpdateSurroundings(unsigned int i);
 
-		Minigin::Vector2 WorldToGrid(const Minigin::Vector2& p) const;
-		Minigin::Vector2 GridToWorld(const Minigin::Vector2& p) const;
+		Engine::Vector2 WorldToGrid(const Engine::Vector2& p) const;
+		Engine::Vector2 GridToWorld(const Engine::Vector2& p) const;
 
-		Minigin::Vector2 GetWorld(unsigned int w, unsigned int h) const;
-		Minigin::Vector2 GetLocal(unsigned int w, unsigned int h) const;
-		int GetIdx(const Minigin::Vector2& world, float epsilon = 0.001f) const;
-		int CloseIdx(const Minigin::Vector2& world) const;
+		Engine::Vector2 GetWorld(unsigned int w, unsigned int h) const;
+		Engine::Vector2 GetLocal(unsigned int w, unsigned int h) const;
+		int GetIdx(const Engine::Vector2& world, float epsilon = 0.001f) const;
+		int CloseIdx(const Engine::Vector2& world) const;
 
 
 	};

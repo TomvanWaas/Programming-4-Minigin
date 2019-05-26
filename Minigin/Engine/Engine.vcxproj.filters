@@ -46,9 +46,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Application.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -202,6 +199,9 @@
     <ClInclude Include="FSMState.h">
       <Filter>Actions</Filter>
     </ClInclude>
+    <ClInclude Include="EngineObject.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AABBCollisionComponent.cpp">
@@ -300,10 +300,10 @@
     <ClCompile Include="Observer.cpp">
       <Filter>Observing</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
+    <ClCompile Include="stdafx.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="EngineObject.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>

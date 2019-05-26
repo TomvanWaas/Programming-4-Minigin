@@ -4,13 +4,13 @@ namespace DigDug
 {
 	class DigDugGridComponent;
 	enum class Direction;
-	class EnemyController final : public Minigin::BaseComponent
+	class EnemyController final : public Engine::BaseComponent
 	{
 		
 	public:
 		explicit EnemyController(DigDugGridComponent* pGrid, float fireInterval, float ghostInterval);
 		virtual ~EnemyController() = default;
-		virtual void UpdateFirstOverride(const Minigin::SceneData& sceneData) override;
+		virtual void UpdateFirstOverride(const Engine::SceneData& sceneData) override;
 	private:
 		float m_FireAccu;
 		float m_FireInterval;
@@ -22,8 +22,8 @@ namespace DigDug
 		Direction m_Current;
 		
 
-		void UpdateAsMove(const Minigin::SceneData& sceneData);
-		void UpdateAsGhost(const Minigin::SceneData& sceneData);
+		void UpdateAsMove(const Engine::SceneData& sceneData);
+		void UpdateAsGhost(const Engine::SceneData& sceneData);
 	};
 
 }

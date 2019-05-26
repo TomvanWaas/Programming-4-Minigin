@@ -3,7 +3,7 @@
 #include "Observer.h"
 #include "ObservedEvent.h"
 
-namespace Minigin
+namespace Engine
 {
 	class GameObject;
 	class ObservedData;

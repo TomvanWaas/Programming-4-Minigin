@@ -5,7 +5,7 @@
 #include "ResourceManager.h"
 #include "GameObject.h"
 #include "Components.h"
-#include "Engine.h"
+#include "EngineObject.h"
 #include "InputManager.h"
 #include "GameInputCommands.h"
 #include "ScreenRenderComponent.h"
@@ -13,7 +13,7 @@
 
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 DigDugPauseScene::DigDugPauseScene(const std::string& name)
 	: Scene(name)
@@ -63,7 +63,7 @@ void DigDugPauseScene::SceneInitialize()
 
 
 	//Positions
-	const auto& windowSettings = Minigin::Engine::GetWindowSettings();
+	const auto& windowSettings = Engine::EngineObject::GetWindowSettings();
 	pResumeButton->GetTransform().SetWorldPosition(windowSettings.width*0.5f, windowSettings.height*0.4f);
 	pMenuButton->GetTransform().SetWorldPosition(windowSettings.width*0.5f, windowSettings.height*0.6f);
 

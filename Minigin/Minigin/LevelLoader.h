@@ -6,7 +6,7 @@
 
 
 template <>
-class Minigin::ResourceManager::ResourceLoader<DigDug::LevelData> final : public Minigin::ResourceManager::Loader
+class Engine::ResourceManager::ResourceLoader<DigDug::LevelData> final : public Engine::ResourceManager::Loader
 {
 	std::map<std::string, std::shared_ptr<DigDug::LevelData>> m_pResources;
 public:

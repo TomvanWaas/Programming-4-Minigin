@@ -3,7 +3,7 @@
 #include "ObservedEvent.h"
 #include "GameObject.h"
 
-namespace Minigin
+namespace Engine
 {
 	class SceneManager;
 }
@@ -13,18 +13,18 @@ namespace DigDug
 	class DigDugMovementComponent;
 	class ButtonManager;
 
-	class PlayerInput final : public Minigin::InputCommand
+	class PlayerInput final : public Engine::InputCommand
 	{
 		DigDug::Direction m_Direction;
 		int m_PlayerId;
-		Minigin::Scene* m_pScene;
+		Engine::Scene* m_pScene;
 	public:
-		explicit PlayerInput(DigDug::Direction d, int playerId, Minigin::Scene* pScene);
+		explicit PlayerInput(DigDug::Direction d, int playerId, Engine::Scene* pScene);
 		virtual void Execute() override;
 	};
 
 	template <class T>
-	class InputSetData final : public Minigin::InputCommand
+	class InputSetData final : public Engine::InputCommand
 	{
 		T* m_pData;
 		T m_Target;
@@ -40,7 +40,7 @@ namespace DigDug
 	};
 
 
-	class InputButtonSet final : public Minigin::InputCommand
+	class InputButtonSet final : public Engine::InputCommand
 	{
 	public:
 		enum class Action
@@ -59,36 +59,36 @@ namespace DigDug
 	};
 
 
-	class PlayerNotifier final : public Minigin::InputCommand
+	class PlayerNotifier final : public Engine::InputCommand
 	{
 	public:
-		explicit PlayerNotifier(int playerId, Minigin::ObservedEvent event, Minigin::Scene* pScene)
+		explicit PlayerNotifier(int playerId, Engine::ObservedEvent event, Engine::Scene* pScene)
 			: m_PlayerId(playerId), m_Event(event), m_pScene(pScene)
 		{}
 		virtual ~PlayerNotifier() = default;
 		virtual void Execute() override;
 	private:
-		Minigin::ObservedEvent m_Event;
+		Engine::ObservedEvent m_Event;
 		int m_PlayerId;
-		Minigin::Scene* m_pScene;
+		Engine::Scene* m_pScene;
 	};
-	class InputNotifier final : public Minigin::InputCommand
+	class InputNotifier final : public Engine::InputCommand
 	{
 	public:
-		explicit InputNotifier(Minigin::GameObject* pObject, Minigin::ObservedEvent event)
+		explicit InputNotifier(Engine::GameObject* pObject, Engine::ObservedEvent event)
 			: m_pObject(pObject), m_Event(event)
 		{}
 		virtual ~InputNotifier() = default;
 		virtual void Execute() override;
 	private:
-		Minigin::ObservedEvent m_Event;
-		Minigin::GameObject* m_pObject;
+		Engine::ObservedEvent m_Event;
+		Engine::GameObject* m_pObject;
 	};
 
-	class  SceneSetInput final : public Minigin::InputCommand
+	class  SceneSetInput final : public Engine::InputCommand
 	{
 	public:
-		explicit SceneSetInput(const std::string& name, Minigin::SceneManager* pManager)
+		explicit SceneSetInput(const std::string& name, Engine::SceneManager* pManager)
 			: m_SceneName(name)
 			, m_pSceneManager(pManager)
 		{}
@@ -96,25 +96,25 @@ namespace DigDug
 		virtual void Execute() override;
 	private:
 		std::string m_SceneName;
-		Minigin::SceneManager* m_pSceneManager;
+		Engine::SceneManager* m_pSceneManager;
 	};
 
 
 
 
 
-	class EnemyNotifier final : public Minigin::InputCommand
+	class EnemyNotifier final : public Engine::InputCommand
 	{
 	public:
-		explicit EnemyNotifier(int enemyId, Minigin::ObservedEvent event, Minigin::Scene* pScene)
+		explicit EnemyNotifier(int enemyId, Engine::ObservedEvent event, Engine::Scene* pScene)
 			: m_EnemyId(enemyId), m_Event(event), m_pScene(pScene)
 		{}
 		virtual ~EnemyNotifier() = default;
 		virtual void Execute() override;
 	private:
-		Minigin::ObservedEvent m_Event;
+		Engine::ObservedEvent m_Event;
 		int m_EnemyId;
-		Minigin::Scene* m_pScene;
+		Engine::Scene* m_pScene;
 	};
 
 

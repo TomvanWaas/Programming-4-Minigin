@@ -2,7 +2,7 @@
 #include "Color.h"
 #include <SDL.h>
 
-using namespace Minigin;
+using namespace Engine;
 
 Color3& Color3::operator=(const Color3& other)
 {

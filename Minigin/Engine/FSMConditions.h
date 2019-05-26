@@ -1,7 +1,7 @@
 #pragma once
 #include "FSMCondition.h"
 
-namespace Minigin
+namespace Engine
 {
 	class FSMData;
 

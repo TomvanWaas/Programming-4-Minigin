@@ -2,7 +2,7 @@
 
 #define DebugPriority 2147483647
 
-namespace Minigin
+namespace Engine
 {
 	class SceneData;
 	class Renderer;

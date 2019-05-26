@@ -1,6 +1,6 @@
 #pragma once
 #include "Vector2.h"
-namespace Minigin
+namespace Engine
 {
 	class ObservedEvent;
 	class ObservedData;

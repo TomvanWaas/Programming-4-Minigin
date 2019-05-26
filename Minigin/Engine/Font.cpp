@@ -2,7 +2,7 @@
 #include "Font.h"
 #include "Exceptions.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 TTF_Font* Font::GetFont() const {
 	return m_pFont;

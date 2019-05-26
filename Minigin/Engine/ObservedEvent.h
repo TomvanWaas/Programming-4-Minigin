@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Minigin
+namespace Engine
 {
 	class ObservedEvent
 	{

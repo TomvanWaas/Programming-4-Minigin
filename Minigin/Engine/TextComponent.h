@@ -2,7 +2,7 @@
 #include "BaseComponent.h"
 #include <SDL.h>
 
-namespace Minigin
+namespace Engine
 {
 	class RenderComponent;
 	class Font;

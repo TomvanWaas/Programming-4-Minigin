@@ -1,7 +1,7 @@
 #pragma once
 #include "Observer.h"
 
-namespace Minigin
+namespace Engine
 {
 	struct Vector2;
 	class Font;
@@ -9,7 +9,7 @@ namespace Minigin
 }
 namespace DigDug
 {
-	class EnemyScoreObserver final : public Minigin::Observer, public Minigin::Subject
+	class EnemyScoreObserver final : public Engine::Observer, public Engine::Subject
 	{
 
 	public:
@@ -18,15 +18,15 @@ namespace DigDug
 			Pooka,
 			Fygar
 		};
-		explicit EnemyScoreObserver(Type type, Minigin::Scene* pScene = nullptr, float laneHeight = 0.0f);
+		explicit EnemyScoreObserver(Type type, Engine::Scene* pScene = nullptr, float laneHeight = 0.0f);
 		virtual ~EnemyScoreObserver() = default;
-		virtual void Notify(Minigin::ObservedEvent event, const Minigin::ObservedData& data) override;
+		virtual void Notify(Engine::ObservedEvent event, const Engine::ObservedData& data) override;
 	private:
-		int GetScore(const Minigin::Vector2& worldPos);
+		int GetScore(const Engine::Vector2& worldPos);
 
 		Type m_Type;
 		float m_LaneHeight;
-		Minigin::Scene* m_pScene;
+		Engine::Scene* m_pScene;
 	};
 
 }

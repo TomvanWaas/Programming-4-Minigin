@@ -5,7 +5,7 @@
 #include "CollisionManager.h"
 #include "SceneData.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 AABBCollisionComponent::AABBCollisionComponent(const Rect& extents, bool isTrigger, const std::string& tag)
 	: m_Rectangle(extents)

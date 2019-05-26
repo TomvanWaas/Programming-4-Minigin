@@ -8,7 +8,7 @@
 #include "SceneData.h"
 #include "Time.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 FPSComponent::FPSComponent(unsigned int prec)
 	: m_Precision(prec)

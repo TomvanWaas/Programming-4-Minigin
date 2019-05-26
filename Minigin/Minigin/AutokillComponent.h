@@ -3,12 +3,12 @@
 
 namespace DigDug
 {
-	class AutokillComponent final : public Minigin::BaseComponent
+	class AutokillComponent final : public Engine::BaseComponent
 	{
 	public:
 		explicit AutokillComponent(float delay) : m_Delay(delay) {}
 		virtual ~AutokillComponent() = default;
-		virtual void UpdateFirstOverride(const Minigin::SceneData& sceneData) override;
+		virtual void UpdateFirstOverride(const Engine::SceneData& sceneData) override;
 	private:
 		float m_Delay;
 	};

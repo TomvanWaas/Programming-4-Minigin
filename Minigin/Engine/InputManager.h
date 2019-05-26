@@ -11,7 +11,7 @@
 #include "Manager.h"
 #pragma comment(lib, "Xinput.lib")
 
-namespace Minigin
+namespace Engine
 {
 	enum class GamepadCode
 	{
@@ -85,6 +85,7 @@ namespace Minigin
 			, gamepadCode(other.gamepadCode)
 			, pCommand(other.pCommand)
 			, isTriggered(false)
+			, playerID(other.playerID)
 		{}
 		InputAction(InputAction&& other)
 			:triggerState(other.triggerState)
@@ -93,6 +94,7 @@ namespace Minigin
 			, gamepadCode(other.gamepadCode)
 			, pCommand(other.pCommand)
 			, isTriggered(false)
+			, playerID(other.playerID)
 		{}
 		InputAction& operator=(const InputAction& other)
 		{
@@ -102,6 +104,7 @@ namespace Minigin
 			gamepadCode = other.gamepadCode;
 			pCommand = other.pCommand;
 			isTriggered = false;
+			playerID = other.playerID;
 			return *this;
 		}
 		InputAction& operator=(InputAction&& other)
@@ -112,6 +115,7 @@ namespace Minigin
 			gamepadCode = other.gamepadCode;
 			pCommand = other.pCommand;
 			isTriggered = false;
+			playerID = other.playerID;
 			return *this;
 		}
 

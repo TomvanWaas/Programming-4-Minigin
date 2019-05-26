@@ -3,7 +3,7 @@
 #include "RenderManager.h"
 #include "SceneData.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 Renderable::Renderable(int priority)
 	: m_Priority(priority)

@@ -1,6 +1,6 @@
 #pragma once
 #include "FSMState.h"
-namespace Minigin
+namespace Engine
 {
 	class GameObject;
 }
@@ -8,26 +8,26 @@ namespace Minigin
 namespace DigDug
 {
 
-	class FSMStateDelay final : public Minigin::FSMState
+	class FSMStateDelay final : public Engine::FSMState
 	{
 	public:
 		explicit FSMStateDelay(float delay, FSMState* pNext);
 		virtual ~FSMStateDelay() = default;
-		virtual void Enter(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* UpdateFirst(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
+		virtual void Enter(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* UpdateFirst(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
 	private:
 		float m_Accu;
 		float m_Delay;
 		FSMState* m_pNextState;
 	};
 
-	class FSMStateDestroyObject final : public Minigin::FSMState
+	class FSMStateDestroyObject final : public Engine::FSMState
 	{
 	public:
-		explicit FSMStateDestroyObject(Minigin::GameObject* pObject) : m_pObject(pObject) {}
+		explicit FSMStateDestroyObject(Engine::GameObject* pObject) : m_pObject(pObject) {}
 		virtual ~FSMStateDestroyObject() = default;
-		virtual FSMState* UpdateFirst(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
+		virtual FSMState* UpdateFirst(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
 	private:
-		Minigin::GameObject* m_pObject;
+		Engine::GameObject* m_pObject;
 	};
 }

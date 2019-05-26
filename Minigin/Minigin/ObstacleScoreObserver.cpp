@@ -6,7 +6,7 @@
 #include "DigDugEnemyComponent.h"
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 void ObstacleScoreObserver::Notify(ObservedEvent event, const ObservedData& data)
 {

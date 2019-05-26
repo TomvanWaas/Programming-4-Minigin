@@ -2,7 +2,7 @@
 #include "BaseComponent.h"
 #include "Grid.h"
 
-namespace Minigin
+namespace Engine
 {
 
 	template <class T>

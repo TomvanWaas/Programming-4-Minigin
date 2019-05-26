@@ -7,7 +7,7 @@
 #include "RenderManager.h"
 #include "Deletor.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 Scene::Scene(const std::string& name)
 	: m_Name(name)

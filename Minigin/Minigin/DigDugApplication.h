@@ -2,13 +2,13 @@
 #include "Application.h"
 
 
-class DigDugApplication final : public Minigin::Application
+class DigDugApplication final : public Engine::Application
 {
 public:
 	DigDugApplication() = default;
 	virtual ~DigDugApplication() = default;
 
-	virtual void Initialize(Minigin::SceneManager& sceneManager, const Minigin::WindowSettings& windowSettings) override;
+	virtual void Initialize(Engine::SceneManager& sceneManager, const Engine::WindowSettings& windowSettings) override;
 
 
 };

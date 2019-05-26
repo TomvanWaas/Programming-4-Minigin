@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace Minigin
+namespace Engine
 {
 	struct Color4;
 	class BaseComponent;
@@ -20,32 +20,32 @@ namespace DigDug
 	enum class Direction;
 
 	//Background
-	Minigin::GameObject* MakeBackground(Minigin::Scene& scene, const DigDugSettings& settings);
+	Engine::GameObject* MakeBackground(Engine::Scene& scene, const DigDugSettings& settings);
 
 	//Obstacle
-	Minigin::GameObject* CreateObstacle(Minigin::Scene& scene, const DigDugSettings& settings, Minigin::Observer* pScoreObserver);
+	Engine::GameObject* CreateObstacle(Engine::Scene& scene, const DigDugSettings& settings, Engine::Observer* pScoreObserver);
 	
 	//Player
-	Minigin::GameObject* CreatePlayer(Minigin::Scene& scene, const DigDugSettings& settings, Minigin::InputAction up, Minigin::InputAction down, Minigin::InputAction left, Minigin::InputAction right, Minigin::InputAction pump, int id = 0);
-	void HelpPlayerSprites(Minigin::SpriteComponent& comp, const DigDugSettings& settings);
-	Minigin::GameObject* CreatePump(Minigin::GameObject &parent, const DigDugSettings& settings);
+	Engine::GameObject* CreatePlayer(Engine::Scene& scene, const DigDugSettings& settings, Engine::InputAction up, Engine::InputAction down, Engine::InputAction left, Engine::InputAction right, Engine::InputAction pump, int id = 0);
+	void HelpPlayerSprites(Engine::SpriteComponent& comp, const DigDugSettings& settings);
+	Engine::GameObject* CreatePump(Engine::GameObject &parent, const DigDugSettings& settings);
 
 
 	//Score
-	Minigin::GameObject* CreateScore(Minigin::Scene& scene, const std::shared_ptr<Minigin::Font>& pFont, const SDL_Color& color, int score);
-	Minigin::GameObject* CreateScoreManager(Minigin::Scene& scene, const std::shared_ptr<Minigin::Font>& pFont, const Minigin::Color4& color, Minigin::BaseComponent* pScoreObserver);
+	Engine::GameObject* CreateScore(Engine::Scene& scene, const std::shared_ptr<Engine::Font>& pFont, const SDL_Color& color, int score);
+	Engine::GameObject* CreateScoreManager(Engine::Scene& scene, const std::shared_ptr<Engine::Font>& pFont, const Engine::Color4& color, Engine::BaseComponent* pScoreObserver);
 
 
 	//Pooka
-	Minigin::GameObject* CreatePooka(Minigin::Scene& scene, const DigDugSettings& settings, int id, Minigin::Observer* pScoreObserver);
-	Minigin::GameObject* CreateAIPooka(Minigin::Scene& scene, const DigDugSettings& settings, int id, Minigin::Observer* pScoreObserver);
+	Engine::GameObject* CreatePooka(Engine::Scene& scene, const DigDugSettings& settings, int id, Engine::Observer* pScoreObserver);
+	Engine::GameObject* CreateAIPooka(Engine::Scene& scene, const DigDugSettings& settings, int id, Engine::Observer* pScoreObserver);
 
 
 	//Fygar
-	Minigin::GameObject* CreateFygar(Minigin::Scene& scene, const DigDugSettings& settings, int id, Minigin::Observer* pScoreObserver);
-	Minigin::GameObject* CreateAIFygar(Minigin::Scene& scene, const DigDugSettings& settings, int id, Minigin::Observer* pScoreObserver);
-	Minigin::GameObject* CreatePlayerFygar(Minigin::Scene& scene, const DigDugSettings& settings, int id, Minigin::Observer* pScoreObserver, Minigin::InputAction up, Minigin::InputAction down, Minigin::InputAction left, Minigin::InputAction right, Minigin::InputAction fire, Minigin::InputAction ghost);
-	Minigin::GameObject* CreateFire(Minigin::GameObject& parent, const DigDugSettings& settings);
+	Engine::GameObject* CreateFygar(Engine::Scene& scene, const DigDugSettings& settings, int id, Engine::Observer* pScoreObserver);
+	Engine::GameObject* CreateAIFygar(Engine::Scene& scene, const DigDugSettings& settings, int id, Engine::Observer* pScoreObserver);
+	Engine::GameObject* CreatePlayerFygar(Engine::Scene& scene, const DigDugSettings& settings, int id, Engine::Observer* pScoreObserver, Engine::InputAction up, Engine::InputAction down, Engine::InputAction left, Engine::InputAction right, Engine::InputAction fire, Engine::InputAction ghost);
+	Engine::GameObject* CreateFire(Engine::GameObject& parent, const DigDugSettings& settings);
 
 
 }

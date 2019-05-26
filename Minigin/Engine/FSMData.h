@@ -1,7 +1,7 @@
 #pragma once
 #include <map>
 
-namespace Minigin
+namespace Engine
 {
 	class FSMData final
 	{

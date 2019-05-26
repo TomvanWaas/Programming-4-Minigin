@@ -5,7 +5,7 @@
 #include "Scene.h"
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 FSMStateDelay::FSMStateDelay(float delay, FSMState* pNext)
 	: m_Accu(0)

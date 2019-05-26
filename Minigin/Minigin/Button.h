@@ -6,7 +6,7 @@
 namespace DigDug
 {
 	class ButtonComponent;
-	class ButtonManager final : public Minigin::Manager
+	class ButtonManager final : public Engine::Manager
 	{
 	public:
 		void Next();
@@ -29,7 +29,7 @@ namespace DigDug
 		virtual void Execute() = 0;
 	};
 
-	class ButtonComponent final : public Minigin::BaseComponent
+	class ButtonComponent final : public Engine::BaseComponent
 	{
 	public:
 		enum class ButtonState
@@ -41,11 +41,11 @@ namespace DigDug
 
 		explicit ButtonComponent() = default;
 		~ButtonComponent() = default;
-		virtual void InitializeOverride(const Minigin::SceneData& sceneData) override;
-		virtual void DestroyOverride(const Minigin::SceneData& sceneData) override;
+		virtual void InitializeOverride(const Engine::SceneData& sceneData) override;
+		virtual void DestroyOverride(const Engine::SceneData& sceneData) override;
 
-		void SetStateNone(const std::shared_ptr<Minigin::Font>& pFont, SDL_Color color) { m_pNoneFont = pFont; m_NoneColor = color; }
-		void SetStateHover(const std::shared_ptr<Minigin::Font>& pFont, SDL_Color color) { m_pHoverFont = pFont; m_HoverColor = color; }
+		void SetStateNone(const std::shared_ptr<Engine::Font>& pFont, SDL_Color color) { m_pNoneFont = pFont; m_NoneColor = color; }
+		void SetStateHover(const std::shared_ptr<Engine::Font>& pFont, SDL_Color color) { m_pHoverFont = pFont; m_HoverColor = color; }
 		void SetAction(const std::shared_ptr<ButtonAction>& pAction) { m_pAction = pAction; }
 
 		ButtonState GetState() const;
@@ -53,9 +53,9 @@ namespace DigDug
 	private:
 		ButtonState m_State = ButtonState::None;
 		std::shared_ptr<ButtonAction> m_pAction;
-		std::shared_ptr<Minigin::Font> m_pNoneFont;
+		std::shared_ptr<Engine::Font> m_pNoneFont;
 		SDL_Color m_NoneColor;
-		std::shared_ptr<Minigin::Font> m_pHoverFont;
+		std::shared_ptr<Engine::Font> m_pHoverFont;
 		SDL_Color m_HoverColor;
 	};
 

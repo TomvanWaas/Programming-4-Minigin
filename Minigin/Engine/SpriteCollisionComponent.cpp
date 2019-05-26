@@ -6,7 +6,7 @@
 #include "SceneData.h"
 #include "CollisionManager.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 SpriteCollisionComponent::SpriteCollisionComponent(const Rect& extents, bool isTrigger, const std::string& tag)
 	: AABBCollisionComponent(extents, isTrigger, tag)

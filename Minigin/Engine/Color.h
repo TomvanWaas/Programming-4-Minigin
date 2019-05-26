@@ -5,7 +5,7 @@
 #pragma warning (disable:4201)
 
 struct SDL_Color;
-namespace Minigin
+namespace Engine
 {
 
 	struct Color3

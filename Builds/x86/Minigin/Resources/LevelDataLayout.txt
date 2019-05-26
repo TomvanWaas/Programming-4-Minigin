@@ -1,0 +1,15 @@
+GridWidth:GridHeight (Walkable)
+
+while
+{
+index
+[0: Pooka]
+[1: Fygar]
+[2: Obstacle]
+[3: Marks]
+
+length
+
+data (form of (x:y) )
+...
+}

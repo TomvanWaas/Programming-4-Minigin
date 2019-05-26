@@ -4,7 +4,7 @@
 #include "Vector2.h"
 	struct SDL_Window;
 	struct SDL_Renderer;
-namespace Minigin
+namespace Engine
 {
 	class Renderable;
 	struct Rect;

@@ -6,7 +6,7 @@
 #include "InputManager.h"
 #include "Manager.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 SceneData::~SceneData()
 {

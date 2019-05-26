@@ -8,7 +8,7 @@
 #include "Time.h"
 #include <algorithm>
 
-using namespace Minigin;
+using namespace Engine;
 
 Rect TickSource::GetSource(float& accuTime, float speed)
 {

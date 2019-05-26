@@ -28,7 +28,7 @@
 #include "Color.h"
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 ///////////////////
 //Background Creation

@@ -3,7 +3,7 @@
 
 namespace DigDug
 {
-	class GameEvent final : public Minigin::ObservedEvent
+	class GameEvent final : public Engine::ObservedEvent
 	{
 	public:
 		static const int GridMarked = BASE_END + 1;

@@ -6,7 +6,7 @@
 #include "GameObject.h"
 #include "GameButtons.h"
 #include "RenderComponent.h"
-#include "Engine.h"
+#include "EngineObject.h"
 #include "InputManager.h"
 #include "GameInputCommands.h"
 #include "ScreenRenderComponent.h"
@@ -14,7 +14,7 @@
 
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 DigDugMenuScene::DigDugMenuScene(const std::string& name)
 	: Scene(name)
@@ -87,7 +87,7 @@ void DigDugMenuScene::SceneInitialize()
 
 
 	//Position
-	const auto& windowSettings = Minigin::Engine::GetWindowSettings();
+	const auto& windowSettings = Engine::EngineObject::GetWindowSettings();
 	pPlayAloneButton->GetTransform().SetWorldPosition(windowSettings.width*0.5f, windowSettings.height*0.35f);
 	pPlayTogetherButton->GetTransform().SetWorldPosition(windowSettings.width*0.5f, windowSettings.height*0.45f);
 	pVersusButton->GetTransform().SetWorldPosition(windowSettings.width*0.5f, windowSettings.height*0.55f);

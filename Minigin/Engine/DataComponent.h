@@ -2,7 +2,7 @@
 #include "BaseComponent.h"
 #include <map>
 
-namespace Minigin
+namespace Engine
 {
 
 	class DataComponent final : public BaseComponent

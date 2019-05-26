@@ -1,7 +1,7 @@
 #include "MiniginPCH.h"
 #include "ObserverManager.h"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
 ObserverManager::~ObserverManager()

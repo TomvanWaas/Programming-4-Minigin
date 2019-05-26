@@ -3,7 +3,7 @@
 #include "SceneData.h"
 #include "Time.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 //FSMTimeCondition
 FSMTimeCondition::FSMTimeCondition(float dtime)

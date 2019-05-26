@@ -5,7 +5,7 @@
 #include "Renderable.h"
 
 
-namespace Minigin
+namespace Engine
 {
 	class Texture2D;
 	class MultiRenderComponent final : public BaseComponent, public Renderable

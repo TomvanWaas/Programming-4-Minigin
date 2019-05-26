@@ -2,12 +2,12 @@
 #include "ScreenRenderComponent.h"
 #include "ResourceManager.h"
 #include "SceneData.h"
-#include "Engine.h"
+#include "EngineObject.h"
 #include "RenderManager.h"
 #include "Texture2D.h"
 #include "WindowSettings.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 void ScreenRenderComponent::InitializeOverride(const SceneData& sceneData)
 {
@@ -23,7 +23,7 @@ void ScreenRenderComponent::Render(const RenderManager& renderer) const
 {
 	if (m_pTexture)
 	{
-		const auto& set = Minigin::Engine::GetWindowSettings();
+		const auto& set = EngineObject::EngineObject::GetWindowSettings();
 		Vector2 c{ set.width*0.5f, set.height*0.5f };
 
 

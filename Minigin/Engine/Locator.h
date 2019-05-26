@@ -1,5 +1,5 @@
 #pragma once
-namespace Minigin
+namespace Engine
 {
 	template <class T, class N>
 	class Locator abstract

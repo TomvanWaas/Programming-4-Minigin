@@ -1,7 +1,7 @@
 #pragma once
 struct SDL_Texture;
 
-namespace Minigin
+namespace Engine
 {
 	class Texture2D
 	{

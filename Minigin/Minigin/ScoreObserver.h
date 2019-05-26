@@ -1,26 +1,26 @@
 #pragma once
 #include "Color.h"
 #include "BaseComponent.h"
-namespace Minigin
+namespace Engine
 {
 	class Font;
 	class Scene;
 }
 namespace DigDug
 {
-	class ScoreObserver final : public Minigin::BaseComponent
+	class ScoreObserver final : public Engine::BaseComponent
 	{
 	public:
-		explicit ScoreObserver(const std::shared_ptr<Minigin::Font>& pFont, const Minigin::Color4& color, Minigin::Scene* pScene);
+		explicit ScoreObserver(const std::shared_ptr<Engine::Font>& pFont, const Engine::Color4& color, Engine::Scene* pScene);
 		virtual ~ScoreObserver() = default;
 
-		virtual void Notify(Minigin::ObservedEvent event, const Minigin::ObservedData& data) override;
+		virtual void Notify(Engine::ObservedEvent event, const Engine::ObservedData& data) override;
 	private:
 		int m_Score = 0;
 
-		Minigin::Color4 m_Color;
-		std::shared_ptr<Minigin::Font> m_pFont;
-		Minigin::Scene* m_pScene;
+		Engine::Color4 m_Color;
+		std::shared_ptr<Engine::Font> m_pFont;
+		Engine::Scene* m_pScene;
 
 	};
 

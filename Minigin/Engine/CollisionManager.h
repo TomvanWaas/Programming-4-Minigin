@@ -1,6 +1,6 @@
 #pragma once
 #include "Manager.h"
-namespace Minigin
+namespace Engine
 {
 
 	class SceneData;

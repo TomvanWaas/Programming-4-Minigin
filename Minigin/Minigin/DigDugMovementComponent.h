@@ -1,6 +1,6 @@
 #pragma once
 #include "BaseComponent.h"
-namespace Minigin
+namespace Engine
 {
 	class MovementComponent;
 }
@@ -10,7 +10,7 @@ namespace DigDug
 	enum class Direction;
 
 
-	class DigDugMovementComponent final : public Minigin::BaseComponent
+	class DigDugMovementComponent final : public Engine::BaseComponent
 	{
 	public:
 		explicit DigDugMovementComponent(DigDugGridComponent& grid, float speed);
@@ -25,10 +25,10 @@ namespace DigDug
 		Direction& GetMoveDirection() { return m_CurrentDirection; }
 
 	protected:
-		virtual void InitializeOverride(const Minigin::SceneData& sceneData) override;
-		virtual void UpdateFirstOverride(const Minigin::SceneData& sceneData) override;
+		virtual void InitializeOverride(const Engine::SceneData& sceneData) override;
+		virtual void UpdateFirstOverride(const Engine::SceneData& sceneData) override;
 	private:
-		Minigin::MovementComponent* m_pMovement;
+		Engine::MovementComponent* m_pMovement;
 		DigDugGridComponent* m_pGrid;
 		Direction m_PreviousDirection;
 		Direction m_CurrentDirection;

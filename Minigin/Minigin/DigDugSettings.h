@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include "Vector2.h"
-namespace Minigin
+namespace Engine
 {
 	class Font;
 	class Texture2D;
@@ -13,7 +13,7 @@ namespace DigDug
 	{
 		//Grid
 		DigDugGridComponent* pGrid = nullptr;
-		Minigin::Vector2 gridOffset = Minigin::Vector2(48, 48);
+		Engine::Vector2 gridOffset = Engine::Vector2(48, 48);
 		unsigned int gridWidth = 15;
 		unsigned int gridHeight = 12;
 
@@ -23,13 +23,13 @@ namespace DigDug
 		float spriteSpeed = 0.25f;
 
 		//Resources
-		std::shared_ptr<Minigin::Texture2D> pDigDugTexture = nullptr;
-		std::shared_ptr<Minigin::Texture2D> pPookaTexture = nullptr;
-		std::shared_ptr<Minigin::Texture2D> pFygarTexture = nullptr;
-		std::shared_ptr<Minigin::Texture2D> pBackgroundTexture = nullptr;
-		std::shared_ptr<Minigin::Texture2D> pPumpTexture = nullptr;
-		std::shared_ptr<Minigin::Texture2D> pOtherTexture = nullptr;
-		std::shared_ptr<Minigin::Font> pScoreFont = nullptr;
+		std::shared_ptr<Engine::Texture2D> pDigDugTexture = nullptr;
+		std::shared_ptr<Engine::Texture2D> pPookaTexture = nullptr;
+		std::shared_ptr<Engine::Texture2D> pFygarTexture = nullptr;
+		std::shared_ptr<Engine::Texture2D> pBackgroundTexture = nullptr;
+		std::shared_ptr<Engine::Texture2D> pPumpTexture = nullptr;
+		std::shared_ptr<Engine::Texture2D> pOtherTexture = nullptr;
+		std::shared_ptr<Engine::Font> pScoreFont = nullptr;
 
 		//Values
 		float fygarFireDelay = 7.5f;

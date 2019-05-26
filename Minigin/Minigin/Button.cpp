@@ -5,7 +5,7 @@
 #include "TextComponent.h"
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 void ButtonManager::Next()
 {

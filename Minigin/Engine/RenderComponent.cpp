@@ -8,7 +8,7 @@
 #include "SceneData.h"
 #include <SDL.h>
 
-using namespace Minigin;
+using namespace Engine;
 
 RenderComponent::RenderComponent(const std::string& texturePath)
 	: m_pTexture(ResourceManager::GetInstance().LoadTexture(texturePath))

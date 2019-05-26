@@ -1,7 +1,7 @@
 #pragma once
 #include "FSMState.h"
 #include "Vector2.h"
-namespace Minigin
+namespace Engine
 {
 	class GameObject;
 }
@@ -12,14 +12,14 @@ namespace DigDug
 
 
 	//General
-	class FSMStateEnemyMove final : public Minigin::FSMState
+	class FSMStateEnemyMove final : public Engine::FSMState
 	{
 	public:
 		explicit FSMStateEnemyMove(float speed, DigDugGridComponent* pGrid, float ghostCooldown, float fireCooldown, const std::string& ghostState, const std::string& fireState, const std::string& pumpState, const std::string& crushState);
 		virtual ~FSMStateEnemyMove() = default;
-		virtual void Enter(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* OnNotify(Minigin::ObservedEvent oevent, const Minigin::ObservedData& odata, Minigin::FSMData& data) override;
-		virtual FSMState* UpdateSecond(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
+		virtual void Enter(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* OnNotify(Engine::ObservedEvent oevent, const Engine::ObservedData& odata, Engine::FSMData& data) override;
+		virtual FSMState* UpdateSecond(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
 	private:
 		std::string m_GhostState;
 		std::string m_FireState;
@@ -39,14 +39,14 @@ namespace DigDug
 		bool Opposite(Direction a, Direction b) const;
 	};
 
-	class FSMStateEnemyGhost final : public Minigin::FSMState
+	class FSMStateEnemyGhost final : public Engine::FSMState
 	{
 	public:
 		explicit FSMStateEnemyGhost(float speed, float dur, DigDugGridComponent* pGrid, const std::string& move, const std::string& pump, const std::string& crush);
 		virtual ~FSMStateEnemyGhost() = default;
-		virtual void Enter(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* OnNotify(Minigin::ObservedEvent oevent, const Minigin::ObservedData& odata, Minigin::FSMData& data) override;
-		virtual FSMState* UpdateSecond(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
+		virtual void Enter(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* OnNotify(Engine::ObservedEvent oevent, const Engine::ObservedData& odata, Engine::FSMData& data) override;
+		virtual FSMState* UpdateSecond(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
 	private:
 		float m_Speed;
 		float m_Duration;
@@ -55,26 +55,26 @@ namespace DigDug
 		std::string m_PumpState;
 		std::string m_CrushState;
 		DigDugGridComponent* m_pGrid;
-		Minigin::Vector2 m_Direction;
+		Engine::Vector2 m_Direction;
 		bool m_RequestedMoveState;
 	};
 
-	class FSMStateEnemyPumping final : public Minigin::FSMState
+	class FSMStateEnemyPumping final : public Engine::FSMState
 	{
 	public:
-		explicit FSMStateEnemyPumping(Minigin::GameObject* pObject, DigDugGridComponent* pGrid, float targetTime,float deflateSpeed, FSMState* pMove, FSMState* pDead, FSMState* pCrushed);
+		explicit FSMStateEnemyPumping(Engine::GameObject* pObject, DigDugGridComponent* pGrid, float targetTime,float deflateSpeed, FSMState* pMove, FSMState* pDead, FSMState* pCrushed);
 		virtual ~FSMStateEnemyPumping() = default;
 
-		virtual void Enter(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* UpdateFirst(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* OnNotify(Minigin::ObservedEvent oevent, const Minigin::ObservedData& odata, Minigin::FSMData& data) override;
-		virtual void Exit(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
+		virtual void Enter(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* UpdateFirst(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* OnNotify(Engine::ObservedEvent oevent, const Engine::ObservedData& odata, Engine::FSMData& data) override;
+		virtual void Exit(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
 
 		void SetMoveState(FSMState* pMove) { m_pMovingState = pMove; }
 		void SetCrushState(FSMState* pCrush) { m_pCrushedState = pCrush; }
 		void SetDeadState(FSMState* pDead) { m_pDeadState = pDead; }
 	private:
-		Minigin::GameObject* m_pObject;
+		Engine::GameObject* m_pObject;
 		FSMState* m_pMovingState;
 		FSMState* m_pDeadState;
 		FSMState* m_pCrushedState;
@@ -85,33 +85,33 @@ namespace DigDug
 		DigDugGridComponent* m_pGrid;
 	};
 
-	class FSMStateEnemyCrushed final : public Minigin::FSMState
+	class FSMStateEnemyCrushed final : public Engine::FSMState
 	{
 	public:
-		explicit FSMStateEnemyCrushed(DigDugGridComponent* pGrid, Minigin::GameObject* pObj, float fallspeed, FSMState* pDead);
+		explicit FSMStateEnemyCrushed(DigDugGridComponent* pGrid, Engine::GameObject* pObj, float fallspeed, FSMState* pDead);
 		virtual ~FSMStateEnemyCrushed() = default;
-		virtual void Enter(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* UpdateFirst(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual void Exit(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
+		virtual void Enter(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* UpdateFirst(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual void Exit(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
 
 		void SetDeadState(FSMState* pDead) { m_pDeadState = pDead; }
 	private:
 		DigDugGridComponent* m_pGrid;
-		Minigin::GameObject* m_pObject;
+		Engine::GameObject* m_pObject;
 		float m_FallSpeed;
 		FSMState* m_pDeadState;
 	};
 	
 
 	//Fygar specific
-	class FSMStateFygarFire final : public Minigin::FSMState
+	class FSMStateFygarFire final : public Engine::FSMState
 	{
 	public:
 		explicit FSMStateFygarFire(float time, const std::string& pumpedState, const std::string& crushedState, const std::string& moveState);
 		virtual ~FSMStateFygarFire() = default;
-		virtual void Enter(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* UpdateFirst(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* OnNotify(Minigin::ObservedEvent oevent, const Minigin::ObservedData& odata, Minigin::FSMData& data) override;
+		virtual void Enter(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* UpdateFirst(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* OnNotify(Engine::ObservedEvent oevent, const Engine::ObservedData& odata, Engine::FSMData& data) override;
 	private:
 		std::string m_PumpedState;
 		std::string m_CrushedState;
@@ -120,14 +120,14 @@ namespace DigDug
 		float m_Accu;
 	};
 
-	class FSMStateFygarCharge final : public Minigin::FSMState
+	class FSMStateFygarCharge final : public Engine::FSMState
 	{
 	public:
 		explicit FSMStateFygarCharge(float dur, const std::string& pumpState, const std::string& crushState, const std::string& fireState);
 		virtual ~FSMStateFygarCharge() = default;
-		virtual void Enter(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* UpdateFirst(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* OnNotify(Minigin::ObservedEvent oevent, const Minigin::ObservedData& odata, Minigin::FSMData& data) override;
+		virtual void Enter(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* UpdateFirst(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* OnNotify(Engine::ObservedEvent oevent, const Engine::ObservedData& odata, Engine::FSMData& data) override;
 	private:
 		float m_Duration;
 		float m_Accu;
@@ -138,24 +138,24 @@ namespace DigDug
 
 
 	//Fire Object
-	class FSMStateFireIdle final : public Minigin::FSMState
+	class FSMStateFireIdle final : public Engine::FSMState
 	{
 	public:
 		explicit FSMStateFireIdle(const std::string& activeState);
 		virtual ~FSMStateFireIdle() = default;
-		virtual void Enter(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* OnNotify(Minigin::ObservedEvent oevent, const Minigin::ObservedData& odata, Minigin::FSMData& data) override;
+		virtual void Enter(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* OnNotify(Engine::ObservedEvent oevent, const Engine::ObservedData& odata, Engine::FSMData& data) override;
 	private:
 		std::string m_ActiveState;
 	};
-	class FSMStateFireActive final : public Minigin::FSMState
+	class FSMStateFireActive final : public Engine::FSMState
 	{
 	public:
 		explicit FSMStateFireActive(DigDugGridComponent* pGrid, const std::string& inactiveState, float duration);
 		virtual ~FSMStateFireActive() = default;
-		virtual void Enter(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
-		virtual FSMState* OnNotify(Minigin::ObservedEvent oevent, const Minigin::ObservedData& odata, Minigin::FSMData& data) override;
-		virtual FSMState* UpdateFirst(const Minigin::SceneData& sceneData, Minigin::FSMData& data) override;
+		virtual void Enter(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
+		virtual FSMState* OnNotify(Engine::ObservedEvent oevent, const Engine::ObservedData& odata, Engine::FSMData& data) override;
+		virtual FSMState* UpdateFirst(const Engine::SceneData& sceneData, Engine::FSMData& data) override;
 	private:
 		std::string m_InactiveState;
 		float m_Duration;

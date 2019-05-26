@@ -5,12 +5,12 @@
 #include "GameObject.h"
 
 
-void DigDug::AutokillComponent::UpdateFirstOverride(const Minigin::SceneData& sceneData)
+void DigDug::AutokillComponent::UpdateFirstOverride(const Engine::SceneData& sceneData)
 {
 	m_Delay -= sceneData.GetTime()->GetDeltaTime();
 	if (m_Delay <= 0)
 	{
 		auto* pObject = GetGameObject();
-		Minigin::GameObject::DeleteObject(pObject);
+		Engine::GameObject::DeleteObject(pObject);
 	}
 }

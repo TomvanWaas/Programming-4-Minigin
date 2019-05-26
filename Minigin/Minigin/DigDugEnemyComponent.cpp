@@ -8,7 +8,7 @@
 #include "ObservedData.h"
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 void DigDugEnemyComponent::InitializeOverride(const SceneData& sceneData)
 {

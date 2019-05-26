@@ -1,13 +1,13 @@
 #pragma once
 #include "Manager.h"
 
-namespace Minigin
+namespace Engine
 {
 	class Observer;
 }
 namespace DigDug
 {
-	class ObserverManager final : public Minigin::Manager
+	class ObserverManager final : public Engine::Manager
 	{
 	public:
 		explicit ObserverManager() = default;

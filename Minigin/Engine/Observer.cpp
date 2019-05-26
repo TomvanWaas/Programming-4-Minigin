@@ -3,7 +3,7 @@
 #include "Subject.h"
 #include <algorithm>
 
-using namespace Minigin;
+using namespace Engine;
 
 Observer::~Observer()
 {

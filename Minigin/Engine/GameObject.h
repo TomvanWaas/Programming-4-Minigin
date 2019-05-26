@@ -3,7 +3,7 @@
 #include "Transform.h"
 #include "Observer.h"
 
-namespace Minigin
+namespace Engine
 {
 	class Scene;
 	class BaseComponent;

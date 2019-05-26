@@ -7,7 +7,7 @@
 #include "ObservedData.h"
 #include "GameFiles.h"
 #include "WindowSettings.h"
-#include "Engine.h"
+#include "EngineObject.h"
 #include "DigDugGridComponent.h"
 #include "GameObject.h"
 #include "EnemyManager.h"
@@ -24,7 +24,7 @@
 #include "DigDugPlayerComponent.h"
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 DigDugSingleplayerScene::DigDugSingleplayerScene(const std::string& name, const std::string& levelFile, int numLives, int levelNumber)
 	: Scene(name)
@@ -43,7 +43,7 @@ void DigDugSingleplayerScene::SceneInitialize()
 {
 #pragma region Settings
 	Vector2 scale{ 2.0f, 2.0f };
-	const WindowSettings& wsettings = Minigin::Engine::GetWindowSettings();
+	const WindowSettings& wsettings = Engine::EngineObject::GetWindowSettings();
 
 	//Settings
 	m_GameSettings.spriteHeight = 16;
@@ -85,7 +85,7 @@ void DigDugSingleplayerScene::SceneInitialize()
 		Logger::GetInstance().LogError("DigDugSingleplayerScene::SceneInitialize > Failed to make grid");
 		return;
 	}
-	pBackgroundObject->GetTransform().SetLocalPosition(Minigin::Engine::GetWindowSettings().width*0.5f, Minigin::Engine::GetWindowSettings().height*0.5f);
+	pBackgroundObject->GetTransform().SetLocalPosition(Engine::EngineObject::GetWindowSettings().width*0.5f, Engine::EngineObject::GetWindowSettings().height*0.5f);
 
 	//LevelData
 	m_GameSettings.pGrid->Initialize(GetSceneData());

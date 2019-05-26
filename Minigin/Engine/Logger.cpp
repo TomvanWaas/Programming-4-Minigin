@@ -2,7 +2,7 @@
 #include "Logger.h"
 #include <iostream>
 
-using namespace Minigin;
+using namespace Engine;
 Logger::Logger()
 {
 	m_ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);

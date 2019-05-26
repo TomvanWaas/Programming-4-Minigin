@@ -9,7 +9,7 @@
 #include "GameEvents.h"
 #include "DigDugMovementComponent.h"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
 

@@ -2,7 +2,7 @@
 #include "BaseComponent.h"
 #include "FSMData.h"
 
-namespace Minigin
+namespace Engine
 {
 	class FSMState;
 	class FSMEvent;

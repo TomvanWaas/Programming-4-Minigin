@@ -4,7 +4,7 @@
 #include <float.h>
 #include "Logger.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 const Vector2 Vector2::Zero = Vector2(0, 0);
 const Vector2 Vector2::Up = Vector2(0, -1);

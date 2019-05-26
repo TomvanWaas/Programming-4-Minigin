@@ -4,7 +4,7 @@
 #include "Scene.h"
 #include "ObservedData.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 void BaseComponent::Notify(ObservedEvent event, const ObservedData& data)
 {

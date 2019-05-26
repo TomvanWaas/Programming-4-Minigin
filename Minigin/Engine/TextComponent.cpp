@@ -9,7 +9,7 @@
 #include "Logger.h"
 #include "SceneData.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 void TextComponent::UpdateFirstOverride(const SceneData& sceneData)
 {

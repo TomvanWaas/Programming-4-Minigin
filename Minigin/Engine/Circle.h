@@ -1,5 +1,5 @@
 #pragma once
-namespace Minigin
+namespace Engine
 {
 	struct Circle
 	{

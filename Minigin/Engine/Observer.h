@@ -2,7 +2,7 @@
 #include "ObservedEvent.h"
 #include "Subject.h"
 
-namespace Minigin
+namespace Engine
 {
 	class ObservedData;
 

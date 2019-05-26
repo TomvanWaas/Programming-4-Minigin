@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Time.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 Time::Time()
 	: m_TotalTime(0)

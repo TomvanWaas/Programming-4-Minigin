@@ -8,7 +8,7 @@
 #include "Font.h"
 #include "RenderManager.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 ResourceManager::ResourceLoader<Texture2D>::ResourceLoader()
 {

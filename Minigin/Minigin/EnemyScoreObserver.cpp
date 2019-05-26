@@ -4,17 +4,17 @@
 #include "Transform.h"
 #include "ObservedData.h"
 #include "GameEvents.h"
-#include "Engine.h"
+#include "EngineObject.h"
 #include "GameFiles.h"
 #include "SDL.h"
 #include "PlayerManager.h"
 #include "Scene.h"
 #include "WindowSettings.h"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
-EnemyScoreObserver::EnemyScoreObserver(Type type, Minigin::Scene* pScene, float laneHeight)
+EnemyScoreObserver::EnemyScoreObserver(Type type, Engine::Scene* pScene, float laneHeight)
 	: m_Type(type)
 	, m_LaneHeight(laneHeight)
 	, m_pScene(pScene)
@@ -28,13 +28,13 @@ void EnemyScoreObserver::Notify(ObservedEvent event, const ObservedData& data)
 	{
 	case ObservedEvent::Destroyed:
 		{
-		Minigin::GameObject* pObject = nullptr;
+		Engine::GameObject* pObject = nullptr;
 			if (data.GetData("GameObject", pObject) && pObject != nullptr)
 			{
 				ObservedData d{};
 				int score = GetScore(pObject->GetTransform().GetWorldPosition());
 				d.AddData<int>("Score", score);
-				d.AddData<Minigin::GameObject*>("GameObject", pObject);
+				d.AddData<Engine::GameObject*>("GameObject", pObject);
 				NotifyObservers(GameEvent::GainedScore, d);
 			}
 		}
@@ -42,9 +42,9 @@ void EnemyScoreObserver::Notify(ObservedEvent event, const ObservedData& data)
 	}
 }
 
-int EnemyScoreObserver::GetScore(const Minigin::Vector2& worldPos)
+int EnemyScoreObserver::GetScore(const Engine::Vector2& worldPos)
 {
-	const auto& wsettings = Minigin::Engine::GetWindowSettings();
+	const auto& wsettings = Engine::EngineObject::GetWindowSettings();
 	float frac = worldPos.y / wsettings.height;
 	int score = 0;
 

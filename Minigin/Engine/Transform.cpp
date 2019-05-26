@@ -5,7 +5,7 @@
 #include "MiniginMath.h"
 #include "ObservedData.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 Transform::Transform(GameObject& gameObject)
 	: m_LocalPosition(0, 0)

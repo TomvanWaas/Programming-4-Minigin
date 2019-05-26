@@ -7,10 +7,10 @@
 #include "SDL.h"
 #include "TextComponent.h"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
-ScoreObserver::ScoreObserver(const std::shared_ptr<Font>& pFont, const Minigin::Color4& color, Minigin::Scene* pScene)
+ScoreObserver::ScoreObserver(const std::shared_ptr<Font>& pFont, const Engine::Color4& color, Engine::Scene* pScene)
 	: m_pScene(pScene)
 	, m_Color(color)
 	, m_pFont(pFont)
@@ -25,9 +25,9 @@ void ScoreObserver::Notify(ObservedEvent event, const ObservedData& data)
 	case GameEvent::GainedScore:
 	{
 		//Get Data
-		Minigin::GameObject* pObject = nullptr;
+		Engine::GameObject* pObject = nullptr;
 		int score = 0;
-		if (m_pScene && data.GetData<int>("Score", score) && data.GetData<Minigin::GameObject*>("GameObject", pObject) && pObject)
+		if (m_pScene && data.GetData<int>("Score", score) && data.GetData<Engine::GameObject*>("GameObject", pObject) && pObject)
 		{
 			//Use Data
 			if (score > 0)

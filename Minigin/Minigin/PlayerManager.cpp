@@ -4,7 +4,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
 void PlayerManager::LateInitialize(const SceneData& sceneData)

@@ -1,5 +1,5 @@
 #pragma once
-namespace Minigin
+namespace Engine
 {
 	class Deletor final : public Singleton<Deletor>
 	{

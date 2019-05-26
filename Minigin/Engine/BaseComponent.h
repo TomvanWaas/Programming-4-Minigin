@@ -1,6 +1,6 @@
 #pragma once
 #include "Observer.h"
-namespace Minigin
+namespace Engine
 {
 	class ObservedData;
 	class GameObject;

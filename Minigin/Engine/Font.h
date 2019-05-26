@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL_ttf.h>
 
-namespace Minigin
+namespace Engine
 {
 	class Font
 	{

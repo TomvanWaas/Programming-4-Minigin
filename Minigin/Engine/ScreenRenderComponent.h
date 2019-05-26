@@ -4,7 +4,7 @@
 #include "FlipMode.h"
 #include "Rect.h"
 
-namespace Minigin
+namespace Engine
 {
 	class Texture2D;
 	class ScreenRenderComponent final : public BaseComponent, public Renderable

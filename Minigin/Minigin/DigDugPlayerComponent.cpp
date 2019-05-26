@@ -7,7 +7,7 @@
 #include "GameEvents.h"
 #include "ObservedData.h"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
 DigDugPlayerComponent::DigDugPlayerComponent(int id)

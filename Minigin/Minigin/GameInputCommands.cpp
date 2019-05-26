@@ -11,7 +11,7 @@
 #include "Scene.h"
 #include "EnemyManager.h"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
 PlayerInput::PlayerInput(DigDug::Direction d, int playerId, Scene* pScene)

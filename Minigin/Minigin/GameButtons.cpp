@@ -4,7 +4,7 @@
 #include "Scene.h"
 #include "InputManager.h"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
 SceneSwapButton::SceneSwapButton(SceneManager& sceneManager, const std::string& name, bool reload )

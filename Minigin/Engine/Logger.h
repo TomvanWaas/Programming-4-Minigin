@@ -2,9 +2,9 @@
 #include "Singleton.h"
 #include <fstream>
 
-namespace Minigin
+namespace Engine
 {
-	class Logger final : public Minigin::Singleton<Logger>
+	class Logger final : public Engine::Singleton<Logger>
 	{
 	public:
 		Logger();

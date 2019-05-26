@@ -6,7 +6,7 @@
 #include "CollisionManager.h"
 #include "SceneData.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 MovementComponent::MovementComponent(unsigned int interpolation )
 	: m_Interpolation(interpolation)

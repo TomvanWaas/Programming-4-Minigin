@@ -4,7 +4,7 @@
 #include "Rect.h"
 
 
-namespace Minigin
+namespace Engine
 {
 	class Texture2D;
 

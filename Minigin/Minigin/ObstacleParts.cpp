@@ -10,7 +10,7 @@
 #include "GameEvents.h"
 #include "ObservedEvent.h"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
 FSMStateObstacleIdle::FSMStateObstacleIdle(DigDugGridComponent* pGrid, GameObject* pObject, FSMState* pFallState)

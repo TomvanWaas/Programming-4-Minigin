@@ -2,7 +2,7 @@
 #include "BaseComponent.h"
 #include "Rect.h"
 
-namespace Minigin
+namespace Engine
 {
 	class ColliderCommand;
 	class AABBCollisionComponent : public BaseComponent

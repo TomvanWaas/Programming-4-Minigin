@@ -3,7 +3,7 @@
 #include "fstream"
 #include "sstream"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
 std::shared_ptr<LevelData> ResourceManager::ResourceLoader<LevelData>::GetResource(const std::string& path)

@@ -1,7 +1,7 @@
 #pragma once
 #include "AABBCollisionComponent.h"
 
-namespace Minigin
+namespace Engine
 {
 	class SpriteComponent;
 	class SpriteCollisionComponent final : public AABBCollisionComponent

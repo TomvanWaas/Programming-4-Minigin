@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-namespace Minigin
+namespace Engine
 {
 
 	class InputCommand abstract

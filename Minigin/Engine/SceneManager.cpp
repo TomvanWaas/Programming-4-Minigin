@@ -6,7 +6,7 @@
 #include "Deletor.h"
 #include "RenderManager.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 SceneManager::SceneManager()
 	: m_pScenes()

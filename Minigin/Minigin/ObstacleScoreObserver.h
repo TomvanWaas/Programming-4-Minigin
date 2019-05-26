@@ -3,12 +3,12 @@
 
 namespace DigDug
 {
-	class ObstacleScoreObserver final : public Minigin::Observer, public Minigin::Subject
+	class ObstacleScoreObserver final : public Engine::Observer, public Engine::Subject
 	{
 	public:
 		explicit ObstacleScoreObserver() = default;
 		virtual ~ObstacleScoreObserver() = default;
-		virtual void Notify(Minigin::ObservedEvent event, const Minigin::ObservedData& data) override;
+		virtual void Notify(Engine::ObservedEvent event, const Engine::ObservedData& data) override;
 	private:
 		int m_HitAmount;
 

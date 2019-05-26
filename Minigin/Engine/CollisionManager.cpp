@@ -7,7 +7,7 @@
 #include "SceneData.h"
 #include "ObservedData.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 #ifdef Debug
 Minigin::CollisionManager::CollisionManager()
@@ -15,12 +15,12 @@ Minigin::CollisionManager::CollisionManager()
 {}
 #endif
 
-Minigin::CollisionManager::~CollisionManager()
+Engine::CollisionManager::~CollisionManager()
 {
 	SAFE_DELETE(m_pPairsBuffer1);
 	SAFE_DELETE(m_pPairsBuffer2);
 }
-void Minigin::CollisionManager::Initialize(const SceneData& sceneData)
+void Engine::CollisionManager::Initialize(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
 	SAFE_DELETE(m_pPairsBuffer1);
@@ -34,7 +34,7 @@ void Minigin::CollisionManager::Initialize(const SceneData& sceneData)
 
 
 //Return true if pCollider collides, else false
-bool Minigin::CollisionManager::Collides(AABBCollisionComponent* pCollider) const
+bool Engine::CollisionManager::Collides(AABBCollisionComponent* pCollider) const
 {
 	if (pCollider == nullptr || pCollider->IsEnabled() == false) return false;
 
@@ -47,7 +47,7 @@ bool Minigin::CollisionManager::Collides(AABBCollisionComponent* pCollider) cons
 	}
 	return false;
 }
-bool Minigin::CollisionManager::Collides(const Rect& a, const Rect& b) const
+bool Engine::CollisionManager::Collides(const Rect& a, const Rect& b) const
 {
 	return (a.x <= b.x + b.width &&
 		a.x + a.width >= b.x &&
@@ -62,7 +62,7 @@ bool Minigin::CollisionManager::Collides(const Rect& a, const Rect& b) const
 
 
 //Calculate for enters/exits
-void Minigin::CollisionManager::Update(const SceneData& sceneData)
+void Engine::CollisionManager::Update(const SceneData& sceneData)
 {
 	UNREFERENCED_PARAMETER(sceneData);
 	//////////////////////////////////////
@@ -197,7 +197,7 @@ void Minigin::CollisionManager::Render(const RenderManager& renderer) const
 }
 #endif
 
-void Minigin::CollisionManager::RegisterCollision(AABBCollisionComponent& col)
+void Engine::CollisionManager::RegisterCollision(AABBCollisionComponent& col)
 {
 	auto i = std::find(m_pColliders.begin(), m_pColliders.end(), &col);
 	if (i == m_pColliders.end())
@@ -206,7 +206,7 @@ void Minigin::CollisionManager::RegisterCollision(AABBCollisionComponent& col)
 	}
 }
 
-void Minigin::CollisionManager::UnRegisterCollision(AABBCollisionComponent& col)
+void Engine::CollisionManager::UnRegisterCollision(AABBCollisionComponent& col)
 {
 	//In Vector
 	auto i = std::find(m_pColliders.begin(), m_pColliders.end(), &col);

@@ -11,7 +11,7 @@
 #include "Time.h"
 #include "Scene.h"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
 DigDug::FSMStatePlayerIdle::FSMStatePlayerIdle(const std::string& deadState, const std::string& crushedState,

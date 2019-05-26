@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 
-namespace Minigin
+namespace Engine
 {
 	class ObservedData final
 	{

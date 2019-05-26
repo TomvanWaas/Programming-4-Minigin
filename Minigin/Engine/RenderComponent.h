@@ -5,7 +5,7 @@
 #include "FlipMode.h"
 #include "Vector2.h"
 
-namespace Minigin
+namespace Engine
 {
 	class Texture2D;
 

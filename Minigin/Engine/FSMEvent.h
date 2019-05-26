@@ -1,7 +1,7 @@
 #pragma once
 #include "ObservedEvent.h"
 
-namespace Minigin
+namespace Engine
 {
 
 	class ObservedData;

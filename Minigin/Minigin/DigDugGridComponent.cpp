@@ -10,7 +10,7 @@
 #include "ObservedData.h"
 #include "GameEvents.h"
 
-using namespace Minigin;
+using namespace Engine;
 using namespace DigDug;
 
 

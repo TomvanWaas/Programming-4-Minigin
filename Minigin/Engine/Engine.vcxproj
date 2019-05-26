@@ -168,7 +168,7 @@
     <ClInclude Include="Components.h" />
     <ClInclude Include="DataComponent.h" />
     <ClInclude Include="Deletor.h" />
-    <ClInclude Include="Engine.h" />
+    <ClInclude Include="EngineObject.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="FiniteStateMachineComponent.h" />
     <ClInclude Include="FlipMode.h" />
@@ -221,7 +221,7 @@
     <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="Color.cpp" />
-    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="EngineObject.cpp" />
     <ClCompile Include="FiniteStateMachineComponent.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FPSComponent.cpp" />

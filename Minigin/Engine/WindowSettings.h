@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace Minigin
+namespace Engine
 {
 	struct WindowSettings final
 	{

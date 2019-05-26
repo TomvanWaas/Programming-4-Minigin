@@ -5,7 +5,7 @@
 #include "BaseComponent.h"
 #include "SpriteComponent.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 //FSMDeleteGameObjectEvent
 FSMDeleteGameObjectEvent::FSMDeleteGameObjectEvent(GameObject* pObject)

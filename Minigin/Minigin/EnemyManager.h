@@ -1,7 +1,7 @@
 #pragma once
 #include "Manager.h"
 #include <map>
-namespace Minigin
+namespace Engine
 {
 	struct Vector2;
 	class Transform;
@@ -9,21 +9,21 @@ namespace Minigin
 }
 namespace DigDug
 {
-	class EnemyManager final : public Minigin::Manager
+	class EnemyManager final : public Engine::Manager
 	{
 	public:
 		explicit EnemyManager() = default;
 		virtual ~EnemyManager() = default;
 
-		virtual void LateInitialize(const Minigin::SceneData& sceneData) override;
+		virtual void LateInitialize(const Engine::SceneData& sceneData) override;
 
-		bool RegisterEnemy(Minigin::GameObject* pEnemy, int id);
-		bool UnregisterEnemy(Minigin::GameObject* pEnemy);
-		const std::map<int, std::pair<Minigin::Vector2, Minigin::GameObject*>>& GetEnemies() const { return m_Enemies; }
-		Minigin::GameObject* GetEnemy(int id) const;
-		Minigin::GameObject* GetClosestEnemy(const Minigin::Vector2& t) const;
+		bool RegisterEnemy(Engine::GameObject* pEnemy, int id);
+		bool UnregisterEnemy(Engine::GameObject* pEnemy);
+		const std::map<int, std::pair<Engine::Vector2, Engine::GameObject*>>& GetEnemies() const { return m_Enemies; }
+		Engine::GameObject* GetEnemy(int id) const;
+		Engine::GameObject* GetClosestEnemy(const Engine::Vector2& t) const;
 	private:
-		std::map<int, std::pair<Minigin::Vector2, Minigin::GameObject*>> m_Enemies;
+		std::map<int, std::pair<Engine::Vector2, Engine::GameObject*>> m_Enemies;
 	};
 
 }

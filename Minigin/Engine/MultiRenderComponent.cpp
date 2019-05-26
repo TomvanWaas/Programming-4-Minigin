@@ -8,7 +8,7 @@
 #include "SceneData.h"
 #include "GameObject.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 MultiRenderComponent::MultiRenderComponent(const std::string& texturePath)
 	: m_pTexture(ResourceManager::GetInstance().LoadTexture(texturePath))

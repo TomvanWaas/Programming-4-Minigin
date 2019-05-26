@@ -3,13 +3,13 @@
 
 namespace DigDug
 {
-	class DigDugEnemyComponent : public Minigin::BaseComponent
+	class DigDugEnemyComponent : public Engine::BaseComponent
 	{
 	public:
 		explicit DigDugEnemyComponent(int id) : m_Id(id) {}
 		virtual ~DigDugEnemyComponent() = default;
-		virtual void InitializeOverride(const Minigin::SceneData& sceneData) override;
-		virtual void DestroyOverride(const Minigin::SceneData& sceneData) override;
+		virtual void InitializeOverride(const Engine::SceneData& sceneData) override;
+		virtual void DestroyOverride(const Engine::SceneData& sceneData) override;
 	private:
 		int m_Id;
 	};

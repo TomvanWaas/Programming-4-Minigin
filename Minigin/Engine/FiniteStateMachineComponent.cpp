@@ -5,7 +5,7 @@
 #include "GameObject.h"
 #include <algorithm>
 
-using namespace Minigin;
+using namespace Engine;
 
 FiniteStateMachineComponent::~FiniteStateMachineComponent()
 {

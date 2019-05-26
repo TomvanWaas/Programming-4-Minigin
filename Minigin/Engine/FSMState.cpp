@@ -4,14 +4,14 @@
 #include "FSMCondition.h"
 #include "FiniteStateMachineComponent.h"
 
-using namespace Minigin;
+using namespace Engine;
 
-void Minigin::FSMState::SetFSMComponent(FiniteStateMachineComponent* pComponent)
+void Engine::FSMState::SetFSMComponent(FiniteStateMachineComponent* pComponent)
 {
 	m_pFSMComponent = pComponent;
 }
 
-FSMState* Minigin::FSMState::GetState(const std::string& name) const
+FSMState* Engine::FSMState::GetState(const std::string& name) const
 {
 	if (m_pFSMComponent) return m_pFSMComponent->GetStateByName(name);
 	return nullptr;

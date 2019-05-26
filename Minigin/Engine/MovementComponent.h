@@ -2,7 +2,7 @@
 #include "BaseComponent.h"
 #include "Vector2.h"
 
-namespace Minigin
+namespace Engine
 {
 	class AABBCollisionComponent;
 	class MovementComponent final : public BaseComponent

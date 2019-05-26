@@ -10,7 +10,7 @@
 #define DEGTORAD 0.0174532925f 
 #endif
 
-namespace Minigin
+namespace Engine
 {
 	namespace Mathf
 	{

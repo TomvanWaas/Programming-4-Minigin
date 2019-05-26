@@ -2,7 +2,7 @@
 #include "Singleton.h"
 #include <map>
 
-namespace Minigin
+namespace Engine
 {
 	class Texture2D;
 	class Font;

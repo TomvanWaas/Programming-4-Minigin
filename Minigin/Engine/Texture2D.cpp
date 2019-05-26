@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include "Logger.h"
 
-using namespace Minigin;
+using namespace Engine;
 
 Texture2D::Texture2D(SDL_Texture* texture)
 {

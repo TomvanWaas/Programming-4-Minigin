@@ -8,7 +8,7 @@
 #include "Time.h"
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 DigDug::DigDugMovementComponent::DigDugMovementComponent(DigDugGridComponent& grid, float speed)
 	: m_pGrid(&grid)

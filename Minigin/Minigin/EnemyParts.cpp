@@ -18,7 +18,7 @@
 #include "MovementComponent.h"
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 DigDug::FSMStateEnemyMove::FSMStateEnemyMove(float speed, DigDugGridComponent* pGrid, float ghostCooldown, float fireCooldown, const std::string& ghostState, const std::string& fireState,
 	const std::string& pumpState, const std::string& crushState)

@@ -1,6 +1,6 @@
 #pragma once
 #include <exception>
-namespace Minigin
+namespace Engine
 {
 	class ResourceException final : public std::exception
 	{

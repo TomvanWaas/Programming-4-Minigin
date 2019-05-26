@@ -11,7 +11,7 @@
 #include "DigDugPauseScene.h"
 
 using namespace DigDug;
-using namespace Minigin;
+using namespace Engine;
 
 #include "ObservedData.h"
 void DigDugApplication::Initialize(SceneManager& sceneManager, const WindowSettings& windowSettings)

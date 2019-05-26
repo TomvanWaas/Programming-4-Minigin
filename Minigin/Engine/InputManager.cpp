@@ -5,7 +5,7 @@
 #include "InputCommand.h"
 #include <algorithm>
 
-using namespace Minigin;
+using namespace Engine;
 
 BYTE* InputManager::m_pCurrentKeyboardState = nullptr;
 BYTE* InputManager::m_pPreviousKeyboardState = nullptr;
