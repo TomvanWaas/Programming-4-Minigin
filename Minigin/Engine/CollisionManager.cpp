@@ -97,7 +97,13 @@ void Engine::CollisionManager::Update(const SceneData& sceneData)
 				CollPair pair{};
 				pair.pFirst = pColliderA;
 				pair.pSecond = pColliderB;
-				m_pPairsBuffer1->push_back(pair);
+
+				//Check if not already in buffer
+				auto iterator = std::find_if((*m_pPairsBuffer1).begin(), (*m_pPairsBuffer1).end(), [&pair](const CollPair& other)
+				{
+					return pair == other;
+				});
+				if (iterator == (*m_pPairsBuffer1).end())m_pPairsBuffer1->push_back(pair);
 			}
 		}
 	}
